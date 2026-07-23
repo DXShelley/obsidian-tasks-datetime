@@ -19,7 +19,7 @@ You can quickly verify that the `editTaskLineModal()` API works as expected usin
 You can test the API directly in the Obsidian console
 
 1. Open the developer console in Obsidian (Cmd+Opt+I on Mac).
-2. Get access to the Tasks API by typing `this.app.plugins.plugins['obsidian-tasks-plugin'].apiV1` in the console.
+2. Get access to the Tasks Datetime API by typing `this.app.plugins.plugins['obsidian-tasks-datetime'].apiV1` in the console.
 3. Use the `editTaskLineModal()` method to open the edit task modal with a sample task text.
 
 ## Edit Tasks
@@ -27,7 +27,7 @@ You can test the API directly in the Obsidian console
 Edit Task Command:
 
 ```js
-const tasksApi = this.app.plugins.plugins['obsidian-tasks-plugin'].apiV1;
+const tasksApi = this.app.plugins.plugins['obsidian-tasks-datetime'].apiV1;
 let editedTaskLine = await tasksApi.editTaskLineModal('- [ ] #task Do every day 🔼 🔁 every day ➕ 2025-07-06 ⏳ 2025-07-06');
 console.log(editedTaskLine);
 ```

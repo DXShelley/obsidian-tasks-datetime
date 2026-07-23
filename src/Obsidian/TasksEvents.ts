@@ -5,10 +5,10 @@ import { logging } from '../lib/logging';
 import type { State } from './Cache';
 
 enum Event {
-    CacheUpdate = 'obsidian-tasks-plugin:cache-update',
-    RequestCacheUpdate = 'obsidian-tasks-plugin:request-cache-update',
-    ReloadOpenSearchResults = 'obsidian-tasks-plugin:reload-open-search-results',
-    ReloadVault = 'obsidian-tasks-plugin:reload-vault',
+    CacheUpdate = 'obsidian-tasks-datetime:cache-update',
+    RequestCacheUpdate = 'obsidian-tasks-datetime:request-cache-update',
+    ReloadOpenSearchResults = 'obsidian-tasks-datetime:reload-open-search-results',
+    ReloadVault = 'obsidian-tasks-datetime:reload-vault',
 }
 
 interface CacheUpdateData {

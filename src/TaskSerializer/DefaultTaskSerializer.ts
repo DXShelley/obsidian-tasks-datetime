@@ -5,6 +5,7 @@ import { Recurrence } from '../Task/Recurrence';
 import { Task } from '../Task/Task';
 import { Priority } from '../Task/Priority';
 import { TaskRegularExpressions } from '../Task/TaskRegularExpressions';
+import { formatTaskDate } from '../DateTime/DateTools';
 import type { TaskDetails, TaskSerializer } from '.';
 
 /* Interface describing the symbols that {@link DefaultTaskSerializer}
@@ -62,7 +63,7 @@ export const taskIdRegex = /[a-zA-Z0-9-_]+/;
 export const taskIdSequenceRegex = new RegExp(taskIdRegex.source + '( *, *' + taskIdRegex.source + ' *)*');
 
 function dateFieldRegex(symbols: string) {
-    return fieldRegex(symbols, '(\\d{4}-\\d{2}-\\d{2})');
+    return fieldRegex(symbols, '(\\d{4}-\\d{2}-\\d{2}(?: \\d{2}:\\d{2}:\\d{2})?)');
 }
 
 function fieldRegex(symbols: string, valueRegexString: string) {
@@ -126,7 +127,7 @@ function symbolAndDateValue(shortMode: boolean, symbol: string, date: moment.Mom
     // We could call symbolAndStringValue() to remove a little code repetition,
     // but doing so would do some wasted date-formatting when in 'short mode',
     // so instead we repeat the check on shortMode value.
-    return shortMode ? ' ' + symbol : ` ${symbol} ${date.format(TaskRegularExpressions.dateFormat)}`;
+    return shortMode ? ' ' + symbol : ` ${symbol} ${formatTaskDate(date)}`;
 }
 
 export function allTaskPluginEmojis() {
@@ -273,7 +274,10 @@ export class DefaultTaskSerializer implements TaskSerializer {
      */
     private extractDateField(state: ParsingState, regex: RegExp, setter: (date: Moment) => void): void {
         this.extractField(state, regex, (match) => {
-            setter(window.moment(match[1], TaskRegularExpressions.dateFormat));
+            const format = match[1].includes(' ')
+                ? TaskRegularExpressions.dateTimeFormat
+                : TaskRegularExpressions.dateFormat;
+            setter(window.moment(match[1], format));
         });
     }
 

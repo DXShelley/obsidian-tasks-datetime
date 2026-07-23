@@ -22,6 +22,7 @@ import { QueryFileDefaults } from './Query/QueryFileDefaults';
 import { LinkResolver } from './Task/LinkResolver';
 import { ObsidianLocalStorageProvider } from './Config/ObsidianLocalStorageProvider';
 import { EnableJsInTasksQueries } from './Config/EnableJsInTasksQueries';
+import { TaskDashboardModal } from './Obsidian/TaskDashboardModal';
 
 export default class TasksPlugin extends Plugin {
     private cache: Cache | undefined;
@@ -81,6 +82,9 @@ export default class TasksPlugin extends Plugin {
 
         this.registerEditorExtension(newLivePreviewExtension(this));
         this.registerEditorSuggest(new EditorSuggestor(this.app, getSettings(), this));
+        this.addRibbonIcon('chart-no-axes-combined', 'Open task dashboard', () => {
+            new TaskDashboardModal(this.app, this.getTasks()).open();
+        });
         new Commands({ plugin: this });
     }
 

@@ -346,6 +346,17 @@ export class SettingsTab extends PluginSettingTab {
         // ---------------------------------------------------------------------------
 
         new Setting(containerEl)
+            .setName('Include time in task dates')
+            .setDesc('Store and display task dates as YYYY-MM-DD HH:mm:ss. When disabled, task dates remain day-only.')
+            .addToggle((toggle) => {
+                toggle.setValue(getSettings().enableDateTime).onChange(async (value) => {
+                    updateSettings({ enableDateTime: value });
+                    await this.plugin.saveSettings();
+                    this.events.triggerReloadOpenSearchResults();
+                });
+            });
+
+        new Setting(containerEl)
             .setName(i18n.t('settings.dates.createdDate.name'))
             .setDesc(
                 SettingsTab.createFragmentWithHTML(

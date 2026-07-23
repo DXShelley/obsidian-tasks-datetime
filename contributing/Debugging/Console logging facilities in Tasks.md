@@ -10,7 +10,7 @@ The source file [src/lib/logging.ts](https://github.com/obsidian-tasks-group/obs
 
 ## Enabling debug logging
 
-The `loggingOptions` section in the file `.obsidian/plugins/obsidian-tasks-plugin/data.json` vault determines the level of detail written out by Tasks.
+The `loggingOptions` section in the file `.obsidian/plugins/obsidian-tasks-datetime/data.json` vault determines the level of detail written out by Tasks Datetime.
 
 For example, change all the `info` values to `debug`.
 
@@ -22,7 +22,7 @@ The available levels are:
 - `debug`: Show debug messages and above.
 - `trace`: A `trace` message shows the call-stack to the log message.
 
-See a sample [data.json](https://github.com/obsidian-tasks-group/obsidian-tasks/blob/main/resources/sample_vaults/Tasks-Demo/.obsidian/plugins/obsidian-tasks-plugin/data.json) file.
+See the sample [`data.json`](../../resources/sample_vaults/Tasks-Demo/.obsidian/plugins/obsidian-tasks-datetime/data.json) file.
 
 ## Adding logging to new locations
 

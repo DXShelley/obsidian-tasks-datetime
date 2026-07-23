@@ -1,5 +1,6 @@
 import type { App, Editor, MarkdownFileInfo, MarkdownView, TFile, View } from 'obsidian';
 import type TasksPlugin from '../main';
+import { TaskDashboardModal } from '../Obsidian/TaskDashboardModal';
 import { StatusRegistry } from '../Statuses/StatusRegistry';
 import { createOrEdit } from './CreateOrEdit';
 
@@ -34,6 +35,13 @@ export class Commands {
                     async () => await this.plugin.saveSettings(),
                 );
             },
+        });
+
+        plugin.addCommand({
+            id: 'open-task-dashboard',
+            name: 'Open task dashboard',
+            icon: 'chart-no-axes-combined',
+            callback: () => new TaskDashboardModal(this.app, this.plugin.getTasks()).open(),
         });
 
         plugin.addCommand({

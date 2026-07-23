@@ -1,5 +1,5 @@
 {
-  "obsidian-tasks-plugin:edit-task": [
+  "obsidian-tasks-datetime:edit-task": [
     {
       "modifiers": [
         "Ctrl",
@@ -17,7 +17,7 @@
     }
   ],
   "editor:toggle-comments": [],
-  "obsidian-tasks-plugin:toggle-done": [
+  "obsidian-tasks-datetime:toggle-done": [
     {
       "modifiers": [
         "Mod"

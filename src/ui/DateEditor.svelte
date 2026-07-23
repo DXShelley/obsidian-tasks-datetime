@@ -1,7 +1,10 @@
 <script lang="ts">
+    import { onDestroy, onMount } from 'svelte';
+    import { getSettings } from '../Config/Settings';
     import { doAutocomplete } from '../DateTime/DateAbbreviations';
-    import { parseTypedDateForDisplayUsingFutureDate } from '../DateTime/DateTools';
+    import { parseTypedDateForDisplayUsingFutureDate, taskDateFormat } from '../DateTime/DateTools';
     import { labelContentWithAccessKey } from './EditTaskHelpers';
+    import { createDateTimePicker, type DateTimePickerInstance } from './DateTimePicker';
 
     export let id: 'start' | 'scheduled' | 'due' | 'done' | 'created' | 'cancelled';
     export let dateSymbol: string;
@@ -14,13 +17,17 @@
     export let parsedDate: string = '';
 
     let pickedDate = '';
+    let pickerInput: HTMLInputElement;
+    let picker: DateTimePickerInstance | undefined;
 
     $: {
         date = doAutocomplete(date);
         parsedDate = parseTypedDateForDisplayUsingFutureDate(id, date, forwardOnly);
         isDateValid = !parsedDate.includes('invalid');
-        if (isDateValid) {
+        if (isDateValid && !parsedDate.startsWith('<')) {
             pickedDate = parsedDate;
+        } else if (!date) {
+            pickedDate = '';
         }
     }
 
@@ -30,6 +37,22 @@
         }
         date = pickedDate;
     }
+
+    onMount(() => {
+        if (!pickerInput) {
+            return;
+        }
+        picker = createDateTimePicker({
+            input: pickerInput,
+            enableTime: getSettings().enableDateTime,
+            onDateSelected: (selectedDate) => {
+                pickedDate = window.moment(selectedDate).format(taskDateFormat());
+                date = pickedDate;
+            },
+        });
+    });
+
+    onDestroy(() => picker?.destroy());
 
     // 'weekend' abbreviation omitted due to lack of space.
     const datePlaceholder = "Try 'Mon' or 'tm' then space";
@@ -47,18 +70,18 @@
     {accesskey}
 />
 
-{#if isDateValid}
-    <div class="tasks-modal-parsed-date">
-        {dateSymbol}<input
-            class="tasks-modal-date-editor-picker"
-            type="date"
-            bind:value={pickedDate}
-            id="date-editor-picker"
-            on:input={onDatePicked}
-            tabindex="-1"
-        />
-    </div>
-{:else}
+<div class="tasks-modal-parsed-date">
+    {dateSymbol}<input
+        class="tasks-modal-date-editor-picker"
+        type="text"
+        bind:value={pickedDate}
+        bind:this={pickerInput}
+        id="date-editor-picker"
+        on:input={onDatePicked}
+        tabindex="-1"
+    />
+</div>
+{#if !isDateValid}
     <code class="tasks-modal-parsed-date">{dateSymbol} {@html parsedDate}</code>
 {/if}
 

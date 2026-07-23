@@ -69,6 +69,8 @@ export interface Settings {
     globalFilter: string;
     removeGlobalFilter: boolean;
     taskFormat: keyof TASK_FORMATS;
+    /** Whether task dates are stored and displayed with a time of day. */
+    enableDateTime: boolean;
     setCreatedDate: boolean;
     setDoneDate: boolean;
     setCancelledDate: boolean;
@@ -115,6 +117,7 @@ const defaultSettings: Readonly<Settings> = {
     globalFilter: '',
     removeGlobalFilter: false,
     taskFormat: 'tasksPluginEmoji',
+    enableDateTime: false,
     setCreatedDate: false,
     setDoneDate: true,
     setCancelledDate: true,

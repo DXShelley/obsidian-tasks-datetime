@@ -3,14 +3,13 @@ import { DateRange } from './DateRange';
 
 export class DateParser {
     public static parseDate(input: string, forwardDate: boolean = false): Moment {
-        // Using start of day to correctly match on comparison with other dates (like equality).
-        return window
-            .moment(
-                chrono.parseDate(input, undefined, {
-                    forwardDate: forwardDate,
-                }),
-            )
-            .startOf('day');
+        const date = window.moment(
+            chrono.parseDate(input, undefined, {
+                forwardDate: forwardDate,
+            }),
+        );
+        // Preserve an explicitly supplied time for datetime-aware filters.
+        return /\d{1,2}:\d{2}/.test(input) ? date : date.startOf('day');
     }
 
     /**
@@ -56,7 +55,11 @@ export class DateParser {
         const start = window.moment(startDate.date());
         const end = window.moment(endDate.date());
 
-        return new DateRange(start, end);
+        return new DateRange(start, end, DateParser.hasExplicitTime(input));
+    }
+
+    public static hasExplicitTime(input: string): boolean {
+        return /\b\d{1,2}:\d{2}(?::\d{2})?\b/u.test(input);
     }
 
     private static parseRelativeDateRange(this: void, input: string, _forwardDate: boolean): DateRange {

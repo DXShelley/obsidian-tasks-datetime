@@ -1,4 +1,14 @@
 import * as chrono from 'chrono-node';
+import { getSettings } from '../Config/Settings';
+import { TaskRegularExpressions } from '../Task/TaskRegularExpressions';
+
+export function taskDateFormat(): string {
+    return getSettings().enableDateTime ? TaskRegularExpressions.dateTimeFormat : TaskRegularExpressions.dateFormat;
+}
+
+export function formatTaskDate(date: moment.Moment | null): string {
+    return date ? date.format(taskDateFormat()) : '';
+}
 
 export function compareByDate(a: moment.Moment | null, b: moment.Moment | null): -1 | 0 | 1 {
     if (a !== null && b === null) {
@@ -60,7 +70,12 @@ function parseTypedDateForDisplay(
         forwardDate: forwardDate != undefined,
     });
     if (parsed !== null) {
-        return window.moment(parsed).format('YYYY-MM-DD');
+        const date = window.moment(parsed);
+        if (getSettings().enableDateTime && !/\d{1,2}:\d{2}/.test(typedDate)) {
+            const now = window.moment();
+            date.hour(now.hour()).minute(now.minute()).second(now.second()).millisecond(0);
+        }
+        return date.format(taskDateFormat());
     }
     return `<i>invalid ${fieldName} date</i>`;
 }
@@ -90,6 +105,12 @@ export function parseTypedDateForSaving(typedDate: string, forwardDate: boolean)
     const parsedDate = chrono.parseDate(typedDate, new Date(), { forwardDate });
     if (parsedDate !== null) {
         date = window.moment(parsedDate);
+        // A date-only entry deliberately remains convenient: when time support is on,
+        // use the current clock time instead of silently treating it as midnight.
+        if (getSettings().enableDateTime && !/\d{1,2}:\d{2}/.test(typedDate)) {
+            const now = window.moment();
+            date.hour(now.hour()).minute(now.minute()).second(now.second()).millisecond(0);
+        }
     }
     return date;
 }

@@ -1,6 +1,5 @@
 import { GlobalFilter } from '../Config/GlobalFilter';
-import { parseTypedDateForSaving } from '../DateTime/DateTools';
-import { PriorityTools } from '../lib/PriorityTools';
+import { formatTaskDate, parseTypedDateForSaving } from '../DateTime/DateTools';
 import { replaceTaskWithTasks } from '../Obsidian/File';
 import type { Status } from '../Statuses/Status';
 import type { OnCompletion } from '../Task/OnCompletion';
@@ -19,11 +18,14 @@ import { StatusType } from '../Statuses/StatusConfiguration';
 export class EditableTask {
     private readonly addGlobalFilterOnSave: boolean;
     private readonly originalBlocking: Task[];
+    private readonly hasPriorityDimensions: boolean;
 
     // NEW_TASK_FIELD_EDIT_REQUIRED
     description: string;
     status: Status;
     priority: string;
+    importance: 'light' | 'normal' | 'heavy';
+    urgency: 'slow' | 'normal' | 'urgent';
     recurrenceRule: string;
     onCompletion: OnCompletion;
     createdDate: string;
@@ -39,11 +41,14 @@ export class EditableTask {
     private constructor(editableTask: {
         addGlobalFilterOnSave: boolean;
         originalBlocking: Task[];
+        hasPriorityDimensions: boolean;
 
         // NEW_TASK_FIELD_EDIT_REQUIRED
         description: string;
         status: Status;
         priority: string;
+        importance: 'light' | 'normal' | 'heavy';
+        urgency: 'slow' | 'normal' | 'urgent';
         onCompletion: OnCompletion;
         recurrenceRule: string;
         createdDate: string;
@@ -58,10 +63,13 @@ export class EditableTask {
     }) {
         this.addGlobalFilterOnSave = editableTask.addGlobalFilterOnSave;
         this.originalBlocking = editableTask.originalBlocking;
+        this.hasPriorityDimensions = editableTask.hasPriorityDimensions;
 
         this.description = editableTask.description;
         this.status = editableTask.status;
         this.priority = editableTask.priority;
+        this.importance = editableTask.importance;
+        this.urgency = editableTask.urgency;
         this.onCompletion = editableTask.onCompletion;
         this.recurrenceRule = editableTask.recurrenceRule;
         this.createdDate = editableTask.createdDate;
@@ -113,23 +121,39 @@ export class EditableTask {
         }
 
         const originalBlocking = allTasks.filter((cacheTask) => cacheTask.dependsOn.includes(task.id));
+        const hasPriorityDimensions = task.tags.some(
+            (tag) =>
+                /^#tasks-importance-(light|normal|heavy)$/u.test(tag) ||
+                /^#tasks-urgency-(slow|normal|urgent)$/u.test(tag),
+        );
 
         return new EditableTask({
             addGlobalFilterOnSave,
             originalBlocking,
+            hasPriorityDimensions,
 
             // NEW_TASK_FIELD_EDIT_REQUIRED
             description,
             status: task.status,
             priority,
+            importance: task.tags.includes('#tasks-importance-heavy')
+                ? 'heavy'
+                : task.tags.includes('#tasks-importance-light')
+                ? 'light'
+                : 'normal',
+            urgency: task.tags.includes('#tasks-urgency-urgent')
+                ? 'urgent'
+                : task.tags.includes('#tasks-urgency-slow')
+                ? 'slow'
+                : 'normal',
             recurrenceRule: task.recurrence ? task.recurrence.toText() : '',
             onCompletion: task.onCompletion,
-            createdDate: task.created.formatAsDate(),
-            startDate: task.start.formatAsDate(),
-            scheduledDate: task.scheduled.formatAsDate(),
-            dueDate: task.due.formatAsDate(),
-            doneDate: task.done.formatAsDate(),
-            cancelledDate: task.cancelled.formatAsDate(),
+            createdDate: formatTaskDate(task.createdDate),
+            startDate: formatTaskDate(task.startDate),
+            scheduledDate: formatTaskDate(task.scheduledDate),
+            dueDate: formatTaskDate(task.dueDate),
+            doneDate: formatTaskDate(task.doneDate),
+            cancelledDate: formatTaskDate(task.cancelledDate),
             forwardOnly: true,
             blockedBy: blockedBy,
             blocking: originalBlocking,
@@ -146,7 +170,15 @@ export class EditableTask {
      */
     public async applyEdits(task: Task, allTasks: Task[]): Promise<Task[]> {
         // NEW_TASK_FIELD_EDIT_REQUIRED
-        let description = this.description.trim();
+        let description = this.description
+            .replace(/\s*#tasks-importance-(light|normal|heavy)\b/gu, '')
+            .replace(/\s*#tasks-urgency-(slow|normal|urgent)\b/gu, '')
+            .trim();
+        const shouldPersistPriorityDimensions =
+            this.hasPriorityDimensions || this.importance !== 'normal' || this.urgency !== 'normal';
+        if (shouldPersistPriorityDimensions) {
+            description += ` #tasks-importance-${this.importance} #tasks-urgency-${this.urgency}`;
+        }
         if (this.addGlobalFilterOnSave) {
             description = GlobalFilter.getInstance().prependTo(description);
         }
@@ -196,7 +228,9 @@ export class EditableTask {
             ...task,
             description,
             status: task.status,
-            priority: PriorityTools.priorityValue(this.priority),
+            priority: shouldPersistPriorityDimensions
+                ? priorityForDimensions(this.importance, this.urgency)
+                : task.priority,
             onCompletion: parsedOnCompletion,
             recurrence,
             startDate,
@@ -277,6 +311,18 @@ export class EditableTask {
 
         return { parsedRecurrence: '<i>due, scheduled or start date required</i>', isRecurrenceValid: false };
     }
+}
+
+function priorityForDimensions(
+    importance: 'light' | 'normal' | 'heavy',
+    urgency: 'slow' | 'normal' | 'urgent',
+): Priority {
+    const priorities = {
+        light: { slow: Priority.Lowest, normal: Priority.Low, urgent: Priority.Medium },
+        normal: { slow: Priority.Low, normal: Priority.None, urgent: Priority.High },
+        heavy: { slow: Priority.Medium, normal: Priority.High, urgent: Priority.Highest },
+    } as const;
+    return priorities[importance][urgency];
 }
 
 async function serialiseTaskId(task: Task, allTasks: Task[]) {

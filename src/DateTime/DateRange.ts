@@ -1,5 +1,5 @@
 /**
- * Represent an inclusive span of time between two days at 00:00 local time.
+ * Represent an inclusive span of time between two dates.
  */
 export class DateRange {
     start: Moment;
@@ -7,13 +7,14 @@ export class DateRange {
 
     /**
      * Builds the date range. If start is after the end, the dates will be automatically reversed.
-     * Start and end will be saved at 00:00 local time.
+     * Start and end default to 00:00 local time for date-only query semantics.
+     * Explicit datetime queries can preserve their supplied time.
      * The stored values of are mutable.
      * Note that there is no validation of the start and end moment. They can be checked with start.isValid() and end.isValid().
      * @param start
      * @param end
      */
-    constructor(start: Moment, end: Moment) {
+    constructor(start: Moment, end: Moment, preserveTime: boolean = false) {
         this.start = start;
         this.end = end;
 
@@ -22,9 +23,10 @@ export class DateRange {
             this.end = start;
         }
 
-        // Dates shall be at midnight eg 00:00
-        this.start = this.start.startOf('day');
-        this.end = this.end.startOf('day');
+        if (!preserveTime) {
+            this.start = this.start.startOf('day');
+            this.end = this.end.startOf('day');
+        }
     }
 
     /**

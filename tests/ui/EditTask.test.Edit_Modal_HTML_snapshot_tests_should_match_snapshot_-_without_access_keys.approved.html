@@ -5,51 +5,35 @@
       <textarea id="description" class="tasks-modal-description" placeholder="Take out the trash"></textarea>
     </section>
     <section class="tasks-modal-priority-section">
-      <label for="priority-none" id="priority">Priority</label>
-      <div class="task-modal-priority-option-container">
-        <input type="radio" id="priority-lowest" value="lowest" />
-        <label for="priority-lowest">
-          <span>Lowest</span>
-          <span>⏬</span>
-        </label>
-      </div>
-      <div class="task-modal-priority-option-container">
-        <input type="radio" id="priority-low" value="low" />
-        <label for="priority-low">
-          <span>Low</span>
-          <span>🔽</span>
-        </label>
-      </div>
-      <div class="task-modal-priority-option-container">
-        <input type="radio" id="priority-none" value="none" />
-        <label for="priority-none"><span>Normal</span></label>
-      </div>
-      <div class="task-modal-priority-option-container">
-        <input type="radio" id="priority-medium" value="medium" />
-        <label for="priority-medium">
-          <span>Medium</span>
-          <span>🔼</span>
-        </label>
-      </div>
-      <div class="task-modal-priority-option-container">
-        <input type="radio" id="priority-high" value="high" />
-        <label for="priority-high">
-          <span>High</span>
-          <span>⏫</span>
-        </label>
-      </div>
-      <div class="task-modal-priority-option-container">
-        <input type="radio" id="priority-highest" value="highest" />
-        <label for="priority-highest">
-          <span>Highest</span>
-          <span>🔺</span>
-        </label>
+      <div id="priority" class="tasks-priority-matrix" role="group" aria-label="Importance and urgency">
+        <div class="tasks-priority-title">Priority</div>
+        <div class="tasks-priority-axis tasks-priority-axis-x">Urgency</div>
+        <div class="tasks-priority-axis tasks-priority-axis-y">Importance</div>
+        <div class="tasks-priority-grid">
+          <button type="button" aria-pressed="false">Light / Slow</button>
+          <button type="button" aria-pressed="false">Light / Normal</button>
+          <button type="button" aria-pressed="false">Light / Urgent</button>
+          <button type="button" aria-pressed="false">Normal / Slow</button>
+          <button type="button" aria-pressed="true" class="tasks-priority-selected">Normal / Normal</button>
+          <button type="button" aria-pressed="false">Normal / Urgent</button>
+          <button type="button" aria-pressed="false">Heavy / Slow</button>
+          <button type="button" aria-pressed="false">Heavy / Normal</button>
+          <button type="button" aria-pressed="false">Heavy / Urgent</button>
+        </div>
       </div>
     </section>
     <hr id="line-after-priority" />
     <section class="tasks-modal-dates-section">
       <label for="recurrence">Recurs</label>
       <input id="recurrence" type="text" class="tasks-modal-date-input" placeholder="Try 'every day when done'" />
+      <select class="tasks-modal-recurrence-preset" aria-label="Common recurrence intervals">
+        <option value="">Choose interval...</option>
+        <option value="every 30 minutes">Every 30 minutes</option>
+        <option value="every hour">Every hour</option>
+        <option value="every day">Every day</option>
+        <option value="every week">Every week</option>
+        <option value="every month">Every month</option>
+      </select>
       <code class="tasks-modal-parsed-date">
         🔁
         <i>not recurring</i>
@@ -58,7 +42,7 @@
       <input id="due" type="text" class="tasks-modal-date-input" placeholder="Try 'Mon' or 'tm' then space" />
       <div class="tasks-modal-parsed-date">
         📅
-        <input class="tasks-modal-date-editor-picker" type="date" id="date-editor-picker" tabindex="-1" />
+        <input class="tasks-modal-date-editor-picker" type="text" id="date-editor-picker" tabindex="-1" />
       </div>
       <label for="scheduled">Scheduled</label>
       <input
@@ -66,6 +50,10 @@
         type="text"
         class="tasks-modal-date-input tasks-modal-error"
         placeholder="Try 'Mon' or 'tm' then space" />
+      <div class="tasks-modal-parsed-date">
+        ⏳
+        <input class="tasks-modal-date-editor-picker" type="text" id="date-editor-picker" tabindex="-1" />
+      </div>
       <code class="tasks-modal-parsed-date">
         ⏳
         <i>invalid scheduled date</i>
@@ -74,7 +62,7 @@
       <input id="start" type="text" class="tasks-modal-date-input" placeholder="Try 'Mon' or 'tm' then space" />
       <div class="tasks-modal-parsed-date">
         🛫
-        <input class="tasks-modal-date-editor-picker" type="date" id="date-editor-picker" tabindex="-1" />
+        <input class="tasks-modal-date-editor-picker" type="text" id="date-editor-picker" tabindex="-1" />
       </div>
       <div class="future-dates-only" id="only-future-dates">
         <label for="forwardOnly">Only future dates:</label>
@@ -147,19 +135,19 @@
       <input id="created" type="text" class="tasks-modal-date-input" placeholder="Try 'Mon' or 'tm' then space" />
       <div class="tasks-modal-parsed-date">
         ➕
-        <input class="tasks-modal-date-editor-picker" type="date" id="date-editor-picker" tabindex="-1" />
+        <input class="tasks-modal-date-editor-picker" type="text" id="date-editor-picker" tabindex="-1" />
       </div>
       <label for="done">Done</label>
       <input id="done" type="text" class="tasks-modal-date-input" placeholder="Try 'Mon' or 'tm' then space" />
       <div class="tasks-modal-parsed-date">
         ✅
-        <input class="tasks-modal-date-editor-picker" type="date" id="date-editor-picker" tabindex="-1" />
+        <input class="tasks-modal-date-editor-picker" type="text" id="date-editor-picker" tabindex="-1" />
       </div>
       <label for="cancelled">Cancelled</label>
       <input id="cancelled" type="text" class="tasks-modal-date-input" placeholder="Try 'Mon' or 'tm' then space" />
       <div class="tasks-modal-parsed-date">
         ❌
-        <input class="tasks-modal-date-editor-picker" type="date" id="date-editor-picker" tabindex="-1" />
+        <input class="tasks-modal-date-editor-picker" type="text" id="date-editor-picker" tabindex="-1" />
       </div>
     </section>
     <section class="tasks-modal-button-section">

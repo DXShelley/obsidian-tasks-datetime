@@ -7,6 +7,40 @@
 @import './ui/ModalOptionsEditor';
 @import './ui/Utilities';
 @import './ui/Menus/DatePicker';
+
+.tasks-dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(9rem, 1fr));
+    gap: 12px;
+}
+
+.tasks-dashboard-period {
+    border: 1px solid var(--background-modifier-border);
+    border-radius: var(--radius-s);
+    padding: 12px;
+    text-align: center;
+
+    h3 { margin: 0 0 10px; font-size: var(--font-ui-medium); }
+}
+
+.tasks-dashboard-ring {
+    --tasks-completion: 0%;
+    width: 76px;
+    height: 76px;
+    display: grid;
+    place-items: center;
+    margin: 0 auto 8px;
+    border-radius: 50%;
+    font-weight: var(--font-bold);
+    background:
+        radial-gradient(circle, var(--background-primary) 56%, transparent 57%),
+        conic-gradient(var(--interactive-accent) var(--tasks-completion), var(--background-modifier-border) 0);
+}
+
+.tasks-dashboard-ring { color: var(--text-normal); }
+.tasks-dashboard-caption { color: var(--text-muted); font-size: var(--font-ui-small); }
+
+@media (max-width: 499px) { .tasks-dashboard-grid { grid-template-columns: 1fr; } }
 @import './Config/DismissibleNotices';
 @import './Config/SettingsTab';
 @import './Config/PresetsSettingsUI';

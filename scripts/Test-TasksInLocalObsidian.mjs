@@ -19,7 +19,7 @@ const FILES_TO_COPY = ['main.js', 'manifest.json', 'styles.css'];
 // path.join() is used instead of hardcoded separators for cross-platform compatibility.
 const DEFAULT_DEST = path.join('resources', 'sample_vaults', 'Tasks-Demo');
 
-const PLUGIN_SUFFIX = path.join('.obsidian', 'plugins', 'obsidian-tasks-plugin');
+const PLUGIN_SUFFIX = path.join('.obsidian', 'plugins', 'obsidian-tasks-datetime');
 
 // Allow overriding the destination via a CLI argument, e.g.:
 //   node scripts/Test-TasksInLocalObsidian.mjs /path/to/my-vault

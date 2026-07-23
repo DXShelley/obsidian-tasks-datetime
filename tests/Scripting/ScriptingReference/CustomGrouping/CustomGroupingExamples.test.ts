@@ -132,11 +132,10 @@ describe('dates', () => {
                 ],
                 [
                     'group by function task.due.formatAsDateAndTime()',
-                    'Format date as YYYY-MM-DD HH:mm or empty string if no due date.',
+                    'Format a due date as YYYY-MM-DD HH:mm:ss when task times are enabled, otherwise YYYY-MM-DD.',
                     'Note:',
                     '    This is shown for demonstration purposes.',
-                    '    Currently the Tasks plugin does not support storing of times.',
-                    '    Do not add times to your tasks, as it will break the reading of task data',
+                    '    Enable "Include time in task dates" to display task times.',
                 ],
                 [
                     'group by function task.due.format("YYYY[%%]-MM[%%] MMM", "no due date")',

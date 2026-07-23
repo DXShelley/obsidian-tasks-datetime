@@ -5,6 +5,7 @@
 import moment from 'moment';
 
 import { ScheduledDateField } from '../../../src/Query/Filter/ScheduledDateField';
+import { TaskBuilder } from '../../TestingTools/TaskBuilder';
 
 window.moment = moment;
 
@@ -35,5 +36,14 @@ describe('DateField', () => {
     it('should honour original case, when explaining simple filters', () => {
         const filter = new ScheduledDateField().createFilterOrErrorMessage('HAS SCHEDULED DATE');
         expect(filter).toHaveExplanation('HAS SCHEDULED DATE');
+    });
+
+    it('should compare explicit datetime filters to the second', () => {
+        const filter = new ScheduledDateField().createFilterOrErrorMessage('scheduled before 2026-07-23 10:00:00');
+        const before = new TaskBuilder().scheduledDate('2026-07-23 09:59:59').build();
+        const atBoundary = new TaskBuilder().scheduledDate('2026-07-23 10:00:00').build();
+
+        expect(filter.filterFunction?.(before, {} as never)).toBe(true);
+        expect(filter.filterFunction?.(atBoundary, {} as never)).toBe(false);
     });
 });

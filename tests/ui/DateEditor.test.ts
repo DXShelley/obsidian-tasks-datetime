@@ -3,6 +3,7 @@
  */
 import { fireEvent, render } from '@testing-library/svelte';
 import moment from 'moment/moment';
+import { resetSettings, updateSettings } from '../../src/Config/Settings';
 import DateEditorWrapper from './DateEditorWrapper.svelte';
 
 import { getAndCheckRenderedElement } from './RenderingTestHelpers';
@@ -57,17 +58,21 @@ async function testTypingInput(
         testDatePickerValue(container, expectedRightText);
     } else {
         const datePicker = container.ownerDocument.getElementById('date-editor-picker') as HTMLInputElement;
-        expect(datePicker).toBeNull();
+        // Keep the picker mounted so a corrected value can be selected without
+        // recreating the component or losing focus.
+        expect(datePicker).not.toBeNull();
     }
 }
 
 beforeEach(() => {
     jest.useFakeTimers();
     jest.setSystemTime(new Date('2024-04-20'));
+    updateSettings({ enableDateTime: false });
 });
 
 afterEach(() => {
     jest.useRealTimers();
+    resetSettings();
 });
 
 describe('date editor wrapper tests', () => {

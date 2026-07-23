@@ -75,6 +75,20 @@
     }
 }
 
+.tasks-priority-matrix {
+    display: grid;
+    grid-template-columns: 6em 1fr;
+    gap: 4px 8px;
+    width: 100%;
+
+    .tasks-priority-title { grid-row: 1 / span 2; align-self: center; }
+    .tasks-priority-axis { color: var(--text-muted); font-size: var(--font-ui-smaller); }
+    .tasks-priority-axis-y { grid-row: 3; }
+    .tasks-priority-grid { grid-column: 2; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 3px; }
+    button { min-height: 30px; font-size: var(--font-ui-smaller); }
+    .tasks-priority-selected { background: var(--interactive-accent); color: var(--text-on-accent); }
+}
+
 .tasks-modal-dates-section {
     display: grid;
     grid-template-columns: 6.0em 13em auto;
@@ -92,6 +106,11 @@
 
     .tasks-modal-date-editor-picker {
         margin-left: .5em;
+    }
+
+    .tasks-modal-recurrence-preset {
+        grid-column: 2;
+        min-width: 13em;
     }
 
     .tasks-modal-parsed-date {

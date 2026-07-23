@@ -1,6 +1,7 @@
 import { Notice } from 'obsidian';
 import { PropertyCategory } from '../lib/PropertyCategory';
 import { TaskRegularExpressions } from '../Task/TaskRegularExpressions';
+import { formatTaskDate } from './DateTools';
 
 /**
  * TasksDate encapsulates a date, for simplifying the JavaScript expressions users need to
@@ -29,11 +30,12 @@ export class TasksDate {
     }
 
     /**
-     * Return the date formatted as YYYY-MM-DD HH:mm, or {@link fallBackText} if there is no date.
+     * Return the configured task date format, including time when it is enabled,
+     * or {@link fallBackText} if there is no date.
      @param fallBackText - the string to use if the date is null. Defaults to empty string.
      */
     public formatAsDateAndTime(fallBackText: string = ''): string {
-        return this.format(TaskRegularExpressions.dateTimeFormat, fallBackText);
+        return this._date ? formatTaskDate(this._date) : fallBackText;
     }
 
     /**

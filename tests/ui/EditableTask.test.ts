@@ -6,6 +6,7 @@ import type { Task } from 'Task/Task';
 import { GlobalFilter } from '../../src/Config/GlobalFilter';
 import { Status } from '../../src/Statuses/Status';
 import { OnCompletion } from '../../src/Task/OnCompletion';
+import { Priority } from '../../src/Task/Priority';
 import { EditableTask } from '../../src/ui/EditableTask';
 import { TaskBuilder } from '../TestingTools/TaskBuilder';
 
@@ -55,6 +56,8 @@ describe('EditableTask tests', () => {
               "doneDate": "2023-07-05",
               "dueDate": "2023-07-04",
               "forwardOnly": true,
+              "hasPriorityDimensions": false,
+              "importance": "normal",
               "onCompletion": "delete",
               "originalBlocking": [],
               "priority": "medium",
@@ -70,6 +73,7 @@ describe('EditableTask tests', () => {
                   "type": "TODO",
                 },
               },
+              "urgency": "normal",
             }
         `);
     });
@@ -121,6 +125,45 @@ describe('EditableTask tests', () => {
         const appliedEdits = await editableTask.applyEdits(task, [task]);
 
         expect(appliedEdits).toEqual([task]);
+    });
+
+    it('does not add priority-dimension tags or change priority for an existing task', async () => {
+        const task = new TaskBuilder().description('Keep my existing priority').priority(Priority.High).build();
+        const editableTask = EditableTask.fromTask(task, [task]);
+
+        editableTask.description = 'Edited description';
+        const [editedTask] = await editableTask.applyEdits(task, [task]);
+
+        expect(editedTask.description).toBe('Edited description');
+        expect(editedTask.priority).toBe(Priority.High);
+    });
+
+    it('stores non-default importance and urgency as tags and uses their ordering priority', async () => {
+        const task = new TaskBuilder().build();
+        const editableTask = EditableTask.fromTask(task, [task]);
+
+        editableTask.importance = 'heavy';
+        editableTask.urgency = 'urgent';
+        const [editedTask] = await editableTask.applyEdits(task, [task]);
+
+        expect(editedTask.description).toContain('#tasks-importance-heavy #tasks-urgency-urgent');
+        expect(editedTask.priority).toBe(Priority.Highest);
+    });
+
+    it('replaces existing priority-dimension tags without duplicating them', async () => {
+        const task = new TaskBuilder()
+            .tags(['#tasks-importance-heavy', '#tasks-urgency-urgent'])
+            .priority(Priority.Highest)
+            .build();
+        const editableTask = EditableTask.fromTask(task, [task]);
+
+        editableTask.importance = 'light';
+        editableTask.urgency = 'slow';
+        const [editedTask] = await editableTask.applyEdits(task, [task]);
+
+        expect(editedTask.description).toContain('#tasks-importance-light #tasks-urgency-slow');
+        expect(editedTask.description).not.toMatch(/#tasks-importance-heavy|#tasks-urgency-urgent/u);
+        expect(editedTask.priority).toBe(Priority.Lowest);
     });
 
     it.failing('should apply no edits to a fully populated task', async () => {
@@ -176,7 +219,7 @@ describe('EditableTask tests', () => {
               "onCompletion": "",
               "originalMarkdown": "  - [ ] Do exercises #todo #health 🆔 abcdef ⛔ 123456,abc123 🔼 🔁 every day when done 🏁 delete ➕ 2023-07-01 🛫 2023-07-02 ⏳ 2023-07-03 📅 2023-07-04 ❌ 2023-07-06 ✅ 2023-07-05 ^dcf64c",
               "parent": null,
-              "priority": "3",
+              "priority": "2",
               "recurrence": null,
               "scheduledDateIsInferred": false,
               "status": Status {
@@ -222,13 +265,6 @@ describe('EditableTask tests', () => {
         editableTask.dueDate = '2024-07-13';
 
         const editedTasks = await editableTask.applyEdits(task, allTasks);
-        // TODO Why does this have the time 12:00?
-        //      When I edit a task in the plugin, in the modal, and then group by the following, the time is midnight,
-        //      so where is the time dropped in production code?
-        //          group by function task.due.formatAsDateAndTime()
-        //      Or have I misunderstood something?
-        //      For now, I would just like assurance that this is the same behaviour as
-        //      the code before this PR.... (I expect it is)
         expect(editedTasks[0].dueDate).toEqualMoment(moment('2024-07-13T12:00:00.000Z'));
     });
 

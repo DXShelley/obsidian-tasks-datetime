@@ -33,9 +33,9 @@ export class Recurrence {
                 const referenceDate = occurrence.referenceDate;
 
                 if (!baseOnToday && referenceDate !== null) {
-                    options.dtstart = window.moment(referenceDate).startOf('day').utc(true).toDate();
+                    options.dtstart = window.moment(referenceDate).utc(true).toDate();
                 } else {
-                    options.dtstart = window.moment().startOf('day').utc(true).toDate();
+                    options.dtstart = window.moment().utc(true).toDate();
                 }
 
                 const rrule = new RRule(options);
@@ -101,10 +101,10 @@ export class Recurrence {
     private nextReferenceDateFromToday(today: Moment): Moment {
         const ruleBasedOnToday = new RRule({
             ...this.rrule.origOptions,
-            dtstart: today.startOf('day').utc(true).toDate(),
+            dtstart: today.clone().utc(true).toDate(),
         });
 
-        return this.nextAfter(today.endOf('day'), ruleBasedOnToday);
+        return this.nextAfter(today.clone(), ruleBasedOnToday);
     }
 
     private nextReferenceDateFromOriginalReferenceDate(): Moment {
@@ -114,8 +114,7 @@ export class Recurrence {
         const after = window
             // Reference date can be `undefined` to mean "today".
             // Moment only accepts `undefined`, not `null`.
-            .moment(this.occurrence.referenceDate ?? undefined)
-            .endOf('day');
+            .moment(this.occurrence.referenceDate ?? undefined);
 
         return this.nextAfter(after, this.rrule);
     }

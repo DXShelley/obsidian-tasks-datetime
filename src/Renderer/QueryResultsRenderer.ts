@@ -209,8 +209,17 @@ export class QueryResultsRenderer {
         const doSearch = async () => {
             const filterString = searchBox.value;
             await this.applySearchBoxFilterAndRerender(filterString, content);
+            // Results are replaced below, but the toolbar is retained. Restore the
+            // focused control explicitly so Enter never moves the user's viewport.
+            searchBox.focus({ preventScroll: true });
         };
         searchBox.addEventListener('input', debounce(doSearch, 500, true));
+        searchBox.addEventListener('keydown', (event: KeyboardEvent) => {
+            if (event.key === 'Enter' && !event.isComposing) {
+                event.preventDefault();
+                void doSearch();
+            }
+        });
     }
 
     public async applySearchBoxFilterAndRerender(filterString: string, content: HTMLDivElement) {

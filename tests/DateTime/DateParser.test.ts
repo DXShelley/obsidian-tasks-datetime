@@ -40,9 +40,20 @@ describe('DateParser - single dates', () => {
         const parsedDate = DateParser.parseDate(dateToParse);
         expect(parsedDate.format('YYYY-MM-DD HH:mm')).toStrictEqual('2023-07-08 00:00');
     });
+
+    it('should preserve an explicitly supplied time', () => {
+        const parsedDate = DateParser.parseDate('2026-07-23 16:30:05');
+        expect(parsedDate.format('YYYY-MM-DD HH:mm:ss')).toStrictEqual('2026-07-23 16:30:05');
+    });
 });
 
 describe('DateParser - date ranges', () => {
+    it('should preserve explicit time in a date range', () => {
+        const result = DateParser.parseDateRange('2026-07-23 09:15:30');
+        expect(result.start.format('YYYY-MM-DD HH:mm:ss')).toStrictEqual('2026-07-23 09:15:30');
+        expect(result.end.format('YYYY-MM-DD HH:mm:ss')).toStrictEqual('2026-07-23 09:15:30');
+    });
+
     it('should parse date range from absolute dates, supplied as words', () => {
         // Arrange
         testParsingDateRange('17 August 2013 19 August 2013', '2013-08-17', '2013-08-19');

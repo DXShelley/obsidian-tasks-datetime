@@ -15,4 +15,4 @@ set -euo pipefail
 
 # Should be run from the vault directory
 cp main.js manifest.json styles.css \
-    resources/sample_vaults/Tasks-Demo/.obsidian/plugins/obsidian-tasks-plugin
+    resources/sample_vaults/Tasks-Demo/.obsidian/plugins/obsidian-tasks-datetime

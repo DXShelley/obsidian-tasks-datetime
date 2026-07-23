@@ -1,10 +1,10 @@
 {
-  "name": "obsidian-tasks",
+  "name": "obsidian-tasks-datetime",
   "version": "8.2.2",
-  "description": "Task management for the Obsidian knowledge base",
+  "description": "Tasks with date and time support down to seconds",
   "main": "main.js",
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=18.0.0 <23.0.0"
   },
   "scripts": {
     "dev": "node esbuild.config.mjs",
@@ -26,11 +26,19 @@
   "keywords": [
     "obsidian",
     "obsidian-plugin",
-    "obsidian-tasks",
+    "obsidian-tasks-datetime",
     "task-manager",
     "task-management"
   ],
-  "author": "Clare Macrae and Ilyas Landikov (created by Martin Schenck)",
+  "author": "springfish <dxshelley@outlook.com> (https://github.com/DXShelley)",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DXShelley/obsidian-tasks-datetime.git"
+  },
+  "bugs": {
+    "url": "https://github.com/DXShelley/obsidian-tasks-datetime/issues"
+  },
+  "homepage": "https://github.com/DXShelley/obsidian-tasks-datetime#readme",
   "license": "MIT",
   "devDependencies": {
     "@codemirror/view": "^6.2.0",

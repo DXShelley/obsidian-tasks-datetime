@@ -5,11 +5,11 @@
 ## Introduction
 
 - **Intended audience of this note**
-  - Developers working on the Tasks plugin, reviewing a Pull Request (especially ones that change dependencies), or making a release, and who wish to do some basic tests of the plugin to make sure there are no glaring show-stopper errors.
+  - Developers working on the Tasks Datetime plugin, reviewing a Pull Request (especially ones that change dependencies), or making a release, and who wish to do some basic tests of the plugin to make sure there are no glaring show-stopper errors.
 - **What is a Smoke Test?**
   - As [Wikipedia](https://en.wikipedia.org/wiki/Smoke_testing_(software)) says: smoke testing ... is preliminary testing to reveal simple failures severe enough to, for example, reject a prospective software release.
 - **Why not test everything?**
-  - The Tasks plugin is run by volunteers in our finite spare time. We take care during development to write automated tests for the algorithms in our code, but there are some kinds of changes, such as in tools the project depends on, that we do not have automated tests for.
+  - The Tasks Datetime plugin is run by volunteers in our finite spare time. We take care during development to write automated tests for the algorithms in our code, but there are some kinds of changes, such as in tools the project depends on, that we do not have automated tests for.
 - **Why not test on every platform?**
   - It's not feasible nor a good use of limited volunteer time on a free tool.
 
@@ -17,11 +17,11 @@
 
 ### Get the Tasks-Demo vault with the build to be tested
 
-You can either [download the Tasks-demo vault with the build's Tasks plugin installed](https://publish.obsidian.md/tasks-contributing/Testing/How+do+I+test+a+GitHub+build+of+the+Tasks+plugin) - see Option 1.
+You can either download the Tasks-Demo vault with the build's Tasks Datetime plugin installed (see Option 1) or use a local build.
 
-Or you can install a download of the build's Tasks plugin inside your clone of the Tasks repo:
+Or you can install a download of the build's Tasks Datetime plugin inside your clone of this repository:
 
-- Make sure you have the [obsidian-tasks repo](https://github.com/obsidian-tasks-group/obsidian-tasks) cloned and up-to-date on your machine.
+- Make sure this repository is cloned and up-to-date on your machine.
 - Open the Tasks-Demo vault on a machine of your choice:
   - Open Obsidian
   - Click 'Open another vault' button
@@ -29,7 +29,7 @@ Or you can install a download of the build's Tasks plugin inside your clone of t
   - Navigate to `obsidian-tasks/resources/sample_vaults/Tasks-Demo`
   - Click 'Open'
 - Install the candidate build for the pull request or release inside the `Tasks-Demo` vault
-  - See [How do I test a GitHub build of the Tasks plugin](https://publish.obsidian.md/tasks-contributing/Testing/How+do+I+test+a+GitHub+build+of+the+Tasks+plugin) - see Option 2.
+  - See [[How do I test a GitHub build of the Tasks plugin|the build installation instructions]] - Option 2.
 
 ### Follow the tests
 
@@ -212,13 +212,13 @@ show tree
 - Preparation
   - Go to Settings -> Community plugins -> Installed plugins -> click on the folder icon to **Open plugins folder**
   - Quit Obsidian
-  - Open the `obsidian-tasks-plugin` folder
+  - Open the `obsidian-tasks-datetime` folder
   - Delete `data.json`
 - Test
   - Restart obsidian
   - Go to Settings
-  - Check that `Tasks` is shown in the list of **Community plugins**
+  - Check that `Tasks Datetime` is shown in the list of **Community plugins**
   - View -> Toggle Developer Tools
   - Open the console
-  - Confirm that there are no red messages mentioning Tasks
-- [ ] #task **check**: Checked that Tasks works correctly when **there is no `data.json` present**
+  - Confirm that there are no red messages mentioning Tasks Datetime
+- [ ] #task **check**: Checked that Tasks Datetime works correctly when **there is no `data.json` present**

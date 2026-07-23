@@ -13,59 +13,21 @@
         accesskey="t"></textarea>
     </section>
     <section class="tasks-modal-priority-section">
-      <label for="priority-none" id="priority">Priority</label>
-      <div class="task-modal-priority-option-container">
-        <input type="radio" id="priority-lowest" value="lowest" accesskey="o" />
-        <label for="priority-lowest">
-          <span>L</span>
-          <span class="accesskey">o</span>
-          <span>west</span>
-          <span>⏬</span>
-        </label>
-      </div>
-      <div class="task-modal-priority-option-container">
-        <input type="radio" id="priority-low" value="low" accesskey="l" />
-        <label for="priority-low">
-          <span></span>
-          <span class="accesskey">L</span>
-          <span>ow</span>
-          <span>🔽</span>
-        </label>
-      </div>
-      <div class="task-modal-priority-option-container">
-        <input type="radio" id="priority-none" value="none" accesskey="n" />
-        <label for="priority-none">
-          <span></span>
-          <span class="accesskey">N</span>
-          <span>ormal</span>
-        </label>
-      </div>
-      <div class="task-modal-priority-option-container">
-        <input type="radio" id="priority-medium" value="medium" accesskey="m" />
-        <label for="priority-medium">
-          <span></span>
-          <span class="accesskey">M</span>
-          <span>edium</span>
-          <span>🔼</span>
-        </label>
-      </div>
-      <div class="task-modal-priority-option-container">
-        <input type="radio" id="priority-high" value="high" accesskey="h" />
-        <label for="priority-high">
-          <span></span>
-          <span class="accesskey">H</span>
-          <span>igh</span>
-          <span>⏫</span>
-        </label>
-      </div>
-      <div class="task-modal-priority-option-container">
-        <input type="radio" id="priority-highest" value="highest" accesskey="i" />
-        <label for="priority-highest">
-          <span>H</span>
-          <span class="accesskey">i</span>
-          <span>ghest</span>
-          <span>🔺</span>
-        </label>
+      <div id="priority" class="tasks-priority-matrix" role="group" aria-label="Importance and urgency">
+        <div class="tasks-priority-title">Priority</div>
+        <div class="tasks-priority-axis tasks-priority-axis-x">Urgency</div>
+        <div class="tasks-priority-axis tasks-priority-axis-y">Importance</div>
+        <div class="tasks-priority-grid">
+          <button type="button" aria-pressed="false">Light / Slow</button>
+          <button type="button" aria-pressed="false">Light / Normal</button>
+          <button type="button" aria-pressed="false">Light / Urgent</button>
+          <button type="button" aria-pressed="false">Normal / Slow</button>
+          <button type="button" aria-pressed="true" class="tasks-priority-selected">Normal / Normal</button>
+          <button type="button" aria-pressed="false">Normal / Urgent</button>
+          <button type="button" aria-pressed="false">Heavy / Slow</button>
+          <button type="button" aria-pressed="false">Heavy / Normal</button>
+          <button type="button" aria-pressed="false">Heavy / Urgent</button>
+        </div>
       </div>
     </section>
     <hr id="line-after-priority" />
@@ -80,6 +42,14 @@
         class="tasks-modal-date-input"
         placeholder="Try 'every day when done'"
         accesskey="r" />
+      <select class="tasks-modal-recurrence-preset" aria-label="Common recurrence intervals">
+        <option value="">Choose interval...</option>
+        <option value="every 30 minutes">Every 30 minutes</option>
+        <option value="every hour">Every hour</option>
+        <option value="every day">Every day</option>
+        <option value="every week">Every week</option>
+        <option value="every month">Every month</option>
+      </select>
       <code class="tasks-modal-parsed-date">
         🔁
         <i>not recurring</i>
@@ -96,7 +66,7 @@
         accesskey="d" />
       <div class="tasks-modal-parsed-date">
         📅
-        <input class="tasks-modal-date-editor-picker" type="date" id="date-editor-picker" tabindex="-1" />
+        <input class="tasks-modal-date-editor-picker" type="text" id="date-editor-picker" tabindex="-1" />
       </div>
       <label for="scheduled">
         <span class="accesskey">S</span>
@@ -108,6 +78,10 @@
         class="tasks-modal-date-input tasks-modal-error"
         placeholder="Try 'Mon' or 'tm' then space"
         accesskey="s" />
+      <div class="tasks-modal-parsed-date">
+        ⏳
+        <input class="tasks-modal-date-editor-picker" type="text" id="date-editor-picker" tabindex="-1" />
+      </div>
       <code class="tasks-modal-parsed-date">
         ⏳
         <i>invalid scheduled date</i>
@@ -125,7 +99,7 @@
         accesskey="a" />
       <div class="tasks-modal-parsed-date">
         🛫
-        <input class="tasks-modal-date-editor-picker" type="date" id="date-editor-picker" tabindex="-1" />
+        <input class="tasks-modal-date-editor-picker" type="text" id="date-editor-picker" tabindex="-1" />
       </div>
       <div class="future-dates-only" id="only-future-dates">
         <label for="forwardOnly">
@@ -223,7 +197,7 @@
         accesskey="c" />
       <div class="tasks-modal-parsed-date">
         ➕
-        <input class="tasks-modal-date-editor-picker" type="date" id="date-editor-picker" tabindex="-1" />
+        <input class="tasks-modal-date-editor-picker" type="text" id="date-editor-picker" tabindex="-1" />
       </div>
       <label for="done">
         Done (
@@ -238,7 +212,7 @@
         accesskey="x" />
       <div class="tasks-modal-parsed-date">
         ✅
-        <input class="tasks-modal-date-editor-picker" type="date" id="date-editor-picker" tabindex="-1" />
+        <input class="tasks-modal-date-editor-picker" type="text" id="date-editor-picker" tabindex="-1" />
       </div>
       <label for="cancelled">
         Cancelled (
@@ -253,7 +227,7 @@
         accesskey="-" />
       <div class="tasks-modal-parsed-date">
         ❌
-        <input class="tasks-modal-date-editor-picker" type="date" id="date-editor-picker" tabindex="-1" />
+        <input class="tasks-modal-date-editor-picker" type="text" id="date-editor-picker" tabindex="-1" />
       </div>
     </section>
     <section class="tasks-modal-button-section">

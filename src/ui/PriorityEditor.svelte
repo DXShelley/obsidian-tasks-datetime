@@ -1,81 +1,37 @@
 <script lang="ts">
-    import { TASK_FORMATS } from '../Config/Settings';
+    export let importance: 'light' | 'normal' | 'heavy';
+    export let urgency: 'slow' | 'normal' | 'urgent';
+    const importanceLevels = [
+        { value: 'light', label: 'Light' },
+        { value: 'normal', label: 'Normal' },
+        { value: 'heavy', label: 'Heavy' },
+    ] as const;
+    const urgencyLevels = [
+        { value: 'slow', label: 'Slow' },
+        { value: 'normal', label: 'Normal' },
+        { value: 'urgent', label: 'Urgent' },
+    ] as const;
 
-    export let priority: string;
-    export let withAccessKeys: boolean;
-
-    $: accesskey = (key: string) => (withAccessKeys ? key : null);
-
-    const { prioritySymbols } = TASK_FORMATS.tasksPluginEmoji.taskSerializer.symbols;
-
-    const priorityOptions: {
-        value: typeof priority;
-        label: string;
-        symbol: string;
-        accessKey: string;
-        accessKeyIndex: number;
-    }[] = [
-        {
-            value: 'lowest',
-            label: 'Lowest',
-            symbol: prioritySymbols.Lowest,
-            accessKey: 'o',
-            accessKeyIndex: 1,
-        },
-        {
-            value: 'low',
-            label: 'Low',
-            symbol: prioritySymbols.Low,
-            accessKey: 'l',
-            accessKeyIndex: 0,
-        },
-        {
-            value: 'none',
-            label: 'Normal',
-            symbol: prioritySymbols.None,
-            accessKey: 'n',
-            accessKeyIndex: 0,
-        },
-        {
-            value: 'medium',
-            label: 'Medium',
-            symbol: prioritySymbols.Medium,
-            accessKey: 'm',
-            accessKeyIndex: 0,
-        },
-        {
-            value: 'high',
-            label: 'High',
-            symbol: prioritySymbols.High,
-            accessKey: 'h',
-            accessKeyIndex: 0,
-        },
-        {
-            value: 'highest',
-            label: 'Highest',
-            symbol: prioritySymbols.Highest,
-            accessKey: 'i',
-            accessKeyIndex: 1,
-        },
-    ];
+    function choose(nextImportance: typeof importance, nextUrgency: typeof urgency) {
+        importance = nextImportance;
+        urgency = nextUrgency;
+    }
 </script>
 
-<label for="priority-{priority}" id="priority">Priority</label>
-{#each priorityOptions as { value, label, symbol, accessKey, accessKeyIndex }}
-    <div class="task-modal-priority-option-container">
-        <!-- svelte-ignore a11y-accesskey -->
-        <input type="radio" id="priority-{value}" {value} bind:group={priority} accesskey={accesskey(accessKey)} />
-        <label for="priority-{value}">
-            {#if withAccessKeys}
-                <span>{label.substring(0, accessKeyIndex)}</span><span class="accesskey"
-                    >{label.substring(accessKeyIndex, accessKeyIndex + 1)}</span
-                ><span>{label.substring(accessKeyIndex + 1)}</span>
-            {:else}
-                <span>{label}</span>
-            {/if}
-            {#if symbol && symbol.charCodeAt(0) >= 0x100}
-                <span>{symbol}</span>
-            {/if}
-        </label>
+<div id="priority" class="tasks-priority-matrix" role="group" aria-label="Importance and urgency">
+    <div class="tasks-priority-title">Priority</div>
+    <div class="tasks-priority-axis tasks-priority-axis-x">Urgency</div>
+    <div class="tasks-priority-axis tasks-priority-axis-y">Importance</div>
+    <div class="tasks-priority-grid">
+        {#each importanceLevels as importanceLevel}
+            {#each urgencyLevels as urgencyLevel}
+                <button
+                    type="button"
+                    class:tasks-priority-selected={importance === importanceLevel.value && urgency === urgencyLevel.value}
+                    aria-pressed={importance === importanceLevel.value && urgency === urgencyLevel.value}
+                    on:click={() => choose(importanceLevel.value, urgencyLevel.value)}
+                >{importanceLevel.label} / {urgencyLevel.label}</button>
+            {/each}
+        {/each}
     </div>
-{/each}
+</div>

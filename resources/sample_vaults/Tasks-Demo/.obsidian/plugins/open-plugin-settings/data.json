@@ -2,8 +2,8 @@
   "sleepingTime": 300,
   "pluginCmdr": [
     {
-      "id": "obsidian-tasks-plugin",
-      "name": "Tasks",
+      "id": "obsidian-tasks-datetime",
+      "name": "Tasks Datetime",
       "commandName": "Open Tasks plugin settings"
     },
     {

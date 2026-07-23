@@ -68,12 +68,12 @@ For more information, including adding your own customised statuses, see [[Statu
 
 | Field | Type 1 | Example 1 | Type 2 | Example 2 |
 | ----- | ----- | ----- | ----- | ----- |
-| `task.due` | `TasksDate` | `2023-07-04 00:00` | `TasksDate` | `` |
-| `task.due.moment` | `Moment` | `moment('2023-07-04 00:00')` | `null` | `null` |
+| `task.due` | `TasksDate` | `2023-07-04` | `TasksDate` | `` |
+| `task.due.moment` | `Moment` | `moment('2023-07-04 00:00:00')` | `null` | `null` |
 | `task.due.formatAsDate()` | `string` | `'2023-07-04'` | `string` | `''` |
 | `task.due.formatAsDate('no date')` | `string` | `'2023-07-04'` | `string` | `'no date'` |
-| `task.due.formatAsDateAndTime()` | `string` | `'2023-07-04 00:00'` | `string` | `''` |
-| `task.due.formatAsDateAndTime('no date')` | `string` | `'2023-07-04 00:00'` | `string` | `'no date'` |
+| `task.due.formatAsDateAndTime()` | `string` | `'2023-07-04'` | `string` | `''` |
+| `task.due.formatAsDateAndTime('no date')` | `string` | `'2023-07-04'` | `string` | `'no date'` |
 | `task.due.format('dddd')` | `string` | `'Tuesday'` | `string` | `''` |
 | `task.due.format('dddd', 'no date')` | `string` | `'Tuesday'` | `string` | `'no date'` |
 | `task.due.toISOString()` | `string` | `'2023-07-04T00:00:00.000Z'` | `string` | `''` |

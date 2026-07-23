@@ -80,7 +80,7 @@ export abstract class DateField extends Field {
         if (!fieldDates.isValid()) {
             const date = DateParser.parseDate(keywordAndDateString);
             if (date.isValid()) {
-                fieldDates = new DateRange(date, date);
+                fieldDates = new DateRange(date, date, DateParser.hasExplicitTime(keywordAndDateString));
             }
         }
 

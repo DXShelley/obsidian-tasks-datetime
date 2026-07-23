@@ -5,7 +5,7 @@ param (
     $ObsidianPluginRoot = $env:OBSIDIAN_PLUGIN_ROOT,
     [Parameter(HelpMessage = 'The folder name of the plugin to copy the files to.')]
     [String]
-    $PluginFolderName = 'obsidian-tasks-plugin'
+    $PluginFolderName = 'obsidian-tasks-datetime'
 )
 
 $repoRoot = (Resolve-Path -Path $(git rev-parse --show-toplevel)).Path

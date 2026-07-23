@@ -34,7 +34,7 @@ describe('TasksDate', () => {
         const tasksDate = new TasksDate(moment(date));
         expect(tasksDate.format('dddd')).toEqual('Friday');
         expect(tasksDate.formatAsDate()).toEqual(date);
-        expect(tasksDate.formatAsDateAndTime()).toEqual(date + ' 00:00');
+        expect(tasksDate.formatAsDateAndTime()).toEqual(date);
         expect(tasksDate.toISOString()).toEqual('2023-10-13T00:00:00.000Z');
     });
 

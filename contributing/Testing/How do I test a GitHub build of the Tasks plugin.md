@@ -1,4 +1,4 @@
-# How do I test a GitHub build of the Tasks plugin?
+# How do I test a GitHub build of the Tasks Datetime plugin?
 
 <span class="related-pages">#testing/manual-testing</span>
 
@@ -9,7 +9,7 @@ First...
 
 Then do one of the following options...
 
-## Option 1: Download Tasks-Demo test vault with the build's Tasks plugin installed
+## Option 1: Download Tasks-Demo test vault with the build's Tasks Datetime plugin installed
 
 1. In the Artifacts section at the bottom, click on the link whose name starts with **Tasks-Demo-...**, for example  **Tasks-Demo-VerifyCommit-Build1367-Run1**.
     - This will download a zip file containing a copy of the Tasks-Demo sample vault, including the build of the plugin.
@@ -27,13 +27,13 @@ Then do one of the following options...
 
 ## Option 2: Download the built plugin to add to your vault
 
-You can use these steps to install the built plugin either in to the Tasks-Demo vault inside a clone of the [obsidian-tasks repo](https://github.com/obsidian-tasks-group/obsidian-tasks) or in to one of your own vaults.
+You can use these steps to install the built plugin either in the Tasks-Demo vault inside a clone of this repository or in one of your own vaults.
 
 1. In the Artifacts section at the bottom, click on **dist-verified** to download a build of the plugin.
 2. Optionally, rename the zip file to give it a meaningful name.
     - For example, you could append 'testing PR 1234 - nicer styling'.
 3. Expand the downloaded zip file
-4. Copy the files in the expanded folder to the `.obsidian/plugins/obsidian-tasks-plugin/` folder in your vault, over-writing the previous files.
+4. Copy the files in the expanded folder to the `.obsidian/plugins/obsidian-tasks-datetime/` folder in your vault, overwriting the previous files.
 5. Restart Obsidian.
 
 ## Option 3: On iPhone and iPad, in local storage

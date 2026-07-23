@@ -23,6 +23,10 @@ import {
     optionsWithoutARandomField,
 } from './RenderingTestHelpers';
 
+jest.mock('../../src/ui/DateTimePicker', () => ({
+    createDateTimePicker: jest.fn(() => ({ destroy: jest.fn() })),
+}));
+
 window.moment = moment;
 /**
  * Construct an onSubmit function for editing the given task, and when Apply is clicked,
@@ -172,6 +176,12 @@ function getElementValue(container: HTMLElement, elementId: string) {
     const element = getAndCheckRenderedElement<HTMLInputElement>(container, elementId);
     return element.value;
 }
+
+beforeEach(() => {
+    // This suite verifies the established date-only editing contract. Datetime
+    // behaviour is covered separately in DateTimeFormat.test.ts.
+    updateSettings({ enableDateTime: false });
+});
 
 afterEach(() => {
     resetSettings();
