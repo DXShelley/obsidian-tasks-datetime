@@ -4,7 +4,7 @@
 
 First...
 
-1. Go to the [Verify Commit actions page](https://github.com/obsidian-tasks-group/obsidian-tasks/actions/workflows/verify.yml).
+1. Go to the [Tasks Datetime Verify Commit actions page](https://github.com/DXShelley/obsidian-tasks-datetime/actions/workflows/verify.yml).
 2. Click on the build of the code version you want to test. For example, you might click on the build for a particular pull request, or the most recent build on `main`.
 
 Then do one of the following options...

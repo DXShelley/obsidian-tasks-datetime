@@ -8,6 +8,12 @@
 
 Tasks Datetime is an Obsidian task-management plugin with optional date and time support down to seconds. It keeps date-only task workflows compact while allowing precise task planning when time support is enabled.
 
+> **Independent project.** Tasks Datetime is independently maintained and is not affiliated with, endorsed by, or supported by the upstream Obsidian Tasks project or its maintainers.
+
+## Relationship to the upstream project
+
+The upstream project remains the date-only compatibility baseline. Tasks Datetime preserves that workflow and adds optional time-of-day and seconds precision for people whose planning needs cannot be represented by a calendar date alone. It is not presented as an official replacement for the upstream plugin.
+
 ## Highlights
 
 - Optional `YYYY-MM-DD HH:mm:ss` task dates, with date-only display when disabled.
@@ -36,7 +42,11 @@ fnm exec --using=22.23.1 corepack yarn build
 
 ## Upstream Attribution
 
-Tasks Datetime is a modified derivative of [obsidian-tasks-group/obsidian-tasks](https://github.com/obsidian-tasks-group/obsidian-tasks). It retains the upstream MIT license and its required copyright notice in [LICENSE](LICENSE).
+Tasks Datetime is a modified derivative of [obsidian-tasks-group/obsidian-tasks](https://github.com/obsidian-tasks-group/obsidian-tasks). It retains the upstream MIT license and its required copyright notice in [LICENSE](LICENSE). See [NOTICE](NOTICE) for attribution, bundled-runtime notices, and the independent-project statement.
+
+## Privacy and Permissions
+
+Tasks Datetime reads and modifies task Markdown files inside the open Obsidian vault to render, query, create, and update tasks. It does not implement telemetry, analytics, automatic updates, external downloads, account sign-in, payments, or network requests. See [PRIVACY.md](PRIVACY.md) for the reviewed scope and reporting route.
 
 ## License
 

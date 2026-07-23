@@ -1,0 +1,37 @@
+Tasks Datetime
+Copyright (c) 2026 springfish
+
+Tasks Datetime is an independently maintained derivative of
+obsidian-tasks-group/obsidian-tasks. It is not affiliated with, endorsed by,
+or supported by the upstream Obsidian Tasks project or its maintainers.
+
+Purpose and compatibility
+-------------------------
+The upstream project remains the date-only compatibility baseline. Tasks
+Datetime preserves that workflow while adding optional time-of-day and seconds
+precision for users who need it in real task-planning scenarios. It is not an
+official replacement for the upstream plugin.
+
+Upstream source copyright notice
+--------------------------------
+Copyright (c) 2021 Clare Macrae, Ilyas Landikov and Martin Schenck
+
+The upstream project is licensed under MIT. Its complete, unmodified license
+text and copyright notice are retained in LICENSE, as required by that license.
+
+Third-party runtime notices
+---------------------------
+The generated main.js includes the runtime dependencies listed below. The
+generated bundle carries their applicable notices. Do not use the names of the
+rrule or python-dateutil authors or contributors to endorse this project.
+
+- rrule and python-dateutil-derived material: BSD-3-Clause notices in main.js
+- chrono-node, flatpickr, @floating-ui/dom, boon-js, eventemitter2, i18next,
+  mustache, mustache-validator, and safe-regex2: MIT notices in main.js
+
+The complete dependency inventory can be regenerated with:
+
+    fnm exec --using=22.23.1 corepack yarn licenses list
+
+Obsidian and CodeMirror APIs are external peer APIs and are not bundled in the
+release artifact.

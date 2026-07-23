@@ -6,30 +6,21 @@ publish: true
 
 See also [[Report a Bug]].
 
+Tasks Datetime is an independently maintained derivative focused on optional
+time-of-day and seconds precision. Feature requests here apply to Tasks
+Datetime, not to the upstream Obsidian Tasks plugin.
+
 ## Before requesting a feature
 
-> [!important]
-> Don't waste your time crafting a careful request for something we are either already tracking, or have already declined.
-
-- Is it already possible?
-  - Check the relevant section of the Tasks documentation.
-- Is it already requested?
-  - Search for existing feature requests (FRs) for your proposed change:
-    - [Issues: open FRs](https://github.com/obsidian-tasks-group/obsidian-tasks/issues?q=is%3Aopen+is%3Aissue+label%3A%22type%3A+enhancement%22)
-    - [Issues: closed FRs](https://github.com/obsidian-tasks-group/obsidian-tasks/issues?q=is%3Aissue+label%3A%22type%3A+enhancement%22+is%3Aclosed)
-    - [Discussions: older requests](https://github.com/obsidian-tasks-group/obsidian-tasks/discussions/categories/ideas-any-new-feature-requests-go-in-issues-please?discussions_q=category%3A%22Ideas%3A+Any+New+Feature+Requests+go+in+Issues+please%22+sort%3Atop) pre-dating FRs going in Issues
-  - If it is, up-vote it with a 👍 (in Issues) or the up-arrow (in Discussions).
-- Can it be achieved using another plugin?
-- Is it specific only to your personal workflow?
-  - Some requests demand volunteer time for something very specific to one person's way of working.
-- Is it outside the scope of this plugin?
-  - We won't be adding [time-tracking, productivity tracking, pomodoros, notifications](https://github.com/obsidian-tasks-group/obsidian-tasks/issues/2721) and similar...
-- Is it really multiple features?
-  - One feature per request, please.
+- Check the relevant Tasks Datetime documentation.
+- Search [open feature requests](https://github.com/DXShelley/obsidian-tasks-datetime/issues?q=is%3Aopen+is%3Aissue+label%3A%22type%3A+enhancement%22) and [closed feature requests](https://github.com/DXShelley/obsidian-tasks-datetime/issues?q=is%3Aclosed+is%3Aissue+label%3A%22type%3A+enhancement%22).
+- Consider whether the request can be achieved through existing settings or another plugin.
+- Describe one feature per request and explain the workflow it improves.
+- Do not assume affiliation with, endorsement by, or support from the upstream project.
 
 ## Make the request
 
-There is a [form to guide you through submitting a feature request](https://github.com/obsidian-tasks-group/obsidian-tasks/issues/new?assignees=&labels=type%3A+enhancement&projects=&template=feature-request.yaml).
+Use the [Tasks Datetime feature request form](https://github.com/DXShelley/obsidian-tasks-datetime/issues/new?template=feature-request.yaml).
 
 See also:
 

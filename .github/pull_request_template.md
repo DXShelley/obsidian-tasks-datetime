@@ -11,10 +11,10 @@ Changes visible to users:
   - Issue/discussion: <!-- Link to the issue or discussion where this has been agreed with a maintainer -->
 - [ ] **Bug fix** (prefix: `fix` - non-breaking change which fixes an issue)
   - Issue/discussion: <!-- Link to the issue or discussion where this has been agreed with a maintainer -->
-- [ ] **Translation** (prefix: `i18n` - additions or improvements to the translations - see [Support a new language](https://publish.obsidian.md/tasks-contributing/Translation/Support+a+new+language))
+- [ ] **Translation** (prefix: `i18n` - additions or improvements to translations)
 - [ ] **Documentation** (prefix: `docs` - improvements to any documentation content **for users**)
-- [ ] **Sample vault** (prefix: `vault` - improvements to the [Tasks-Demo sample vault](https://github.com/obsidian-tasks-group/obsidian-tasks/tree/main/resources/sample_vaults/Tasks-Demo))
-- [ ] **Contributing Guidelines** (prefix: `contrib` - any improvements to documentation content **for contributors** - see [Contributing to Tasks](https://publish.obsidian.md/tasks-contributing/))
+- [ ] **Sample vault** (prefix: `vault` - improvements to the local Tasks-Demo sample vault)
+- [ ] **Contributing Guidelines** (prefix: `contrib` - improvements to contributor documentation)
 
 Internal changes:
 
@@ -49,17 +49,16 @@ Internal changes:
 - [ ] My code changes are on a branch, and not on the `main` branch.
 - [ ] My code follows the code style of this project and passes `yarn run lint`.
 - [ ] My change requires a change to the documentation.
-- [ ] I have [updated the documentation](https://publish.obsidian.md/tasks-contributing/Documentation/About+Documentation) accordingly.
-- [ ] My change has adequate [Unit Test coverage](https://publish.obsidian.md/tasks-contributing/Testing/About+Testing).
+- [ ] I have updated the relevant documentation.
+- [ ] My change has adequate unit-test coverage.
 
 ## Terms
 
 <!--
-By submitting this pull request, you must agree to follow our
-[contributing guide](https://publish.obsidian.md/tasks-contributing) and
-[Code of Conduct](https://github.com/obsidian-tasks-group/obsidian-tasks/blob/main/CODE_OF_CONDUCT.md).
+By submitting this pull request, you must agree to follow this repository's
+[contributing guide](../../CONTRIBUTING.md) and [Code of Conduct](../../CODE_OF_CONDUCT.md).
 Put an x in the boxes to confirm you agree.
 -->
 
-- [ ] My contribution follows this project's [contributing guide](https://publish.obsidian.md/tasks-contributing)
-- [ ] I agree to follow this project's [Code of Conduct](https://github.com/obsidian-tasks-group/obsidian-tasks/blob/main/CODE_OF_CONDUCT.md)
+- [ ] My contribution follows this project's [contributing guide](../../CONTRIBUTING.md)
+- [ ] I agree to follow this project's [Code of Conduct](../../CODE_OF_CONDUCT.md)

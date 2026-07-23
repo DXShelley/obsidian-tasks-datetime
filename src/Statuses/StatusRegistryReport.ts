@@ -59,7 +59,7 @@ ${i18n.t('reports.statusRegistry.sampleTasks.line3')}
 
 > [!Tip] ${i18n.t('reports.statusRegistry.sampleTasks.tip.line1')}
 > ${i18n.t('reports.statusRegistry.sampleTasks.tip.line2', {
-        url: 'https://publish.obsidian.md/tasks/How+To/Style+custom+statuses',
+        url: 'https://github.com/DXShelley/obsidian-tasks-datetime/tree/main/docs',
     })}
 
 ${sampleTasksText.join('\n')}

@@ -2,20 +2,18 @@
 
 ## More Tasks resources
 
-- [Contributing Guide](https://publish.obsidian.md/tasks-contributing/) (this vault)
-- [User Guide](https://publish.obsidian.md/tasks/)
+- [Contributing Guide](../../CONTRIBUTING.md)
+- [Project README](../../README.md)
 
 ## GitHub Links
 
-- Tasks plugin [GitHub repository](https://github.com/obsidian-tasks-group/obsidian-tasks)
+- Tasks Datetime [GitHub repository](https://github.com/DXShelley/obsidian-tasks-datetime)
 - Improving the plugin:
-  - [Issues](https://github.com/obsidian-tasks-group/obsidian-tasks/issues)
-  - [Discussions](https://github.com/obsidian-tasks-group/obsidian-tasks/discussions)
-  - [Pull Requests](https://github.com/obsidian-tasks-group/obsidian-tasks/pulls)
-- [Releases](https://github.com/obsidian-tasks-group/obsidian-tasks/releases)
-- [GitHub Actions](https://github.com/obsidian-tasks-group/obsidian-tasks/actions)
+  - [Issues](https://github.com/DXShelley/obsidian-tasks-datetime/issues)
+  - [Pull Requests](https://github.com/DXShelley/obsidian-tasks-datetime/pulls)
+- [Releases](https://github.com/DXShelley/obsidian-tasks-datetime/releases)
+- [GitHub Actions](https://github.com/DXShelley/obsidian-tasks-datetime/actions)
 
 ## Other links
 
-- Tasks Datetime on the [Obsidian Plugins Directory](https://obsidian.md/plugins?search=obsidian-tasks-datetime)
-- Tasks Datetime in the [Obsidian Hub](https://publish.obsidian.md/hub/02+-+Community+Expansions/02.05+All+Community+Expansions/Plugins/obsidian-tasks-datetime)
+- [Independent fork compliance audit](../../docs/Compliance/Independent%20Fork%20Compliance%20Audit.md)

@@ -315,7 +315,7 @@ export class SettingsTab extends PluginSettingTab {
                         '</p><p>' +
                         i18n.t('settings.changeRequiresRestart') +
                         '</p><p></p><p>' +
-                        `<a href="https://publish.obsidian.md/tasks/Getting+Started/Statuses">${i18n.t(
+                        `<a href="https://github.com/DXShelley/obsidian-tasks-datetime/tree/main/docs">${i18n.t(
                             'settings.statuses.customStatuses.description.line4',
                         )}</a></p>`,
                 },
@@ -622,8 +622,11 @@ export class SettingsTab extends PluginSettingTab {
             });
     }
 
-    private seeTheDocumentation(url: string) {
-        return `<p><a href="${url}">${i18n.t('settings.seeTheDocumentation')}</a>.</p>`;
+    private seeTheDocumentation(_url: string) {
+        return (
+            '<p><a href="https://github.com/DXShelley/obsidian-tasks-datetime/tree/main/docs">' +
+            `${i18n.t('settings.seeTheDocumentation')}</a>.</p>`
+        );
     }
 
     private addOneSettingsBlock(

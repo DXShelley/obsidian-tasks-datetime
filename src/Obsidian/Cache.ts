@@ -389,7 +389,7 @@ Line number: ${listItem.position.start.line}
 Task line: ${line}
 
 Please create a bug report for this message at
-https://github.com/obsidian-tasks-group/obsidian-tasks/issues/new/choose
+https://github.com/DXShelley/obsidian-tasks-datetime/issues/new/choose
 to help us find and fix the underlying issue.
 
 Include:

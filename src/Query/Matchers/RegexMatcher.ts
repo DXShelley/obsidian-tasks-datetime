@@ -55,7 +55,7 @@ export class RegexMatcher extends IStringMatcher {
     }
 
     public static helpMessage(): string {
-        return String.raw`See https://publish.obsidian.md/tasks/Queries/Regular+Expressions
+        return String.raw`See https://github.com/DXShelley/obsidian-tasks-datetime/tree/main/docs
 
 Regular expressions must look like this:
     /pattern/

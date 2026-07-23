@@ -642,7 +642,7 @@ description includes \
             expect(getQueryError(source)).toEqual(
                 String.raw`Invalid instruction: 'description regex matches apple sauce'
 
-See https://publish.obsidian.md/tasks/Queries/Regular+Expressions
+See https://github.com/DXShelley/obsidian-tasks-datetime/tree/main/docs
 
 Regular expressions must look like this:
     /pattern/

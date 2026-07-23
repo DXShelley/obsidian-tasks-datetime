@@ -11,7 +11,7 @@ describe('should report regular expression errors to user ', () => {
 The error message was:
     "SyntaxError: Invalid regular expression: /hello(/: Unterminated group"
 
-See https://publish.obsidian.md/tasks/Queries/Regular+Expressions
+See https://github.com/DXShelley/obsidian-tasks-datetime/tree/main/docs
 
 Regular expressions must look like this:
     /pattern/

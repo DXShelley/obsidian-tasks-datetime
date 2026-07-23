@@ -6,7 +6,7 @@ See also [[Request a Feature]].
 
 If you require support with a bug, you can help us to help you.
 
-Please understand that Tasks is mostly maintained by two people in their free time, and:
+Please understand that Tasks Datetime is independently maintained, and:
 
 - our spending **time dealing with incomplete bug reports means** ...
 - ... us spending **less time improving the plugin**.
@@ -28,28 +28,28 @@ Please follow the steps in this page **fully** when reporting a bug, to save you
 > Don't waste your time crafting a careful bug report for something we already know about!
 
 - Is it the intended behaviour - or a documented limitation?
-  - Read the [User Guide](https://publish.obsidian.md/tasks/Introduction) for the problem feature.
+  - Read the relevant local documentation for the problem feature.
   - We take care to record known limitations, often with a link to an existing issue that you can up-vote with a 👍.
 - Is it already known?
-  - Review the [existing bug reports](https://github.com/obsidian-tasks-group/obsidian-tasks/issues?q=is%3Aissue+is%3Aopen+label%3A%22type%3A+bug%22), to see if yours is listed.
+  - Review the [existing Tasks Datetime bug reports](https://github.com/DXShelley/obsidian-tasks-datetime/issues?q=is%3Aissue+is%3Aopen+label%3A%22type%3A+bug%22), to see if yours is listed.
   - If it is, up-vote it with a 👍.
 - Check your tasks for broken data
-  - Understand why the [order of items in a task matters](https://publish.obsidian.md/tasks/Getting+Started/Auto-Suggest#What+do+I+need+to+know+about+the+order+of+items+in+a+task%3F).
-  - If a task is not found by a query, [check the task is formatted correctly](https://publish.obsidian.md/tasks/Getting+Started/Auto-Suggest#How+can+I+check+that+my+Task+is+formatted+correctly%3F).
-  - Search for [tasks with invalid dates](https://publish.obsidian.md/tasks/Queries/Filters).
+  - Understand why the order of items in a task matters.
+  - If a task is not found by a query, check that the task is formatted correctly.
+  - Search for tasks with invalid dates.
 - Get an explanation of your Tasks search.
-  - Add the [explain](https://publish.obsidian.md/tasks/Queries/Explaining+Queries) instruction to your query block.
+  - Add the `explain` instruction to your query block.
   - Check how it interpreted the dates in your filters.
   - Make sure you have not confused `AND` and `OR`.
 - Is it really a problem with Tasks?
   - Run the Obsidian command `Open sandbox vault`.
-  - Install and enable Tasks.
+  - Install and enable Tasks Datetime.
   - Confirm that you can reproduce the problem there.
   - Make a note of every individual step you needed to do, to reproduce the problem.
 
 ## Report the bug
 
-There is a [form to guide you through submitting a bug report](https://github.com/obsidian-tasks-group/obsidian-tasks/issues/new/choose).
+There is a [form to guide you through submitting a Tasks Datetime bug report](https://github.com/DXShelley/obsidian-tasks-datetime/issues/new/choose).
 
 The rest of this section guides you through giving enough information for the bug to be investigated.
 
@@ -130,7 +130,7 @@ And these steps need to work in a vault that **has Tasks as the only enabled plu
 
 #### Example 'Steps to reproduce'
 
-This is the level of detail required for a developer to be able to reproduce a bug, taken from [issue #1300](https://github.com/obsidian-tasks-group/obsidian-tasks/issues/1300#issuecomment-1306829403):
+This is the level of detail required for a developer to be able to reproduce a bug:
 
 > [!Example] Example steps to reproduce a particular bug
 > Steps to reproduce:
@@ -204,6 +204,6 @@ Once you have figured out the steps to reproduce the vault:
 
 1. Quit Obsidian
 2. Create a .zip file containing the minimal vault
-3. Create a [bug report](https://github.com/obsidian-tasks-group/obsidian-tasks/issues/new/choose)
+3. Create a [Tasks Datetime bug report](https://github.com/DXShelley/obsidian-tasks-datetime/issues/new/choose)
 4. Make sure you [[#Give steps to reproduce the bug]]
 5. Attach the zip file to the bug report, by dragging the file from your file browser into the bug report form

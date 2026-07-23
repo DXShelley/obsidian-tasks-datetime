@@ -9,7 +9,6 @@
 
 ## External pages
 
-- [GitHub repository](https://github.com/obsidian-tasks-group/obsidian-tasks)
-- [Contributing Guide](https://publish.obsidian.md/tasks-contributing/)
-- [Structure of the code](https://publish.obsidian.md/tasks-contributing/Code/Structure+of+the+code)
-- [User Guide](https://publish.obsidian.md/tasks/)
+- [GitHub repository](https://github.com/DXShelley/obsidian-tasks-datetime)
+- [Contributing Guide](../CONTRIBUTING.md)
+- [User Guide](../README.md)

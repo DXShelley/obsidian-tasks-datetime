@@ -7,11 +7,15 @@ aliases:
 
 # Installation
 
-Follow the steps below to install Tasks Datetime.
+Tasks Datetime is an independently distributed plugin and is not submitted to
+the Obsidian Community Plugins directory. Install it from this project's GitHub
+release assets.
 
-1. Search for "Tasks Datetime" in Obsidian's community plugins browser.
-2. Enable the plugin in your Obsidian settings (find "Tasks Datetime" under "Community plugins").
-3. Check the settings. It makes sense to set the global filter early on (if you want one).
-4. Replace the "Toggle Checkbox Status" hotkey with "Tasks: Toggle Done".
+1. Download `main.js`, `manifest.json`, and `styles.css` from the [latest Tasks Datetime release](https://github.com/DXShelley/obsidian-tasks-datetime/releases).
+2. Create `.obsidian/plugins/obsidian-tasks-datetime/` in your vault.
+3. Copy the three downloaded files into that directory.
+4. Enable **Tasks Datetime** in Obsidian's Community plugins settings.
+5. Check the settings. It makes sense to set the global filter early on (if you want one).
+6. Replace the "Toggle Checkbox Status" hotkey with "Tasks: Toggle Done".
     - I recommend you remove the original toggle checkbox hotkey and set the "Tasks" toggle to `Ctrl + Enter` (or `Cmd + Enter` on a mac).
-5. Optional: bind a hotkey to the command `Tasks: Create or edit` to have quick access to the Tasks modal.
+7. Optional: bind a hotkey to the command `Tasks: Create or edit` to have quick access to the Tasks modal.
