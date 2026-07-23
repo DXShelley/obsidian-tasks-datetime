@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Tasks Datetime：为 Obsidian 任务提供可选的日期、时间与秒级精度。"
+    />
+    <meta name="theme-color" content="#0d3938" />
+    <title>Tasks Datetime | 精确安排，仍然简洁</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">跳到主要内容</a>
+    <header class="site-header">
+      <a class="brand" href="#top" aria-label="Tasks Datetime 首页">
+        <img src="assets/tasks-datetime-logo.svg" alt="" width="42" height="42" />
+        <span>Tasks Datetime</span>
+      </a>
+      <nav aria-label="页面导航">
+        <a href="#features">功能</a>
+        <a href="#privacy">隐私</a>
+        <a href="#install">安装</a>
+        <a href="https://github.com/DXShelley/obsidian-tasks-datetime">GitHub</a>
+      </nav>
+    </header>
+
+    <main id="main-content">
+      <section class="hero" id="top" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <p class="eyebrow">Obsidian task plugin</p>
+          <h1 id="hero-title">给任务一个<br /><em>准确的时刻。</em></h1>
+          <p class="lede">
+            在熟悉的日期工作流上，按需加入时、分、秒。Tasks Datetime 专为需要精确安排而不想放弃 Markdown 简洁性的人设计。
+          </p>
+          <div class="actions">
+            <a class="button button-primary" href="#install">查看手动安装方式</a>
+            <a class="button button-quiet" href="https://github.com/DXShelley/obsidian-tasks-datetime/releases">查看 Releases</a>
+          </div>
+        </div>
+        <div class="timeline" aria-label="任务时间线示例">
+          <div class="timeline-topline">
+            <span>THU · 23 JUL</span>
+            <span>LOCAL VAULT</span>
+          </div>
+          <div class="time-row is-current">
+            <time datetime="2026-07-23T09:30:00">09:30:00</time>
+            <span class="time-dot"></span>
+            <p>整理本周会议笔记 <b>今天</b></p>
+          </div>
+          <div class="time-row">
+            <time datetime="2026-07-23T14:00:00">14:00:00</time>
+            <span class="time-dot"></span>
+            <p>复核项目里程碑 <b>计划</b></p>
+          </div>
+          <div class="time-row">
+            <time datetime="2026-07-23T16:45:30">16:45:30</time>
+            <span class="time-dot"></span>
+            <p>发送交付说明 <b>高优先级</b></p>
+          </div>
+          <p class="timeline-caption">时间精度可选。关闭后，任务仍保持日期优先的简洁视图。</p>
+        </div>
+      </section>
+
+      <section class="statement" aria-label="项目声明">
+        <p>独立维护的 MIT 衍生项目</p>
+        <span></span>
+        <p>不隶属于、不获上游 Obsidian Tasks 项目或其维护者认可或支持</p>
+      </section>
+
+      <section class="features section" id="features" aria-labelledby="features-title">
+        <div class="section-heading">
+          <p class="eyebrow">在 Markdown 里工作</p>
+          <h2 id="features-title">精确，不复杂。</h2>
+        </div>
+        <div class="feature-grid">
+          <article>
+            <span class="feature-number">01</span>
+            <h3>可选秒级时间</h3>
+            <p>支持 <code>YYYY-MM-DD HH:mm:ss</code>，也可继续只使用日期。</p>
+          </article>
+          <article>
+            <span class="feature-number">02</span>
+            <h3>创建与编辑</h3>
+            <p>在任务编辑时使用整合的日期与时间选择器，减少手动输入。</p>
+          </article>
+          <article>
+            <span class="feature-number">03</span>
+            <h3>查询与概览</h3>
+            <p>按时间查询任务，在今天、本周和本月视图中查看安排。</p>
+          </article>
+          <article>
+            <span class="feature-number">04</span>
+            <h3>重复与优先级</h3>
+            <p>保留重复任务预设和重要性、紧急性编辑方式，适应既有习惯。</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="privacy section" id="privacy" aria-labelledby="privacy-title">
+        <div class="privacy-intro">
+          <p class="eyebrow">可核验的边界</p>
+          <h2 id="privacy-title">你的任务，留在你的 vault。</h2>
+          <p>插件通过 Obsidian Vault API 读取和修改当前打开 vault 中的任务 Markdown、插件设置及相关元数据，用于渲染、查询、创建、编辑与统计。</p>
+          <a class="text-link" href="https://github.com/DXShelley/obsidian-tasks-datetime/blob/main/PRIVACY.md">阅读完整隐私与权限说明</a>
+        </div>
+        <ul class="privacy-list">
+          <li><span aria-hidden="true">+</span>无遥测、分析、崩溃报告或广告</li>
+          <li><span aria-hidden="true">+</span>无账户、付款或远程同步</li>
+          <li><span aria-hidden="true">+</span>无网络请求、自动更新或外部代码下载</li>
+          <li><span aria-hidden="true">+</span>不主动访问当前 vault 以外的文件</li>
+        </ul>
+      </section>
+
+      <section class="install section" id="install" aria-labelledby="install-title">
+        <div class="section-heading">
+          <p class="eyebrow">当前分发方式</p>
+          <h2 id="install-title">从 Release 手动安装。</h2>
+        </div>
+        <ol class="install-steps">
+          <li><span>1</span><p>从项目 Release 下载 <code>main.js</code>、<code>manifest.json</code> 与 <code>styles.css</code>。</p></li>
+          <li><span>2</span><p>在 vault 中创建 <code>.obsidian/plugins/obsidian-tasks-datetime/</code>。</p></li>
+          <li><span>3</span><p>复制三个文件并在 Obsidian 中启用 <strong>Tasks Datetime</strong>。</p></li>
+        </ol>
+        <p class="install-note">该项目目前不在 Obsidian Community Plugins 目录中。请仅从本项目的 GitHub Releases 获取构建文件。</p>
+      </section>
+
+      <section class="provenance section" aria-labelledby="provenance-title">
+        <p class="eyebrow">来源与支持</p>
+        <h2 id="provenance-title">清楚说明来处，也清楚说明责任。</h2>
+        <p>Tasks Datetime 基于 <a href="https://github.com/obsidian-tasks-group/obsidian-tasks">obsidian-tasks-group/obsidian-tasks</a> 修改而来，保留上游 MIT 许可与所需版权声明。它不是官方替代品，也不代表上游项目。</p>
+        <div class="provenance-links">
+          <a href="https://github.com/DXShelley/obsidian-tasks-datetime/blob/main/NOTICE">版权与第三方声明</a>
+          <a href="https://github.com/DXShelley/obsidian-tasks-datetime/security/policy">报告安全问题</a>
+          <a href="https://github.com/DXShelley/obsidian-tasks-datetime/blob/main/docs/Compliance/Independent%20Fork%20Compliance%20Audit.md">阅读合规审计</a>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <a class="brand" href="#top"><img src="assets/tasks-datetime-logo.svg" alt="" width="28" height="28" /><span>Tasks Datetime</span></a>
+      <p>MIT License · Independent project</p>
+      <a href="https://github.com/DXShelley/obsidian-tasks-datetime">GitHub Repository</a>
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="title desc">
+  <title id="title">Tasks Datetime</title>
+  <desc id="desc">A calendar with a clock showing second-level task scheduling.</desc>
+  <rect width="256" height="256" rx="40" fill="#167d73"/>
+  <rect x="47" y="57" width="162" height="151" rx="18" fill="#f9fcfb"/>
+  <path d="M47 91h162" stroke="#167d73" stroke-width="14"/>
+  <path d="M84 42v33M172 42v33" stroke="#f9fcfb" stroke-width="14" stroke-linecap="round"/>
+  <path d="M79 120h19M118 120h19M157 120h19M79 150h19M118 150h19" stroke="#49a698" stroke-width="12" stroke-linecap="round"/>
+  <circle cx="169" cy="165" r="48" fill="#f4a340" stroke="#f9fcfb" stroke-width="10"/>
+  <path d="M169 136v30l19 12" fill="none" stroke="#1d3f52" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="169" cy="127" r="5" fill="#1d3f52"/>
+  <circle cx="196" cy="165" r="5" fill="#1d3f52"/>
+  <circle cx="169" cy="202" r="5" fill="#1d3f52"/>
+</svg>
