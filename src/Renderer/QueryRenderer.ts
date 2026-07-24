@@ -19,6 +19,7 @@ import { TaskModal } from '../Obsidian/TaskModal';
 import type { TasksEvents } from '../Obsidian/TasksEvents';
 import { TasksFile } from '../Scripting/TasksFile';
 import { DateFallback } from '../DateTime/DateFallback';
+import { logging } from '../lib/logging';
 import type { Task } from '../Task/Task';
 import { type BacklinksEventHandler, type EditButtonClickHandler, QueryResultsRenderer } from './QueryResultsRenderer';
 import { TaskLineRenderer, createAndAppendElement } from './TaskLineRenderer';
@@ -300,43 +301,48 @@ class QueryRenderChild extends MarkdownRenderChild {
         // So note that any results we have already drawn are now out-of-date:
         this.isCacheChangedSinceLastRedraw = true;
 
-        window.requestAnimationFrame(async () => {
-            if (this.isRendering) {
-                return;
-            }
-            this.isRendering = true;
-
-            // We have to wrap the rendering inside requestAnimationFrame() to ensure
-            // that we get correct values for isConnected and isShown().
-            if (!this.containerEl.isConnected) {
-                // Example reasons why we might not be "connected":
-                // - This Tasks query block is contained within another plugin's code block,
-                //   such as a Tabs plugin. The file is closed and that plugin has not correctly
-                //   tidied up, so we have not been deleted.
-                this.queryResultsRenderer.query.debug(
-                    '[render] Ignoring redraw request, as code block is not connected.',
-                );
+        window.requestAnimationFrame(() => {
+            void this.renderInAnimationFrame(state, tasks).catch((error: unknown) => {
                 this.isRendering = false;
-                return;
-            }
-
-            if (!this.containerEl.isShown()) {
-                // Example reasons why we might not be "shown":
-                // - We are in a collapsed callout.
-                // - We are in a note which is obscured by another note.
-                // - We are in a Tabs plugin, in a tab which is not at the front.
-                // - The user has not yet scrolled to this code block's position in the file.
-                this.queryResultsRenderer.query.debug('[render] Ignoring redraw request, as code block is not shown.');
-                this.isRendering = false;
-                return;
-            }
-
-            await this.renderResults(state, tasks);
-
-            // Our results are now up-to-date:
-            this.isCacheChangedSinceLastRedraw = false;
-            this.isRendering = false;
+                logging.getLogger('tasks.QueryRenderer').error('[render] Failed to render search results.', error);
+            });
         });
+    }
+
+    private async renderInAnimationFrame(state: State, tasks: Task[]): Promise<void> {
+        if (this.isRendering) {
+            return;
+        }
+        this.isRendering = true;
+
+        // We have to wrap the rendering inside requestAnimationFrame() to ensure
+        // that we get correct values for isConnected and isShown().
+        if (!this.containerEl.isConnected) {
+            // Example reasons why we might not be "connected":
+            // - This Tasks query block is contained within another plugin's code block,
+            //   such as a Tabs plugin. The file is closed and that plugin has not correctly
+            //   tidied up, so we have not been deleted.
+            this.queryResultsRenderer.query.debug('[render] Ignoring redraw request, as code block is not connected.');
+            this.isRendering = false;
+            return;
+        }
+
+        if (!this.containerEl.isShown()) {
+            // Example reasons why we might not be "shown":
+            // - We are in a collapsed callout.
+            // - We are in a note which is obscured by another note.
+            // - We are in a Tabs plugin, in a tab which is not at the front.
+            // - The user has not yet scrolled to this code block's position in the file.
+            this.queryResultsRenderer.query.debug('[render] Ignoring redraw request, as code block is not shown.');
+            this.isRendering = false;
+            return;
+        }
+
+        await this.renderResults(state, tasks);
+
+        // Our results are now up-to-date:
+        this.isCacheChangedSinceLastRedraw = false;
+        this.isRendering = false;
     }
 
     private async renderResults(state: State, tasks: Task[]) {

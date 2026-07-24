@@ -304,7 +304,7 @@ export class HtmlQueryResultsRenderer extends QueryResultsRendererBase {
 
         /** Open a context menu on right-click.
          */
-        button.addEventListener('contextmenu', async (ev: MouseEvent) => {
+        button.addEventListener('contextmenu', (ev: MouseEvent) => {
             showMenu(ev, new PostponeMenu(button, task));
         });
     }

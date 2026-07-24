@@ -29,6 +29,10 @@ function numericStringCompare(a: string, b: string): number {
 }
 
 describe('TasksDate', () => {
+    it('throws when postponing an undated task', () => {
+        expect(() => undated.postpone()).toThrow('Cannot postpone a null date');
+    });
+
     it('should format valid dates', () => {
         const date = '2023-10-13';
         const tasksDate = new TasksDate(moment(date));
