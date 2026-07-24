@@ -45,8 +45,7 @@ export class HtmlQueryResultsRenderer extends QueryResultsRendererBase {
 
     private readonly taskLineRenderer: TaskLineRenderer;
 
-    // document.createElement() creates dummy elements that must be overwritten later
-    // with the values of elements that will be rendered
+    // These detached nodes are replaced with rendered elements later.
     public content: HTMLDivElement = document.createElement('div');
     private readonly ulElementStack: HTMLUListElement[] = [];
     private lastLIElement: HTMLLIElement = document.createElement('li');
