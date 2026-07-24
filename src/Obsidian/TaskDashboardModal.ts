@@ -16,7 +16,7 @@ export class TaskDashboardModal extends Modal {
             const card = grid.createDiv({ cls: 'tasks-dashboard-period' });
             card.createEl('h3', { text: stat.label });
             const ring = card.createDiv({ cls: 'tasks-dashboard-ring' });
-            ring.style.setProperty('--tasks-completion', `${stat.percentage}%`);
+            ring.setCssProps({ '--tasks-completion': `${stat.percentage}%` });
             ring.setText(`${stat.percentage}%`);
             card.createDiv({
                 text: `${stat.completed} completed / ${stat.planned} due`,

@@ -73,8 +73,8 @@ const typescriptCommonRules = {
     '@typescript-eslint/no-unsafe-member-access': on_or_off,
     '@typescript-eslint/no-unsafe-return': on_or_off,
     '@typescript-eslint/no-wrapper-object-types': on_or_off,
-    '@typescript-eslint/only-throw-error': on_or_off,
-    '@typescript-eslint/restrict-plus-operands': on_or_off,
+    '@typescript-eslint/only-throw-error': 1,
+    '@typescript-eslint/restrict-plus-operands': 1,
     '@typescript-eslint/restrict-template-expressions': on_or_off,
     '@typescript-eslint/unbound-method': 1,
     'eslint-comments/require-description': 1,
@@ -84,13 +84,13 @@ const typescriptCommonRules = {
     'no-unsanitized/method': 1,
     'no-unsanitized/property': 1,
     'obsidianmd/hardcoded-config-path': 0, // These were all 'https://publish.obsidian.md/tasks/' references!!!
-    'obsidianmd/no-global-this': on_or_off,
+    'obsidianmd/no-global-this': 1,
     'obsidianmd/no-nodejs-modules': 1, // Can disable this on test files
     'obsidianmd/no-static-styles-assignment': 1,
     'obsidianmd/prefer-active-doc': on_or_off,
     'obsidianmd/prefer-create-el': on_or_off,
     'obsidianmd/prefer-get-language': 1,
-    'obsidianmd/prefer-window-timers': on_or_off,
+    'obsidianmd/prefer-window-timers': 1,
     'obsidianmd/rule-custom-message': on_or_off,
     'obsidianmd/settings-tab/prefer-setting-definitions': on_or_off,
     'obsidianmd/ui/sentence-case': 0, // Obsidian's scanner now disables this
@@ -111,6 +111,13 @@ export default defineConfig([
         },
         rules:  {
             ...typescriptCommonRules,
+        },
+    },
+    {
+        // This renderer needs detached roots before it has a parent element to call createEl() on.
+        files: ['src/Renderer/HtmlQueryResultsRenderer.ts'],
+        rules: {
+            'obsidianmd/prefer-create-el': 0,
         },
     },
     {

@@ -45,11 +45,13 @@ interface HeadingConfiguration {
     settings: SettingConfiguration[];
 }
 
+type CustomSettingsRenderer = (containerEl: HTMLElement, settingsTab: SettingsTab) => void;
+
 export class SettingsTab extends PluginSettingTab {
     // If the UI needs a more complex setting you can create a
     // custom function and specify it from the json file. It will
     // then be rendered instead of a normal checkbox or text box.
-    customFunctions: { [K: string]: Function } = {
+    customFunctions: Record<string, CustomSettingsRenderer> = {
         insertTaskCoreStatusSettings: this.insertTaskCoreStatusSettings.bind(this),
         insertCustomTaskStatusSettings: this.insertCustomTaskStatusSettings.bind(this),
     };
@@ -836,7 +838,7 @@ export class SettingsTab extends PluginSettingTab {
             );
         });
 
-        containerEl.createEl('div');
+        containerEl.createDiv();
 
         /* -------------------- 'Add New Task Status' button -------------------- */
         const setting = new Setting(containerEl).addButton((button) => {

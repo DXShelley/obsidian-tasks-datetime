@@ -341,7 +341,7 @@ export class PresetsSettingsUI {
                 height: 'auto',
             });
 
-            textArea.inputEl.style.height = `${textArea.inputEl.scrollHeight}px`;
+            textArea.inputEl.setCssProps({ height: `${textArea.inputEl.scrollHeight}px` });
         };
 
         // Initial resize
