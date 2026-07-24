@@ -40,7 +40,7 @@ body:
     id: plugin-version
     attributes:
       label: Tasks Datetime version
-      placeholder: 8.2.2
+      placeholder: 8.3.10
     validations:
       required: true
   - type: input

@@ -1,8 +1,15 @@
 /** @jest-environment jsdom */
 import moment from 'moment';
 import { resetSettings, updateSettings } from '../../src/Config/Settings';
-import { formatTaskDate, parseTypedDateForSaving } from '../../src/DateTime/DateTools';
+import {
+    formatTaskDate,
+    formatTaskDateForStorage,
+    formatTaskDateForStorageWithCurrentTime,
+    parseTypedDateForSaving,
+} from '../../src/DateTime/DateTools';
 import { DEFAULT_SYMBOLS, DefaultTaskSerializer } from '../../src/TaskSerializer/DefaultTaskSerializer';
+import { TaskBuilder } from '../TestingTools/TaskBuilder';
+import { TaskLayoutComponent } from '../../src/Layout/TaskLayoutOptions';
 
 window.moment = moment;
 
@@ -27,10 +34,29 @@ describe('task datetime format', () => {
         expect(formatTaskDate(parsed.dueDate)).toBe('2026-07-23');
     });
 
-    it('adds the current time to a date-only edit when time support is enabled', () => {
+    it('adds the current time to a date-only edit regardless of the display setting', () => {
         jest.useFakeTimers().setSystemTime(new Date('2026-07-23 11:12:13'));
-        updateSettings({ enableDateTime: true });
+        updateSettings({ enableDateTime: false });
         expect(parseTypedDateForSaving('2026-08-01', false)?.format('YYYY-MM-DD HH:mm:ss')).toBe('2026-08-01 11:12:13');
+        jest.useRealTimers();
+    });
+
+    it('always serializes task dates with seconds while respecting the display setting', () => {
+        updateSettings({ enableDateTime: false });
+        const task = new TaskBuilder().dueDate('2026-07-23 16:30:05').build();
+        const serializer = new DefaultTaskSerializer(DEFAULT_SYMBOLS);
+
+        expect(formatTaskDate(task.dueDate)).toBe('2026-07-23');
+        expect(formatTaskDateForStorage(task.dueDate)).toBe('2026-07-23 16:30:05');
+        expect(serializer.serialize(task)).toContain('📅 2026-07-23 16:30:05');
+        expect(serializer.componentToString(task, false, TaskLayoutComponent.DueDate)).toBe(' 📅 2026-07-23');
+    });
+
+    it('uses the current time when serializing a date selected without a time', () => {
+        jest.useFakeTimers().setSystemTime(new Date('2026-07-23 11:12:13'));
+        const selectedDate = moment('2026-08-01');
+
+        expect(formatTaskDateForStorageWithCurrentTime(selectedDate)).toBe('2026-08-01 11:12:13');
         jest.useRealTimers();
     });
 });

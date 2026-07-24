@@ -29,7 +29,7 @@ describe('APIv1 - executeToggleTaskDoneCommand', () => {
     // This is a simple smoke test to make sure executeToggleTaskDoneCommand is working. Its core
     // functionality is covered by other tests
     it('should complete a task', () => {
-        expect(api.executeToggleTaskDoneCommand('- [ ] ', 'x.md')).toBe('- [x]  ✅ 2022-09-04');
+        expect(api.executeToggleTaskDoneCommand('- [ ] ', 'x.md')).toBe('- [x]  ✅ 2022-09-04 00:00:00');
         expect(api.executeToggleTaskDoneCommand('- [x] ✅ 2022-09-04', 'x.md')).toBe('- [ ] ');
     });
 });

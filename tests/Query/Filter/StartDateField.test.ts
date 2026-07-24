@@ -4,12 +4,19 @@
 import moment from 'moment';
 import { StartDateField } from '../../../src/Query/Filter/StartDateField';
 import { TaskBuilder } from '../../TestingTools/TaskBuilder';
+import { testFilter } from '../../TestingTools/FilterTestHelpers';
 import { expectTaskComparesAfter, expectTaskComparesBefore } from '../../CustomMatchers/CustomMatchersForSorting';
 import { SampleTasks } from '../../TestingTools/SampleTasks';
 
 window.moment = moment;
 
 describe('explain start date queries', () => {
+    it('includes times throughout a date-only range', () => {
+        const filter = new StartDateField().createFilterOrErrorMessage('starts in 2026-07-24');
+
+        testFilter(filter, new TaskBuilder().startDate('2026-07-24 08:00:00'), true);
+    });
+
     it('should explain explicit date', () => {
         const filterOrMessage = new StartDateField().createFilterOrErrorMessage('starts before 2023-01-02');
         expect(filterOrMessage).toHaveExplanation(

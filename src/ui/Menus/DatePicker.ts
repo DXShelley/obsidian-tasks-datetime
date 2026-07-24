@@ -2,6 +2,7 @@ import flatpickr from 'flatpickr';
 import type { Task } from '../../Task/Task';
 import { RemoveTaskDate, SetTaskDate } from '../EditInstructions/DateInstructions';
 import type { AllTaskDateFields } from '../../DateTime/DateFieldTypes';
+import { addFlatpickrPickerControls } from '../FlatpickrPickerControls';
 import type { TaskSaver } from './TaskEditingMenu';
 
 interface LocaleWithWeekInfo extends Intl.Locale {
@@ -43,48 +44,17 @@ export function promptForDate(
             instance.destroy();
         },
         onReady: (_selectedDates, _dateStr, instance) => {
-            // Add custom buttons dynamically
-            const buttonContainer = document.createElement('div');
-            buttonContainer.classList.add('tasks-date-picker-buttons');
-
-            // Create "Clear" button
-            addButton(buttonContainer, instance, task, taskSaver, 'Clear', () => {
-                return new RemoveTaskDate(dateFieldToEdit, task).apply(task);
+            addFlatpickrPickerControls(instance, {
+                clear: async () => {
+                    await taskSaver(task, new RemoveTaskDate(dateFieldToEdit, task).apply(task));
+                    instance.destroy();
+                },
+                today: () => instance.setDate(new Date(), true),
+                confirm: () => instance.close(),
             });
-
-            // Create "Today" button
-            addButton(buttonContainer, instance, task, taskSaver, 'Today', () => {
-                const today = new Date();
-                return new SetTaskDate(dateFieldToEdit, today).apply(task);
-            });
-
-            // Append the button container to the Flatpickr calendar container
-            const calendarContainer = instance.calendarContainer;
-            calendarContainer.appendChild(buttonContainer);
         },
     });
 
     // Open the calendar programmatically
     fp.open();
-}
-
-function addButton(
-    buttonContainer: HTMLDivElement,
-    instance: flatpickr.Instance,
-    task: Task,
-    taskSaver: TaskSaver,
-    buttonName: string,
-    applyDate: () => Task[],
-) {
-    const button = document.createElement('button');
-    button.type = 'button';
-    button.textContent = buttonName;
-    button.classList.add('flatpickr-button');
-
-    button.addEventListener('click', async () => {
-        const newTask = applyDate();
-        await taskSaver(task, newTask);
-        instance.destroy();
-    });
-    buttonContainer.appendChild(button);
 }

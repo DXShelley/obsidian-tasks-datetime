@@ -27,6 +27,25 @@ We continually work to improve the Tasks plugin, but at any given time, due to t
 
 This page gathers together all the documentation on known limitations of the plugin, in the hope that it will save users from spending time crafting reports for known issues.
 
+## Pending Issues
+
+### Priority compatibility
+
+The priority matrix uses four quadrant markers. The current implementation also continues to recognise the legacy priority markers and the Dataview priority inline field. The supported long-term compatibility policy has not yet been decided.
+
+| Legacy marker | Priority level |
+| --- | --- |
+| `🔺` | Highest |
+| `⏫` | High |
+| `🔼` | Medium |
+| no marker | None |
+| `🔽` | Low |
+| `⏬` | Lowest |
+
+### Recurrence editing scope
+
+Tasks supports custom recurrence expressions in source editing and Auto-Suggest. The Create or edit Task modal currently offers a fixed preset list. Whether the modal will restore arbitrary recurrence entry or remain preset-only is still to be decided.
+
 ## Writing Tasks: Basics
 
 ![[Getting Started#Limitations and warnings]]

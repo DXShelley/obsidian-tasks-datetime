@@ -27,7 +27,7 @@ const tomorrow = '2024-10-02';
 
 beforeEach(() => {
     jest.useFakeTimers();
-    jest.setSystemTime(new Date(today));
+    jest.setSystemTime(new Date('2024-10-01 12:34:56'));
 });
 
 afterEach(() => {
@@ -66,7 +66,7 @@ describe('SetTaskDate', () => {
 
         // Assert
         expect(newTasks.length).toEqual(1);
-        expect(newTasks[0].dueDate).toEqualMoment(moment(tomorrow));
+        expect(newTasks[0].dueDate).toEqualMoment(moment('2024-10-02 12:34:56'));
     });
 
     it('should not edit task if already has chosen date', () => {
@@ -101,7 +101,9 @@ describe('SetRelativeTaskDate', () => {
         // Assert
         expect(instruction.instructionDisplayName()).toEqual(expectedTitle);
         expect(newTasks.length).toEqual(1);
-        expect(newTasks[0][dateFieldToEdit]).toEqualMoment(expectedNewDate);
+        expect(newTasks[0][dateFieldToEdit]).toEqualMoment(
+            expectedNewDate.clone().hour(12).minute(34).second(56).millisecond(0),
+        );
     }
 
     it('should postpone a task with a due date', () => {

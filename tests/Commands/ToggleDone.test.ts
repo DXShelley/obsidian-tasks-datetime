@@ -116,12 +116,15 @@ describe('ToggleDone', () => {
     });
 
     it('should complete a task', () => {
-        testToggleLine('|- [ ] ', '|- [x]  ✅ 2022-09-04');
-        testToggleLine('- [ ] |', '- [x] | ✅ 2022-09-04');
-        testToggleLine('- [ ] description|', '- [x] description| ✅ 2022-09-04');
+        testToggleLine('|- [ ] ', '|- [x]  ✅ 2022-09-04 00:00:00');
+        testToggleLine('- [ ] |', '- [x] | ✅ 2022-09-04 00:00:00');
+        testToggleLine('- [ ] description|', '- [x] description| ✅ 2022-09-04 00:00:00');
 
         // Issue #449 - cursor jumped 13 characters to the right on completion
-        testToggleLine('- [ ] I have a |proper description', '- [x] I have a |proper description ✅ 2022-09-04');
+        testToggleLine(
+            '- [ ] I have a |proper description',
+            '- [x] I have a |proper description ✅ 2022-09-04 00:00:00',
+        );
 
         GlobalFilter.getInstance().set('#task');
 
@@ -130,8 +133,8 @@ describe('ToggleDone', () => {
         testToggleLine('1. [ ] |', '1. [x] |');
 
         // Done date is added if task does not match global filter
-        testToggleLine('- [ ] #task|', '- [x]  #tas|k ✅ 2022-09-04'); // Extra space added before #; cursor moves left
-        testToggleLine('* [ ] #task description|', '* [x] #task description| ✅ 2022-09-04');
+        testToggleLine('- [ ] #task|', '- [x]  #tas|k ✅ 2022-09-04 00:00:00'); // Extra space added before #; cursor moves left
+        testToggleLine('* [ ] #task description|', '* [x] #task description| ✅ 2022-09-04 00:00:00');
 
         // Issue #449 - cursor jumped 13 characters to the right on completion
         testToggleLine('- [ ] I have a |proper description', '- [x] I have a |proper description');
@@ -164,16 +167,16 @@ describe('ToggleDone', () => {
     it('should complete a recurring task', () => {
         testToggleLine(
             '- [ ] I am a recurring task| 🔁 every day 📅 2022-09-04',
-            `- [ ] I am a recurring task 🔁 every day 📅 2022-09-05
-- [x] I am a recurring task| 🔁 every day 📅 2022-09-04 ✅ 2022-09-04`,
+            `- [ ] I am a recurring task 🔁 every day 📅 2022-09-05 00:00:00
+- [x] I am a recurring task| 🔁 every day 📅 2022-09-04 00:00:00 ✅ 2022-09-04 00:00:00`,
         );
 
         // With a trailing space at the end of the initial line, which is deleted
         // when the task lines are regenerated, the cursor does not move one character to the left:
         testToggleLine(
             '- [ ] I am a recurring task| 🔁 every day 📅 2022-09-04 ',
-            `- [ ] I am a recurring task 🔁 every day 📅 2022-09-05
-- [x] I am a recurring task| 🔁 every day 📅 2022-09-04 ✅ 2022-09-04`,
+            `- [ ] I am a recurring task 🔁 every day 📅 2022-09-05 00:00:00
+- [x] I am a recurring task| 🔁 every day 📅 2022-09-04 00:00:00 ✅ 2022-09-04 00:00:00`,
         );
 
         GlobalFilter.getInstance().set('#task');
@@ -214,14 +217,14 @@ describe('ToggleDone', () => {
         it('should discard completed recurring task - cursor at start of line', () => {
             testToggleLine(
                 '|- [ ] #task Delete my completed task 🔁 every day 🏁 delete ⏳ 2024-12-31',
-                '|- [ ] #task Delete my completed task 🔁 every day 🏁 delete ⏳ 2025-01-01',
+                '|- [ ] #task Delete my completed task 🔁 every day 🏁 delete ⏳ 2025-01-01 00:00:00',
             );
         });
 
         it('should discard completed recurring task - cursor at end of line', () => {
             testToggleLine(
                 '- [ ] #task Delete my completed task 🔁 every day 🏁 delete ⏳ 2024-12-31|',
-                '- [ ] #task Delete my completed task 🔁 every day 🏁 delete ⏳ 2025-01-01|',
+                '- [ ] #task Delete my completed task 🔁 every day 🏁 delete ⏳ 2025-01-01| 00:00:00',
             );
         });
     });
@@ -287,8 +290,8 @@ describe('ToggleDone', () => {
 
             testToggleLine(
                 '- [ ] Recurring task should start with TODO| 🔁 every day 📅 2022-09-04 ',
-                `- [ ] Recurring task should start with TODO 🔁 every day 📅 2022-09-05
-- [x] Recurring task should start with TODO| 🔁 every day 📅 2022-09-04 ✅ 2022-09-04`,
+                `- [ ] Recurring task should start with TODO 🔁 every day 📅 2022-09-05 00:00:00
+- [x] Recurring task should start with TODO| 🔁 every day 📅 2022-09-04 00:00:00 ✅ 2022-09-04 00:00:00`,
             );
         });
 
@@ -303,8 +306,8 @@ describe('ToggleDone', () => {
 
             testToggleLine(
                 '- [1] Recurring task should start with TODO| 🔁 every day 📅 2022-09-04 ',
-                `- [1] Recurring task should start with TODO 🔁 every day 📅 2022-09-05
-- [2] Recurring task should start with TODO| 🔁 every day 📅 2022-09-04 ✅ 2022-09-04`,
+                `- [1] Recurring task should start with TODO 🔁 every day 📅 2022-09-05 00:00:00
+- [2] Recurring task should start with TODO| 🔁 every day 📅 2022-09-04 00:00:00 ✅ 2022-09-04 00:00:00`,
             );
         });
     });

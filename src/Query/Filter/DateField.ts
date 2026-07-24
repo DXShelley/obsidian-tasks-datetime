@@ -206,7 +206,7 @@ export abstract class DateField extends Field {
                 explanationDates = filterDates.start.format(dateFormat);
                 break;
             default:
-                if (!filterDates.start.isSame(filterDates.end)) {
+                if (!filterDates.isSingleDate()) {
                     // This is a special case where a multi-line explanation has to be built
                     // All other cases need only one line
                     const firstLine = `${fieldName} date is between:`;

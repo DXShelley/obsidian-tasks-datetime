@@ -69,8 +69,8 @@ describe('setStatusOnLine', () => {
         expect(result).toBeDefined();
         expect(result?.text).toEqual(
             [
-                '- [x] A recurring task 🔁 every day 📅 2022-09-04 ✅ 2026-02-27',
-                '- [ ] A recurring task 🔁 every day 📅 2022-09-05',
+                '- [x] A recurring task 🔁 every day 📅 2022-09-04 00:00:00 ✅ 2026-02-27 00:00:00',
+                '- [ ] A recurring task 🔁 every day 📅 2022-09-05 00:00:00',
             ].join('\n'),
         );
     });

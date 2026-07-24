@@ -73,11 +73,13 @@ Description field became resizable in Tasks 2.0.0.
 
 ### Priority
 
-See [[Priority|priority]].
+Select one of the four quadrants in the Priority matrix, or select the clear control to leave the task without a priority. See [[Priority]].
 
 ### Recurrence
 
 Here you can make the task recur, so that when it is marked as done, a new task is created, with newer dates.
+
+Choose the recurrence period from the `Recurs` dropdown. Select `When done` to calculate the next occurrence when the current task is completed.
 
 > [!Tip]
 > A task with a recurrence rule is required to also have at least one of Due, Scheduled or Starts dates.<br>
@@ -97,13 +99,7 @@ You can also add or edit
 [[Dates#Done date|done]] and
 [[Dates#Cancelled date|cancelled]] dates.
 
-There is a lot of flexibility here. For example:
-
-- You can type in exact dates, such as `2022-11-28`.
-- You can also enter parts of dates, such as `6 oct`.
-- You can enter relative dates, such as `today`, `tomorrow`, `Saturday`, `10 days`, `2 weeks`.
-
-Note that relative dates will be always interpreted as being in the future, because that is usually what you want. You can change this behavior by unchecking "Only future dates" if you want to enter an overdue task or experiment with the way how relative dates in the past would be interpreted in queries.
+Select all dates in the date picker. When time support is disabled, an empty field displays `Choose date`; when it is enabled, it displays `Choose date and time`. Use the clear control beside a selected date to remove it.
 
 > [!Info]
 > If you have enabled ‘Set created date on every added task’ in Tasks settings (and restarted Obsidian), when you create a new Task via this modal, today's date will be added automatically.
@@ -118,9 +114,7 @@ Note that relative dates will be always interpreted as being in the future, beca
 > [!released]
 > Introduced in Tasks 7.13.0.
 
-The modal provides a date picker, for easy selection of dates for your tasks.
-
-It uses a native date-picker on each platform, so the exact appearance and behaviour will vary.
+The modal provides a date picker for every date field. Date fields do not provide a free-text input.
 
 ![Date-picker demonstration video](https://www.youtube.com/v/bOc6J2m6HSM)
 <span class="caption">Date-picker demonstration video</span>
@@ -129,27 +123,6 @@ The screenshot below is from a Mac.
 
 ![The date-picker allows easy mouse and keyboard adding and editing of dates](../images/modal-date-picker.png)
 <span class="caption">The date-picker allows easy mouse and keyboard adding and editing of dates</span>
-
-#### Date abbreviations
-
-> [!released]
-Introduced in Tasks 1.8.0.
-
-The modal also has a few abbreviations of its own, to speed up entering of common values in the date fields.
-
-Type in the abbreviation and then a space character, and the whole word will be entered for you.
-
-Supported abbreviations:
-
-| Abbreviation | Expanded Text |
-| ------------ | ------------- |
-| `td`         | `today`       |
-| `tm`         | `tomorrow`    |
-| `yd`         | `yesterday`   |
-| `tw`         | `this week`   |
-| `nw`         | `next week`   |
-| `weekend`    | `sat`         |
-| `we`         | `sat`         |
 
 ### Dependencies
 

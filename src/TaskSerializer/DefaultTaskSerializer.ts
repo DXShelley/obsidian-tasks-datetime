@@ -5,7 +5,14 @@ import { Recurrence } from '../Task/Recurrence';
 import { Task } from '../Task/Task';
 import { Priority } from '../Task/Priority';
 import { TaskRegularExpressions } from '../Task/TaskRegularExpressions';
-import { formatTaskDate } from '../DateTime/DateTools';
+import { formatTaskDate, formatTaskDateForStorage } from '../DateTime/DateTools';
+import { taskDateValuePattern } from '../DateTime/TaskDateTime';
+import {
+    priorityForPriorityQuadrant,
+    priorityQuadrantFromText,
+    priorityQuadrantIcons,
+    removePriorityQuadrantMarkers,
+} from '../Task/PriorityQuadrant';
 import type { TaskDetails, TaskSerializer } from '.';
 
 /* Interface describing the symbols that {@link DefaultTaskSerializer}
@@ -63,7 +70,7 @@ export const taskIdRegex = /[a-zA-Z0-9-_]+/;
 export const taskIdSequenceRegex = new RegExp(taskIdRegex.source + '( *, *' + taskIdRegex.source + ' *)*');
 
 function dateFieldRegex(symbols: string) {
-    return fieldRegex(symbols, '(\\d{4}-\\d{2}-\\d{2}(?: \\d{2}:\\d{2}:\\d{2})?)');
+    return fieldRegex(symbols, `(${taskDateValuePattern})`);
 }
 
 function fieldRegex(symbols: string, valueRegexString: string) {
@@ -122,12 +129,14 @@ function symbolAndStringValue(shortMode: boolean, symbol: string, value: string)
     return shortMode ? ' ' + symbol : ` ${symbol} ${value}`;
 }
 
-function symbolAndDateValue(shortMode: boolean, symbol: string, date: moment.Moment | null) {
+function symbolAndDateValue(shortMode: boolean, symbol: string, date: moment.Moment | null, forStorage: boolean) {
     if (!date) return '';
     // We could call symbolAndStringValue() to remove a little code repetition,
     // but doing so would do some wasted date-formatting when in 'short mode',
     // so instead we repeat the check on shortMode value.
-    return shortMode ? ' ' + symbol : ` ${symbol} ${formatTaskDate(date)}`;
+    return shortMode
+        ? ' ' + symbol
+        : ` ${symbol} ${forStorage ? formatTaskDateForStorage(date) : formatTaskDate(date)}`;
 }
 
 export function allTaskPluginEmojis() {
@@ -163,7 +172,7 @@ export class DefaultTaskSerializer implements TaskSerializer {
         let taskString = '';
         const shortMode = false;
         for (const component of taskLayoutOptions.shownComponents) {
-            taskString += this.componentToString(task, shortMode, component);
+            taskString += this.componentToString(task, shortMode, component, true);
         }
         return taskString;
     }
@@ -171,7 +180,7 @@ export class DefaultTaskSerializer implements TaskSerializer {
     /**
      * Renders a specific TaskLayoutComponent of the task (its description, priority, etc) as a string.
      */
-    public componentToString(task: Task, shortMode: boolean, component: TaskLayoutComponent) {
+    public componentToString(task: Task, shortMode: boolean, component: TaskLayoutComponent, forStorage = false) {
         const {
             // NEW_TASK_FIELD_EDIT_REQUIRED
             prioritySymbols,
@@ -192,6 +201,9 @@ export class DefaultTaskSerializer implements TaskSerializer {
             case TaskLayoutComponent.Description:
                 return task.description;
             case TaskLayoutComponent.Priority: {
+                if (priorityQuadrantFromText(task.description) !== null) {
+                    return '';
+                }
                 let priority: string = '';
 
                 if (task.priority === Priority.Highest) {
@@ -208,18 +220,18 @@ export class DefaultTaskSerializer implements TaskSerializer {
                 return priority;
             }
             case TaskLayoutComponent.StartDate:
-                return symbolAndDateValue(shortMode, startDateSymbol, task.startDate);
+                return symbolAndDateValue(shortMode, startDateSymbol, task.startDate, forStorage);
             case TaskLayoutComponent.CreatedDate:
-                return symbolAndDateValue(shortMode, createdDateSymbol, task.createdDate);
+                return symbolAndDateValue(shortMode, createdDateSymbol, task.createdDate, forStorage);
             case TaskLayoutComponent.ScheduledDate:
                 if (task.scheduledDateIsInferred) return '';
-                return symbolAndDateValue(shortMode, scheduledDateSymbol, task.scheduledDate);
+                return symbolAndDateValue(shortMode, scheduledDateSymbol, task.scheduledDate, forStorage);
             case TaskLayoutComponent.DoneDate:
-                return symbolAndDateValue(shortMode, doneDateSymbol, task.doneDate);
+                return symbolAndDateValue(shortMode, doneDateSymbol, task.doneDate, forStorage);
             case TaskLayoutComponent.CancelledDate:
-                return symbolAndDateValue(shortMode, cancelledDateSymbol, task.cancelledDate);
+                return symbolAndDateValue(shortMode, cancelledDateSymbol, task.cancelledDate, forStorage);
             case TaskLayoutComponent.DueDate:
-                return symbolAndDateValue(shortMode, dueDateSymbol, task.dueDate);
+                return symbolAndDateValue(shortMode, dueDateSymbol, task.dueDate, forStorage);
             case TaskLayoutComponent.RecurrenceRule:
                 if (!task.recurrence) return '';
                 return symbolAndStringValue(shortMode, recurrenceSymbol, task.recurrence.toText());
@@ -309,6 +321,7 @@ export class DefaultTaskSerializer implements TaskSerializer {
         // NEW_TASK_FIELD_EDIT_REQUIRED
         const state: ParsingState = { line, matched: false };
         let priority: Priority = Priority.None;
+        let priorityQuadrant: ReturnType<typeof priorityQuadrantFromText> = null;
         let startDate: Moment | null = null;
         let scheduledDate: Moment | null = null;
         let dueDate: Moment | null = null;
@@ -335,6 +348,17 @@ export class DefaultTaskSerializer implements TaskSerializer {
             this.extractField(state, TaskFormatRegularExpressions.priorityRegex, (match) => {
                 priority = this.parsePriority(match[1]);
             });
+
+            // Quadrant priority markers are stored in the description. Temporarily remove
+            // one from the end so that date fields before it can be parsed as metadata.
+            if (priorityQuadrant === null) {
+                const foundPriorityQuadrant = priorityQuadrantFromText(state.line);
+                if (foundPriorityQuadrant !== null) {
+                    priorityQuadrant = foundPriorityQuadrant;
+                    state.line = removePriorityQuadrantMarkers(state.line).trim();
+                    state.matched = true;
+                }
+            }
 
             this.extractDateField(state, TaskFormatRegularExpressions.doneDateRegex, (d) => (doneDate = d));
             this.extractDateField(state, TaskFormatRegularExpressions.cancelledDateRegex, (d) => (cancelledDate = d));
@@ -389,10 +413,11 @@ export class DefaultTaskSerializer implements TaskSerializer {
         // to actually have the description 'Do something #tag1 #tag2'
         if (trailingTags.length > 0) state.line += ' ' + trailingTags;
 
-        // NEW_TASK_FIELD_EDIT_REQUIRED
+        if (priorityQuadrant !== null) state.line += ` ${priorityQuadrantIcons[priorityQuadrant]}`;
+
         return {
             description: state.line,
-            priority,
+            priority: priorityQuadrant ? priorityForPriorityQuadrant(priorityQuadrant) : priority,
             startDate,
             createdDate,
             scheduledDate,

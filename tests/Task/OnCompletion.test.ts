@@ -74,7 +74,7 @@ describe('OnCompletion - cases where all tasks are retained', () => {
 
         // Assert
         expect(toMarkdown(tasks)).toMatchInlineSnapshot(
-            '"- [x] A non-recurring task with no trigger 📅 2024-02-10 ✅ 2024-02-11"',
+            '"- [x] A non-recurring task with no trigger 📅 2024-02-10 00:00:00 ✅ 2024-02-11 00:00:00"',
         );
     });
 
@@ -87,8 +87,8 @@ describe('OnCompletion - cases where all tasks are retained', () => {
 
         // Assert
         expect(toMarkdown(tasks)).toMatchInlineSnapshot(`
-            "- [ ] A recurring task with no trigger 🔁 every day 📅 2024-02-11
-            - [x] A recurring task with no trigger 🔁 every day 📅 2024-02-10 ✅ 2024-02-11"
+            "- [ ] A recurring task with no trigger 🔁 every day 📅 2024-02-11 00:00:00
+            - [x] A recurring task with no trigger 🔁 every day 📅 2024-02-10 00:00:00 ✅ 2024-02-11 00:00:00"
         `);
     });
 
@@ -153,7 +153,7 @@ describe('OnCompletion - "delete" action', () => {
 
         // Assert
         expect(toMarkdown(tasks)).toMatchInlineSnapshot(
-            '"- [ ] A recurring task with "delete" Action 🔁 every day 🏁 delete 📅 2024-02-11"',
+            '"- [ ] A recurring task with "delete" Action 🔁 every day 🏁 delete 📅 2024-02-11 00:00:00"',
         );
     });
 

@@ -4,7 +4,7 @@
 import moment from 'moment';
 import { HappensDateField } from '../../../src/Query/Filter/HappensDateField';
 import { TaskBuilder } from '../../TestingTools/TaskBuilder';
-import { testFilter } from '../../TestingTools/FilterTestHelpers';
+import { testFilter, testTaskFilter } from '../../TestingTools/FilterTestHelpers';
 import * as CustomMatchersForSorting from '../../CustomMatchers/CustomMatchersForSorting';
 import { fromLine } from '../../TestingTools/TestHelpers';
 import { SampleTasks } from '../../TestingTools/SampleTasks';
@@ -12,6 +12,20 @@ import { SampleTasks } from '../../TestingTools/SampleTasks';
 window.moment = moment;
 
 describe('happens date', () => {
+    it('matches every time on today across start, scheduled and due dates', () => {
+        jest.useFakeTimers();
+        jest.setSystemTime(new Date('2026-07-24 10:00:00'));
+
+        const filter = new HappensDateField().createFilterOrErrorMessage('happens in today');
+
+        testFilter(filter, new TaskBuilder().startDate('2026-07-24 08:00:00'), true);
+        testFilter(filter, new TaskBuilder().scheduledDate('2026-07-24 12:00:00'), true);
+        testFilter(filter, new TaskBuilder().dueDate('2026-07-24 23:00:25'), true);
+        testTaskFilter(filter, fromLine({ line: '- [ ] Legacy task 📅 2026-07-24' }), true);
+
+        jest.useRealTimers();
+    });
+
     it('by happens date presence', () => {
         // Arrange
         const filter = new HappensDateField().createFilterOrErrorMessage('has happens date');

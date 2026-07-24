@@ -4,6 +4,7 @@
 import moment from 'moment';
 import type { Task } from 'Task/Task';
 import { GlobalFilter } from '../../src/Config/GlobalFilter';
+import { updateSettings } from '../../src/Config/Settings';
 import { Status } from '../../src/Statuses/Status';
 import { OnCompletion } from '../../src/Task/OnCompletion';
 import { Priority } from '../../src/Task/Priority';
@@ -33,11 +34,12 @@ describe('EditableTask tests', () => {
     beforeEach(() => {
         GlobalFilter.getInstance().reset();
         jest.useFakeTimers();
-        jest.setSystemTime(new Date('2024-05-01'));
+        jest.setSystemTime(new Date('2024-05-01T13:14:15'));
     });
 
     afterEach(() => {
         jest.useRealTimers();
+        updateSettings({ taskFormat: 'tasksPluginEmoji' });
     });
 
     it('should create an editable task without dependencies', () => {
@@ -56,11 +58,11 @@ describe('EditableTask tests', () => {
               "doneDate": "2023-07-05",
               "dueDate": "2023-07-04",
               "forwardOnly": true,
-              "hasPriorityDimensions": false,
               "importance": "normal",
               "onCompletion": "delete",
               "originalBlocking": [],
               "priority": "medium",
+              "priorityDimensionsEnabled": false,
               "recurrenceRule": "every day when done",
               "scheduledDate": "2023-07-03",
               "startDate": "2023-07-02",
@@ -127,7 +129,7 @@ describe('EditableTask tests', () => {
         expect(appliedEdits).toEqual([task]);
     });
 
-    it('does not add priority-dimension tags or change priority for an existing task', async () => {
+    it('preserves a legacy priority above normal when saving', async () => {
         const task = new TaskBuilder().description('Keep my existing priority').priority(Priority.High).build();
         const editableTask = EditableTask.fromTask(task, [task]);
 
@@ -136,34 +138,98 @@ describe('EditableTask tests', () => {
 
         expect(editedTask.description).toBe('Edited description');
         expect(editedTask.priority).toBe(Priority.High);
+        expect(editedTask.toFileLineString()).toBe('- [ ] Edited description ⏫');
     });
 
-    it('stores non-default importance and urgency as tags and uses their ordering priority', async () => {
+    it('preserves a legacy priority below normal when saving', async () => {
+        const task = new TaskBuilder().description('Keep my existing priority').priority(Priority.Low).build();
+        const editableTask = EditableTask.fromTask(task, [task]);
+        const [editedTask] = await editableTask.applyEdits(task, [task]);
+
+        expect(editedTask.description).toBe('Keep my existing priority');
+        expect(editedTask.priority).toBe(Priority.Low);
+        expect(editedTask.toFileLineString()).toBe('- [ ] Keep my existing priority 🔽');
+    });
+
+    it('stores non-default importance and urgency as a quadrant icon and uses their ordering priority', async () => {
         const task = new TaskBuilder().build();
         const editableTask = EditableTask.fromTask(task, [task]);
 
         editableTask.importance = 'heavy';
         editableTask.urgency = 'urgent';
+        editableTask.priorityDimensionsEnabled = true;
         const [editedTask] = await editableTask.applyEdits(task, [task]);
 
-        expect(editedTask.description).toContain('#tasks-importance-heavy #tasks-urgency-urgent');
+        expect(editedTask.description).toContain('🔥');
+        expect(editedTask.description).not.toMatch(/#(?:IU|IN|NU|NN)\b/u);
         expect(editedTask.priority).toBe(Priority.Highest);
     });
 
-    it('replaces existing priority-dimension tags without duplicating them', async () => {
-        const task = new TaskBuilder()
-            .tags(['#tasks-importance-heavy', '#tasks-urgency-urgent'])
-            .priority(Priority.Highest)
-            .build();
+    it('preserves a quadrant icon used in the task body', async () => {
+        const task = new TaskBuilder().description('Discuss the 🔥 launch').build();
+        const editableTask = EditableTask.fromTask(task, [task]);
+
+        editableTask.importance = 'light';
+        editableTask.urgency = 'slow';
+        editableTask.priorityDimensionsEnabled = true;
+        const [editedTask] = await editableTask.applyEdits(task, [task]);
+
+        expect(editedTask.description).toBe('Discuss the 🔥 launch 💤');
+    });
+
+    it('replaces an existing quadrant icon without duplicating it', async () => {
+        const task = new TaskBuilder().description('Prioritised task 🔥').priority(Priority.Highest).build();
         const editableTask = EditableTask.fromTask(task, [task]);
 
         editableTask.importance = 'light';
         editableTask.urgency = 'slow';
         const [editedTask] = await editableTask.applyEdits(task, [task]);
 
-        expect(editedTask.description).toContain('#tasks-importance-light #tasks-urgency-slow');
-        expect(editedTask.description).not.toMatch(/#tasks-importance-heavy|#tasks-urgency-urgent/u);
+        expect(editedTask.description).toBe('Prioritised task 💤');
         expect(editedTask.priority).toBe(Priority.Lowest);
+    });
+
+    it('loads priority dimensions from a quadrant icon', () => {
+        const task = new TaskBuilder().description('Prioritised task 🎯').build();
+        const editableTask = EditableTask.fromTask(task, [task]);
+
+        expect(editableTask.priorityDimensionsEnabled).toBe(true);
+        expect(editableTask.importance).toBe('heavy');
+        expect(editableTask.urgency).toBe('slow');
+    });
+
+    it('removes a priority-dimension icon when the matrix is cleared', async () => {
+        const task = new TaskBuilder().description('Prioritised task 🔥').build();
+        const editableTask = EditableTask.fromTask(task, [task]);
+
+        editableTask.importance = 'normal';
+        editableTask.urgency = 'normal';
+        editableTask.priorityDimensionsEnabled = false;
+        const [editedTask] = await editableTask.applyEdits(task, [task]);
+
+        expect(editedTask.description).toBe('Prioritised task');
+    });
+
+    it('preserves user tags resembling legacy priority-dimension tags', async () => {
+        const task = new TaskBuilder()
+            .description('Prioritised task #tasks-importance-heavy #tasks-urgency-urgent')
+            .build();
+        const editableTask = EditableTask.fromTask(task, [task]);
+        const [editedTask] = await editableTask.applyEdits(task, [task]);
+
+        expect(editedTask.description).toBe('Prioritised task #tasks-importance-heavy #tasks-urgency-urgent');
+    });
+
+    it('preserves a Dataview priority field when saving an existing task', async () => {
+        updateSettings({ taskFormat: 'dataview' });
+        const task = new TaskBuilder().description('Prioritised task').priority(Priority.High).build();
+        const editableTask = EditableTask.fromTask(task, [task]);
+
+        const [editedTask] = await editableTask.applyEdits(task, [task]);
+
+        expect(editedTask.description).toBe('Prioritised task');
+        expect(editedTask.priority).toBe(Priority.High);
+        expect(editedTask.toFileLineString()).toContain('[priority:: high]');
     });
 
     it.failing('should apply no edits to a fully populated task', async () => {
@@ -217,7 +283,7 @@ describe('EditableTask tests', () => {
               "indentation": "  ",
               "listMarker": "-",
               "onCompletion": "",
-              "originalMarkdown": "  - [ ] Do exercises #todo #health 🆔 abcdef ⛔ 123456,abc123 🔼 🔁 every day when done 🏁 delete ➕ 2023-07-01 🛫 2023-07-02 ⏳ 2023-07-03 📅 2023-07-04 ❌ 2023-07-06 ✅ 2023-07-05 ^dcf64c",
+              "originalMarkdown": "  - [ ] Do exercises #todo #health 🆔 abcdef ⛔ 123456,abc123 🔼 🔁 every day when done 🏁 delete ➕ 2023-07-01 00:00:00 🛫 2023-07-02 00:00:00 ⏳ 2023-07-03 00:00:00 📅 2023-07-04 00:00:00 ❌ 2023-07-06 00:00:00 ✅ 2023-07-05 00:00:00 ^dcf64c",
               "parent": null,
               "priority": "2",
               "recurrence": null,
@@ -265,7 +331,28 @@ describe('EditableTask tests', () => {
         editableTask.dueDate = '2024-07-13';
 
         const editedTasks = await editableTask.applyEdits(task, allTasks);
-        expect(editedTasks[0].dueDate).toEqualMoment(moment('2024-07-13T12:00:00.000Z'));
+        expect(editedTasks[0].dueDate).toEqualMoment(moment('2024-07-13T13:14:15.000Z'));
+    });
+
+    it('preserves a hidden time when editing an existing task', async () => {
+        updateSettings({ enableDateTime: false });
+        const task = new TaskBuilder().dueDate('2024-07-13 13:14:15').build();
+        const editableTask = EditableTask.fromTask(task, [task]);
+
+        const [editedTask] = await editableTask.applyEdits(task, [task]);
+
+        expect(editedTask.dueDate?.format('YYYY-MM-DD HH:mm:ss')).toBe('2024-07-13 13:14:15');
+    });
+
+    it('upgrades a legacy midnight date to the current time when saving', async () => {
+        updateSettings({ enableDateTime: false });
+        const task = new TaskBuilder().dueDate('2024-07-13 00:00:00').build();
+        const editableTask = EditableTask.fromTask(task, [task]);
+
+        const [editedTask] = await editableTask.applyEdits(task, [task]);
+
+        expect(editedTask.dueDate?.format('YYYY-MM-DD HH:mm:ss')).toBe('2024-07-13 13:14:15');
+        expect(editedTask.toFileLineString()).toContain('📅 2024-07-13 13:14:15');
     });
 
     it('should honour the forwardOnly value', async () => {
@@ -276,8 +363,8 @@ describe('EditableTask tests', () => {
         jest.setSystemTime(new Date('2024-05-22')); // Wednesday 22nd May
 
         editableTask.dueDate = 'tuesday';
-        const tuesdayBefore = moment('2024-05-28T12:00:00.000Z');
-        const tuesdayAfter = moment('2024-05-21T12:00:00.000Z');
+        const tuesdayBefore = moment('2024-05-28T00:00:00.000Z');
+        const tuesdayAfter = moment('2024-05-21T00:00:00.000Z');
 
         editableTask.forwardOnly = true;
         const tasksFutureDay = await editableTask.applyEdits(task, allTasks);

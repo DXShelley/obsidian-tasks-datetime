@@ -7,6 +7,7 @@ import type { StatusCollection } from '../Statuses/StatusCollection';
 import { createStatusRegistryReport } from '../Statuses/StatusRegistryReport';
 import { i18n } from '../i18n/i18n';
 import type { TasksEvents } from '../Obsidian/TasksEvents';
+import { refreshLivePreviewTaskDateDisplay } from '../Obsidian/LivePreviewExtension';
 import * as Themes from './Themes';
 import {
     type HeadingState,
@@ -347,12 +348,15 @@ export class SettingsTab extends PluginSettingTab {
 
         new Setting(containerEl)
             .setName('Include time in task dates')
-            .setDesc('Store and display task dates as YYYY-MM-DD HH:mm:ss. When disabled, task dates remain day-only.')
+            .setDesc(
+                'Task dates are always stored as YYYY-MM-DD HH:mm:ss. When disabled, Live Preview and query results hide the time.',
+            )
             .addToggle((toggle) => {
                 toggle.setValue(getSettings().enableDateTime).onChange(async (value) => {
                     updateSettings({ enableDateTime: value });
                     await this.plugin.saveSettings();
                     this.events.triggerReloadOpenSearchResults();
+                    refreshLivePreviewTaskDateDisplay();
                 });
             });
 

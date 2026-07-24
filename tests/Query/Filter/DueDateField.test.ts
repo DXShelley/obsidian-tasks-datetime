@@ -134,6 +134,12 @@ describe('due date', () => {
         testTaskFilterForTaskWithDueDate(filter, '2022-04-25', false);
     });
 
+    it('by due date - includes times throughout a date-only range', () => {
+        const filter = new DueDateField().createFilterOrErrorMessage('due in 2026-07-24');
+
+        testTaskFilterForTaskWithDueDate(filter, '2026-07-24 23:00:25', true);
+    });
+
     it('by due date - absolute range', () => {
         // Arrange
         const filter = new DueDateField().createFilterOrErrorMessage('due 2022-04-20 2022-04-24');

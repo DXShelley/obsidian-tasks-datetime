@@ -124,6 +124,14 @@ It allows you to:
   - Elements not copied:
     - The task count
 
+#### Filter results
+
+1. Enter text in the **Filter by description...** box.
+2. Pause briefly for the results to update, or press `Enter` to update them immediately.
+3. Delete the text to show all results from the original query again.
+
+The filter only searches task descriptions in the current query results. It does not change the query block, its filters, or the tasks in your vault.
+
 > [!released]  
 > `show toolbar` and `hide toolbar` were introduced in Tasks 7.23.0.
 

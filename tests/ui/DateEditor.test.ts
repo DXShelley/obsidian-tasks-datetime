@@ -4,17 +4,23 @@
 import { fireEvent, render } from '@testing-library/svelte';
 import moment from 'moment/moment';
 import { resetSettings, updateSettings } from '../../src/Config/Settings';
+import { createDateTimePicker } from '../../src/ui/DateTimePicker';
 import DateEditorWrapper from './DateEditorWrapper.svelte';
-
 import { getAndCheckRenderedElement } from './RenderingTestHelpers';
+
+jest.mock('../../src/ui/DateTimePicker', () => ({
+    createDateTimePicker: jest.fn(({ input, onDateSelected }) => {
+        input.addEventListener('tasks-date-selected', (event: Event) => {
+            onDateSelected(new Date((event as CustomEvent<string>).detail));
+        });
+        return { clear: jest.fn(), destroy: jest.fn(), open: jest.fn() };
+    }),
+}));
 
 window.moment = moment;
 
 function renderDateEditorWrapper(componentOptions: { forwardOnly: boolean }) {
     const { container } = render(DateEditorWrapper, componentOptions);
-
-    expect(() => container).toBeTruthy();
-
     return container;
 }
 
@@ -23,50 +29,14 @@ function testInputValue(container: HTMLElement, inputId: string, expectedText: s
     expect(input.value).toEqual(expectedText);
 }
 
-function testDatePickerValue(container: HTMLElement, expectedValue: string) {
-    const datePicker = getAndCheckRenderedElement<HTMLInputElement>(container, 'date-editor-picker');
-    expect(datePicker.value).toEqual(expectedValue);
-}
-
-async function testTypingInput(
-    {
-        userTyped,
-        expectedLeftText,
-        expectedRightText,
-        expectedReturnedDate,
-        expectedReturnedDateValidity = 'true',
-    }: {
-        userTyped: string;
-        expectedLeftText: string;
-        expectedRightText: string;
-        expectedReturnedDate: string;
-        expectedReturnedDateValidity?: 'true' | 'false';
-    },
-    { forwardOnly }: { forwardOnly: boolean } = { forwardOnly: true },
-) {
-    const container = renderDateEditorWrapper({ forwardOnly });
-
-    const dueDateInput = getAndCheckRenderedElement<HTMLInputElement>(container, 'due');
-    await fireEvent.input(dueDateInput, { target: { value: userTyped } });
-
-    testInputValue(container, 'due', expectedLeftText);
-    testInputValue(container, 'parsedDateFromDateEditor', expectedRightText);
-    testInputValue(container, 'dueDateFromDateEditor', expectedReturnedDate);
-    testInputValue(container, 'parsedDateValidFromDateEditor', expectedReturnedDateValidity);
-
-    if (expectedReturnedDateValidity === 'true') {
-        testDatePickerValue(container, expectedRightText);
-    } else {
-        const datePicker = container.ownerDocument.getElementById('date-editor-picker') as HTMLInputElement;
-        // Keep the picker mounted so a corrected value can be selected without
-        // recreating the component or losing focus.
-        expect(datePicker).not.toBeNull();
-    }
+async function selectDate(container: HTMLElement, value: string) {
+    const datePicker = getAndCheckRenderedElement<HTMLInputElement>(container, 'date-editor-picker-due');
+    await fireEvent(datePicker, new CustomEvent('tasks-date-selected', { detail: value }));
 }
 
 beforeEach(() => {
     jest.useFakeTimers();
-    jest.setSystemTime(new Date('2024-04-20'));
+    jest.setSystemTime(new Date('2024-04-20T13:14:15'));
     updateSettings({ enableDateTime: false });
 });
 
@@ -76,79 +46,51 @@ afterEach(() => {
 });
 
 describe('date editor wrapper tests', () => {
-    it('should initialise fields correctly', () => {
+    it('should initialise as an empty date picker', () => {
         const container = renderDateEditorWrapper({ forwardOnly: true });
 
-        testInputValue(container, 'due', '');
-        testInputValue(container, 'parsedDateFromDateEditor', '<i>no due date</i>');
+        expect(getAndCheckRenderedElement<HTMLButtonElement>(container, 'due').textContent).toContain('Choose date');
         testInputValue(container, 'dueDateFromDateEditor', '');
-
-        testDatePickerValue(container, '');
-    });
-
-    it('should replace an empty date field with typed date value', async () => {
-        await testTypingInput({
-            userTyped: '2024-10-01',
-            expectedLeftText: '2024-10-01',
-            expectedRightText: '2024-10-01',
-            expectedReturnedDate: '2024-10-01',
-        });
-    });
-
-    it('should replace an empty date field with typed abbreviation', async () => {
-        await testTypingInput({
-            userTyped: 'tm ',
-            expectedLeftText: 'tomorrow',
-            expectedRightText: '2024-04-21',
-            expectedReturnedDate: 'tomorrow',
-        });
-    });
-
-    it('should show an error message for invalid date', async () => {
-        await testTypingInput({
-            userTyped: 'blah',
-            expectedLeftText: 'blah',
-            expectedRightText: '<i>invalid due date</i>',
-            expectedReturnedDate: 'blah',
-            expectedReturnedDateValidity: 'false',
-        });
-    });
-
-    it('should select a forward date', async () => {
-        await testTypingInput(
-            {
-                userTyped: 'friday',
-                expectedLeftText: 'friday',
-                expectedRightText: '2024-04-26',
-                expectedReturnedDate: 'friday',
-            },
-            { forwardOnly: true },
-        );
-    });
-
-    it('should select a backward/earlier date', async () => {
-        await testTypingInput(
-            {
-                userTyped: 'friday',
-                expectedLeftText: 'friday',
-                expectedRightText: '2024-04-19',
-                expectedReturnedDate: 'friday',
-            },
-            { forwardOnly: false },
-        );
-    });
-
-    it('should pick a date', async () => {
-        const container = renderDateEditorWrapper({ forwardOnly: false });
-        const datePicker = getAndCheckRenderedElement<HTMLInputElement>(container, 'date-editor-picker');
-
-        await fireEvent.input(datePicker, { target: { value: '2024-11-03' } });
-
-        expect(datePicker.value).toEqual('2024-11-03');
-
-        testInputValue(container, 'due', '2024-11-03');
-        testInputValue(container, 'parsedDateFromDateEditor', '2024-11-03');
-        testInputValue(container, 'dueDateFromDateEditor', '2024-11-03');
+        testInputValue(container, 'parsedDateFromDateEditor', '<i>no due date</i>');
         testInputValue(container, 'parsedDateValidFromDateEditor', 'true');
+    });
+
+    it('should set a date selected from the picker', async () => {
+        const container = renderDateEditorWrapper({ forwardOnly: false });
+
+        await selectDate(container, '2024-11-03');
+
+        expect(getAndCheckRenderedElement<HTMLButtonElement>(container, 'due').textContent).toContain('2024-11-03');
+        testInputValue(container, 'dueDateFromDateEditor', '2024-11-03 13:14:15');
+        testInputValue(container, 'parsedDateFromDateEditor', '2024-11-03');
+        testInputValue(container, 'parsedDateValidFromDateEditor', 'true');
+    });
+
+    it('should clear a selected date', async () => {
+        const container = renderDateEditorWrapper({ forwardOnly: true });
+        await selectDate(container, '2024-10-01');
+
+        const clearButton = container.querySelector<HTMLButtonElement>('[aria-label="Clear due date"]');
+        expect(clearButton).not.toBeNull();
+        await fireEvent.click(clearButton!);
+
+        expect(getAndCheckRenderedElement<HTMLButtonElement>(container, 'due').textContent).toContain('Choose date');
+        testInputValue(container, 'dueDateFromDateEditor', '');
+    });
+
+    it('should show the datetime placeholder when time selection is enabled', () => {
+        updateSettings({ enableDateTime: true });
+        const container = renderDateEditorWrapper({ forwardOnly: true });
+
+        expect(getAndCheckRenderedElement<HTMLButtonElement>(container, 'due').textContent).toContain(
+            'Choose date and time',
+        );
+    });
+
+    it.each([false, true])('should configure time selection from enableDateTime=%s', (enableDateTime) => {
+        updateSettings({ enableDateTime });
+        renderDateEditorWrapper({ forwardOnly: true });
+
+        expect(createDateTimePicker).toHaveBeenLastCalledWith(expect.objectContaining({ enableTime: enableDateTime }));
     });
 });

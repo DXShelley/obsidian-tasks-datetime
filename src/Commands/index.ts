@@ -7,6 +7,7 @@ import { createOrEdit } from './CreateOrEdit';
 import { toggleDone } from './ToggleDone';
 import { ensureQueryFileDefaultsInFrontmatter } from './AddQueryFileDefaultsProperties';
 import { createSetStatusCommands } from './ChangeStatusCommands';
+import { updateHistoricalTaskDataInFile, updateHistoricalTaskDataInVault } from './UpdateHistoricalTaskData';
 
 export const ToggleTaskDoneCommandName = 'Toggle task done';
 
@@ -69,6 +70,30 @@ export class Commands {
                 }
                 return true;
             },
+        });
+
+        plugin.addCommand({
+            id: 'update-historical-task-data',
+            name: 'Update historical task data in current file',
+            icon: 'history',
+            checkCallback: (checking: boolean) => {
+                const activeFile = this.app.workspace.getActiveFile();
+                if (!activeFile || activeFile.extension !== 'md') {
+                    return false;
+                }
+
+                if (!checking) {
+                    updateHistoricalTaskDataInFile(this.app.vault, activeFile).catch(console.error);
+                }
+                return true;
+            },
+        });
+
+        plugin.addCommand({
+            id: 'update-all-historical-task-data',
+            name: 'Update historical task data in entire vault',
+            icon: 'database-zap',
+            callback: () => updateHistoricalTaskDataInVault(this.app.vault).catch(console.error),
         });
 
         // Register set-status commands for each registered status

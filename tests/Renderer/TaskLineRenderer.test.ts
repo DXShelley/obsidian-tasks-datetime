@@ -9,7 +9,7 @@ import { resetSettings, updateSettings } from '../../src/Config/Settings';
 import { QueryLayoutOptions } from '../../src/Layout/QueryLayoutOptions';
 import { TaskLayoutComponent, TaskLayoutOptions, taskLayoutComponents } from '../../src/Layout/TaskLayoutOptions';
 import { DateParser } from '../../src/DateTime/DateParser';
-import type { TextRenderer } from '../../src/Renderer/TaskLineRenderer';
+import { type TextRenderer, priorityQuadrantIcon } from '../../src/Renderer/TaskLineRenderer';
 import {
     TaskLineRenderer,
     createAndAppendElement,
@@ -26,6 +26,21 @@ import { mockHTMLRenderer, mockTextRenderer } from './RenderingTestHelpers';
 
 jest.mock('obsidian');
 window.moment = moment;
+
+describe('priority quadrant labels', () => {
+    it.each([
+        [['🔥'], '🔥'],
+        [['🎯'], '🎯'],
+        [['⚡'], '⚡'],
+        [['💤'], '💤'],
+        [['#IU'], null],
+        [['#tasks-importance-heavy', '#tasks-urgency-urgent'], null],
+        [[], null],
+    ])('maps %p to %s', (tags: string[], expected: string | null) => {
+        const task = new TaskBuilder().description(tags.join(' ')).build();
+        expect(priorityQuadrantIcon(task)).toBe(expected);
+    });
+});
 
 /**
  * Renders a task for test purposes and returns the rendered ListItem.

@@ -299,7 +299,7 @@ describe('DataviewTaskSerializer', () => {
         it.each(dateFields)('should serialize a %s', (dateField) => {
             const serialized = serialize(new TaskBuilder()[dateField]('2021-06-20').description('').build());
             const symbol = DATAVIEW_SYMBOLS[`${dateField}Symbol`];
-            expect(serialized).toEqual(`  [${symbol} 2021-06-20]`);
+            expect(serialized).toEqual(`  [${symbol} 2021-06-20 00:00:00]`);
         });
 
         it('should serialize a Highest, High, Medium, Low and Lowest priority', () => {
@@ -354,7 +354,7 @@ describe('DataviewTaskSerializer', () => {
             const task = TaskBuilder.createFullyPopulatedTask();
             const serialized = serialize(task);
             expect(serialized).toMatchInlineSnapshot(
-                '"Do exercises #todo #health  [id:: abcdef]  [dependsOn:: 123456,abc123]  [priority:: medium]  [repeat:: every day when done]  [onCompletion:: delete]  [created:: 2023-07-01]  [start:: 2023-07-02]  [scheduled:: 2023-07-03]  [due:: 2023-07-04]  [cancelled:: 2023-07-06]  [completion:: 2023-07-05] ^dcf64c"',
+                '"Do exercises #todo #health  [id:: abcdef]  [dependsOn:: 123456,abc123]  [priority:: medium]  [repeat:: every day when done]  [onCompletion:: delete]  [created:: 2023-07-01 00:00:00]  [start:: 2023-07-02 00:00:00]  [scheduled:: 2023-07-03 00:00:00]  [due:: 2023-07-04 00:00:00]  [cancelled:: 2023-07-06 00:00:00]  [completion:: 2023-07-05 00:00:00] ^dcf64c"',
             );
         });
     });

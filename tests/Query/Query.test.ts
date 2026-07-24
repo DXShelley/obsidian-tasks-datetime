@@ -1358,7 +1358,7 @@ describe('Query', () => {
 
                 const expectedResult: Array<string> = [];
                 if (taskShouldMatch) {
-                    expectedResult.push(line);
+                    expectedResult.push(line.replace(/(\d{4}-\d{2}-\d{2})/gu, '$1 00:00:00'));
                 }
 
                 // Act, Assert
@@ -1376,8 +1376,8 @@ describe('Query', () => {
                     filters: ['(has due date) OR (description includes special)'],
                     tasks: [
                         '- [ ] task 1',
-                        '- [ ] task 2 🛫 2022-04-20 ⏳ 2022-04-20 📅 2022-04-20',
-                        '- [ ] task 3 📅 2022-04-20',
+                        '- [ ] task 2 🛫 2022-04-20 00:00:00 ⏳ 2022-04-20 00:00:00 📅 2022-04-20 00:00:00',
+                        '- [ ] task 3 📅 2022-04-20 00:00:00',
                         '- [ ] special task 4',
                     ],
                     expectedResult: [
@@ -1397,7 +1397,9 @@ describe('Query', () => {
                         '- [ ] any task 3 🛫 2022-04-20',
                         '- [ ] special task 4',
                     ],
-                    expectedResult: ['- [ ] some task 2 🛫 2022-04-20 ⏳ 2022-04-20 📅 2022-04-20'],
+                    expectedResult: [
+                        '- [ ] some task 2 🛫 2022-04-20 00:00:00 ⏳ 2022-04-20 00:00:00 📅 2022-04-20 00:00:00',
+                    ],
                 },
             ],
             [
@@ -1410,7 +1412,7 @@ describe('Query', () => {
                         '- [ ] any task 3 🛫 2022-04-20',
                         '- [ ] special task 4',
                     ],
-                    expectedResult: ['- [ ] any task 3 🛫 2022-04-20'],
+                    expectedResult: ['- [ ] any task 3 🛫 2022-04-20 00:00:00'],
                 },
             ],
             [
@@ -1419,8 +1421,8 @@ describe('Query', () => {
                     filters: ['(has start date) OR NOT (description includes special)'],
                     tasks: [
                         '- [ ] task 1',
-                        '- [ ] some task 2 🛫 2022-04-20 ⏳ 2022-04-20 📅 2022-04-20',
-                        '- [ ] any task 3 🛫 2022-04-20',
+                        '- [ ] some task 2 🛫 2022-04-20 00:00:00 ⏳ 2022-04-20 00:00:00 📅 2022-04-20 00:00:00',
+                        '- [ ] any task 3 🛫 2022-04-20 00:00:00',
                         '- [ ] special task 4',
                     ],
                     expectedResult: [
@@ -1440,7 +1442,7 @@ describe('Query', () => {
                         '- [ ] any task 3 🛫 2022-04-20',
                         '- [ ] special task 4',
                     ],
-                    expectedResult: ['- [ ] any task 3 🛫 2022-04-20', '- [ ] special task 4'],
+                    expectedResult: ['- [ ] any task 3 🛫 2022-04-20 00:00:00', '- [ ] special task 4'],
                 },
             ],
             [
@@ -1468,8 +1470,8 @@ describe('Query', () => {
                         '- [ ] special task 4',
                     ],
                     expectedResult: [
-                        '- [ ] some task 2 🛫 2022-04-20 ⏳ 2022-04-20 📅 2022-04-20',
-                        '- [ ] any task 4 🛫 2022-04-20 📅 2022-04-20',
+                        '- [ ] some task 2 🛫 2022-04-20 00:00:00 ⏳ 2022-04-20 00:00:00 📅 2022-04-20 00:00:00',
+                        '- [ ] any task 4 🛫 2022-04-20 00:00:00 📅 2022-04-20 00:00:00',
                     ],
                 },
             ],
@@ -1479,10 +1481,10 @@ describe('Query', () => {
                     filters: ['(has start date) OR ((description includes special) AND (has due date))'],
                     tasks: [
                         '- [ ] special task 1',
-                        '- [ ] some task 2 🛫 2022-04-20 ⏳ 2022-04-20 📅 2022-04-20',
-                        '- [ ] any task 3 🛫 2022-04-20',
-                        '- [ ] any task 4 🛫 2022-04-20 📅 2022-04-20',
-                        '- [ ] special task 4 📅 2022-04-20',
+                        '- [ ] some task 2 🛫 2022-04-20 00:00:00 ⏳ 2022-04-20 00:00:00 📅 2022-04-20 00:00:00',
+                        '- [ ] any task 3 🛫 2022-04-20 00:00:00',
+                        '- [ ] any task 4 🛫 2022-04-20 00:00:00 📅 2022-04-20 00:00:00',
+                        '- [ ] special task 4 📅 2022-04-20 00:00:00',
                     ],
                     expectedResult: [
                         '- [ ] some task 2 🛫 2022-04-20 ⏳ 2022-04-20 📅 2022-04-20',

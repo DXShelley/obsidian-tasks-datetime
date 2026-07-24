@@ -17,24 +17,20 @@
     "appendText": "⏳ "
   },
   {
-    "displayText": "⏫ high priority",
-    "appendText": "⏫ "
+    "displayText": "🔥 Important / Urgent",
+    "appendText": "🔥 "
   },
   {
-    "displayText": "🔼 medium priority",
-    "appendText": "🔼 "
+    "displayText": "🎯 Important / Not urgent",
+    "appendText": "🎯 "
   },
   {
-    "displayText": "🔽 low priority",
-    "appendText": "🔽 "
+    "displayText": "⚡ Not important / Urgent",
+    "appendText": "⚡ "
   },
   {
-    "displayText": "🔺 highest priority",
-    "appendText": "🔺 "
-  },
-  {
-    "displayText": "⏬ lowest priority",
-    "appendText": "⏬ "
+    "displayText": "💤 Not important / Not urgent",
+    "appendText": "💤 "
   },
   {
     "displayText": "🔁 recurring (repeat)",
@@ -43,7 +39,7 @@
   {
     "textToMatch": "➕ created",
     "displayText": "➕ created today (2022-07-11)",
-    "appendText": "➕ 2022-07-11 "
+    "appendText": "➕ 2022-07-11 15:00:00 "
   },
   {
     "displayText": "🆔 id",

@@ -96,7 +96,15 @@ export function shouldSupportFiltering(
 
     // Assert
     const filteredTaskLines = filteredTasks.map((task) => `- [ ] ${task.toString()}`);
-    expect(filteredTaskLines).toMatchObject(expectedResult);
+    const expectedTaskLines = expectedResult.map((taskLine) => {
+        const task = Task.fromLine({
+            line: taskLine,
+            taskLocation: TaskLocation.fromUnknownPosition(createTestTasksFile('')),
+            fallbackDate: null,
+        }) as Task;
+        return `- [ ] ${task.toString()}`;
+    });
+    expect(filteredTaskLines).toMatchObject(expectedTaskLines);
 }
 
 export function booleanToEmoji(boolean: boolean) {

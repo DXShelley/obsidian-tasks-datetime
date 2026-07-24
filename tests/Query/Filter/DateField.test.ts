@@ -46,4 +46,20 @@ describe('DateField', () => {
         expect(filter.filterFunction?.(before, {} as never)).toBe(true);
         expect(filter.filterFunction?.(atBoundary, {} as never)).toBe(false);
     });
+
+    it('should compare natural-language datetime filters precisely', () => {
+        const filter = new ScheduledDateField().createFilterOrErrorMessage('scheduled before 2026-07-23 at 8pm');
+        const before = new TaskBuilder().scheduledDate('2026-07-23 19:59:59').build();
+        const atBoundary = new TaskBuilder().scheduledDate('2026-07-23 20:00:00').build();
+
+        expect(filter.filterFunction?.(before, {} as never)).toBe(true);
+        expect(filter.filterFunction?.(atBoundary, {} as never)).toBe(false);
+    });
+
+    it('should treat an explicit midnight filter as a date-only filter', () => {
+        const filter = new ScheduledDateField().createFilterOrErrorMessage('scheduled on 2026-07-23 00:00:00');
+        const task = new TaskBuilder().scheduledDate('2026-07-23 23:59:59').build();
+
+        expect(filter.filterFunction?.(task, {} as never)).toBe(true);
+    });
 });

@@ -31,6 +31,7 @@
     } = TASK_FORMATS.tasksPluginEmoji.taskSerializer.symbols;
 
     let descriptionInput: HTMLTextAreaElement;
+    let initialDescriptionFocusTimer: ReturnType<typeof setTimeout> | undefined;
 
     let editableTask = EditableTask.fromTask(task, allTasks);
 
@@ -72,10 +73,17 @@
 
         mountComplete = true;
 
-        setTimeout(() => {
+        initialDescriptionFocusTimer = setTimeout(() => {
             descriptionInput.focus({ preventScroll: true });
         }, 10);
     });
+
+    const _cancelInitialDescriptionFocus = () => {
+        if (initialDescriptionFocusTimer !== undefined) {
+            clearTimeout(initialDescriptionFocusTimer);
+            initialDescriptionFocusTimer = undefined;
+        }
+    };
 
     const _onClose = () => {
         onSubmit([]);
@@ -134,7 +142,12 @@ Availability of access keys:
 - -: Cancelled
 -->
 
-<form class="tasks-modal" on:submit|preventDefault={_onSubmit}>
+<form
+    class="tasks-modal"
+    on:submit|preventDefault={_onSubmit}
+    on:focusin={_cancelInitialDescriptionFocus}
+    on:pointerdown={_cancelInitialDescriptionFocus}
+>
     <!-- NEW_TASK_FIELD_EDIT_REQUIRED -->
 
     <!-- --------------------------------------------------------------------------- -->
@@ -161,7 +174,11 @@ Availability of access keys:
     <!-- --------------------------------------------------------------------------- -->
     {#if isShownInEditModal.priority}
         <section class="tasks-modal-priority-section">
-            <PriorityEditor bind:importance={editableTask.importance} bind:urgency={editableTask.urgency} />
+            <PriorityEditor
+                bind:importance={editableTask.importance}
+                bind:urgency={editableTask.urgency}
+                bind:enabled={editableTask.priorityDimensionsEnabled}
+            />
         </section>
         <hr id="line-after-priority" />
     {/if}

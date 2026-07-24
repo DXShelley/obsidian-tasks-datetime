@@ -53,19 +53,6 @@ Both lines must match. Use `or` when either condition is sufficient:
 (description includes review) OR (tags include #work)
 ```
 
-## Important and urgent work
-
-The datetime edition stores the two dimensions as task tags while preserving the existing priority sort:
-
-```tasks
-not done
-tags include #tasks-importance-heavy
-tags include #tasks-urgency-urgent
-sort by priority
-```
-
-Available values are `#tasks-importance-light`, `#tasks-importance-normal`, `#tasks-importance-heavy`, `#tasks-urgency-slow`, `#tasks-urgency-normal` and `#tasks-urgency-urgent`.
-
 ## Group a weekly review
 
 ```tasks

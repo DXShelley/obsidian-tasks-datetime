@@ -4,12 +4,19 @@
 import moment from 'moment';
 import { ScheduledDateField } from '../../../src/Query/Filter/ScheduledDateField';
 import { TaskBuilder } from '../../TestingTools/TaskBuilder';
+import { testFilter } from '../../TestingTools/FilterTestHelpers';
 import { expectTaskComparesAfter, expectTaskComparesBefore } from '../../CustomMatchers/CustomMatchersForSorting';
 import { SampleTasks } from '../../TestingTools/SampleTasks';
 
 window.moment = moment;
 
 describe('explain scheduled date queries', () => {
+    it('includes times throughout a date-only range', () => {
+        const filter = new ScheduledDateField().createFilterOrErrorMessage('scheduled in 2026-07-24');
+
+        testFilter(filter, new TaskBuilder().scheduledDate('2026-07-24 12:00:00'), true);
+    });
+
     it('should explain explicit date', () => {
         const filterOrMessage = new ScheduledDateField().createFilterOrErrorMessage('scheduled before 2023-01-02');
         expect(filterOrMessage).toHaveExplanation('scheduled date is before 2023-01-02 (Monday 2nd January 2023)');

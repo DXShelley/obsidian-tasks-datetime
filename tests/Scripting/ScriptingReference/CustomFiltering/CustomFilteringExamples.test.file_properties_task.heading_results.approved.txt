@@ -11,7 +11,7 @@ Find tasks that:
   **or** do not have a due date, and their preceding heading contains the same date as a string: `2023-06-11`.
 Note that because we use variables to avoid repetition of values, we need to add `return`.
 =>
-- [ ] Due on 2023-06-11 📅 2023-06-11
+- [ ] Due on 2023-06-11 📅 2023-06-11 00:00:00
 - [ ] No due date but I have 2023-06-11 in my preceding heading
 ====================================================================================
 
@@ -24,7 +24,7 @@ Find tasks that:
   **either** due on today's date,
   **or** do not have a due date, and their preceding heading contains today's date as a string, formatted as `YYYY-MM-DD`.
 =>
-- [ ] Due on 2023-06-10 📅 2023-06-10
+- [ ] Due on 2023-06-10 📅 2023-06-10 00:00:00
 - [ ] No due date but I have 2023-06-10 in my preceding heading
 ====================================================================================
 

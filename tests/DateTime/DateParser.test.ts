@@ -45,6 +45,11 @@ describe('DateParser - single dates', () => {
         const parsedDate = DateParser.parseDate('2026-07-23 16:30:05');
         expect(parsedDate.format('YYYY-MM-DD HH:mm:ss')).toStrictEqual('2026-07-23 16:30:05');
     });
+
+    it('should preserve a natural-language time', () => {
+        const parsedDate = DateParser.parseDate('2026-07-23 at 8pm');
+        expect(parsedDate.format('YYYY-MM-DD HH:mm:ss')).toStrictEqual('2026-07-23 20:00:00');
+    });
 });
 
 describe('DateParser - date ranges', () => {
@@ -52,6 +57,12 @@ describe('DateParser - date ranges', () => {
         const result = DateParser.parseDateRange('2026-07-23 09:15:30');
         expect(result.start.format('YYYY-MM-DD HH:mm:ss')).toStrictEqual('2026-07-23 09:15:30');
         expect(result.end.format('YYYY-MM-DD HH:mm:ss')).toStrictEqual('2026-07-23 09:15:30');
+    });
+
+    it('should preserve a natural-language time in a date range', () => {
+        const result = DateParser.parseDateRange('2026-07-23 at noon');
+        expect(result.start.format('YYYY-MM-DD HH:mm:ss')).toStrictEqual('2026-07-23 12:00:00');
+        expect(result.end.format('YYYY-MM-DD HH:mm:ss')).toStrictEqual('2026-07-23 12:00:00');
     });
 
     it('should parse date range from absolute dates, supplied as words', () => {

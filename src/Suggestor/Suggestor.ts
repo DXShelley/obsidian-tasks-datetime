@@ -3,7 +3,9 @@ import type { Editor, EditorPosition } from 'obsidian';
 import type { Settings } from '../Config/Settings';
 import { DateParser } from '../DateTime/DateParser';
 import { doAutocomplete } from '../DateTime/DateAbbreviations';
+import { formatTaskDateForStorageWithCurrentTime } from '../DateTime/TaskDateTime';
 import { Occurrence } from '../Task/Occurrence';
+import { priorityQuadrantIcons } from '../Task/PriorityQuadrant';
 import { Recurrence } from '../Task/Recurrence';
 import {
     type DefaultTaskSerializerSymbols,
@@ -23,7 +25,7 @@ import type { SuggestInfo, SuggestionBuilder } from '.';
  * Recommended default value to pass in to {@link makeDefaultSuggestionBuilder} maxGenericSuggestions parameter
  * for production code.
  */
-export const DEFAULT_MAX_GENERIC_SUGGESTIONS = 5;
+export const DEFAULT_MAX_GENERIC_SUGGESTIONS = 7;
 
 declare global {
     // eslint-disable-next-line no-var -- required to declare a globalThis property in TypeScript
@@ -186,23 +188,48 @@ function addPrioritySuggestions(
     symbols: DefaultTaskSerializerSymbols,
     parameters: SuggestorParameters,
 ) {
-    const hasPriority = (line: string) =>
-        Object.values(symbols.prioritySymbols).some((value) => value.length > 0 && line.includes(value));
-    if (!hasPriority(parameters.line)) {
-        const prioritySymbols: { [key: string]: string } = symbols.prioritySymbols;
-        const priorityTexts = ['High', 'Medium', 'Low', 'Highest', 'Lowest'];
+    if (parameters.dataviewMode) {
+        addDataviewPrioritySuggestions(genericSuggestions, symbols, parameters);
+        return;
+    }
 
-        for (const priorityText of priorityTexts) {
-            const prioritySymbol = prioritySymbols[priorityText];
+    const hasPriority = Object.values(priorityQuadrantIcons).some((icon) => parameters.line.includes(icon));
+    if (hasPriority) return;
 
-            genericSuggestions.push({
-                displayText: parameters.dataviewMode
-                    ? `${prioritySymbol} priority`
-                    : `${prioritySymbol} ${priorityText.toLowerCase()} priority`,
-                appendText: `${prioritySymbol}${parameters.postfix}`,
-                insertSkip: parameters.dataviewMode ? parameters.insertSkip : undefined,
-            });
-        }
+    const prioritySuggestions = [
+        [priorityQuadrantIcons.IU, 'Important / Urgent'],
+        [priorityQuadrantIcons.IN, 'Important / Not urgent'],
+        [priorityQuadrantIcons.NU, 'Not important / Urgent'],
+        [priorityQuadrantIcons.NN, 'Not important / Not urgent'],
+    ] as const;
+
+    for (const [icon, label] of prioritySuggestions) {
+        genericSuggestions.push({
+            displayText: `${icon} ${label}`,
+            appendText: `${icon}${parameters.postfix}`,
+        });
+    }
+}
+
+function addDataviewPrioritySuggestions(
+    genericSuggestions: SuggestInfo[],
+    symbols: DefaultTaskSerializerSymbols,
+    parameters: SuggestorParameters,
+) {
+    const hasPriority = Object.values(symbols.prioritySymbols).some(
+        (value) => value.length > 0 && parameters.line.includes(value),
+    );
+    if (hasPriority) return;
+
+    const prioritySymbols: { [key: string]: string } = symbols.prioritySymbols;
+    const priorityTexts = ['High', 'Medium', 'Low', 'Highest', 'Lowest'];
+    for (const priorityText of priorityTexts) {
+        const prioritySymbol = prioritySymbols[priorityText];
+        genericSuggestions.push({
+            displayText: `${prioritySymbol} priority`,
+            appendText: `${prioritySymbol}${parameters.postfix}`,
+            insertSkip: parameters.insertSkip,
+        });
     }
 }
 
@@ -214,12 +241,12 @@ function addTaskLifecycleDateSuggestions(
     // This will eventually also support Done and Cancelled dates
     if (!parameters.line.includes(symbols.createdDateSymbol)) {
         const parsedDate = DateParser.parseDate('today', true);
-        const formattedDate = parsedDate.format(TaskRegularExpressions.dateFormat);
+        const formattedDate = formatSuggestedDate(parsedDate, parameters.settings);
         genericSuggestions.push({
             // We don't want this to match when the user types "today"
             textToMatch: `${symbols.createdDateSymbol} created`,
-            displayText: `${symbols.createdDateSymbol} created today (${formattedDate})`,
-            appendText: `${symbols.createdDateSymbol} ${formattedDate}` + parameters.postfix,
+            displayText: `${symbols.createdDateSymbol} created today (${formattedDate.displayValue})`,
+            appendText: `${symbols.createdDateSymbol} ${formattedDate.storageValue}` + parameters.postfix,
             insertSkip: parameters.dataviewMode ? parameters.insertSkip : undefined,
         });
     }
@@ -264,11 +291,19 @@ function defaultExtractor(symbol: string, suggestionText: any) {
     return { displayText, appendText };
 }
 
-function dateExtractor(symbol: string, date: string) {
+function formatSuggestedDate(date: moment.Moment, settings: Settings): { displayValue: string; storageValue: string } {
+    const storageValue = formatTaskDateForStorageWithCurrentTime(date);
+    const displayValue = date.format(
+        settings.enableDateTime ? TaskRegularExpressions.dateTimeFormat : TaskRegularExpressions.dateFormat,
+    );
+    return { displayValue, storageValue };
+}
+
+function dateExtractor(symbol: string, date: string, settings: Settings) {
     const parsedDate = DateParser.parseDate(date, true);
-    const formattedDate = `${parsedDate.format(TaskRegularExpressions.dateFormat)}`;
-    const displayText = `${date} (${formattedDate})`;
-    const appendText = `${symbol} ${formattedDate}`;
+    const formattedDate = formatSuggestedDate(parsedDate, settings);
+    const displayText = `${date} (${formattedDate.displayValue})`;
+    const appendText = `${symbol} ${formattedDate.storageValue}`;
     return { displayText, appendText };
 }
 
@@ -317,12 +352,17 @@ function addDatesSuggestions(
         if (possibleDate?.isValid()) {
             // Seems like the text that the user typed can be parsed as a valid date.
             // Present its completed form as a 1st suggestion
-            const absoluteDate = possibleDate.format(TaskRegularExpressions.dateFormat);
-            constructSuggestions(parameters, dateMatch, [absoluteDate], defaultExtractor, results);
+            const absoluteDate = formatSuggestedDate(possibleDate, parameters.settings);
+            const extractor = (symbol: string) => ({
+                displayText: absoluteDate.displayValue,
+                appendText: `${symbol} ${absoluteDate.storageValue}`,
+            });
+            constructSuggestions(parameters, dateMatch, [''], extractor, results);
         }
 
         const genericMatches = filterGenericSuggestions(genericSuggestions, dateString, maxGenericSuggestions, true);
-        constructSuggestions(parameters, dateMatch, genericMatches, dateExtractor, results);
+        const extractor = (symbol: string, date: string) => dateExtractor(symbol, date, parameters.settings);
+        constructSuggestions(parameters, dateMatch, genericMatches, extractor, results);
     }
     return results;
 }

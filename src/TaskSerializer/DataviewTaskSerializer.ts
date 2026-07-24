@@ -2,6 +2,7 @@ import { TaskLayoutComponent } from '../Layout/TaskLayoutOptions';
 import { PriorityTools } from '../lib/PriorityTools';
 import type { Priority } from '../Task/Priority';
 import type { Task } from '../Task/Task';
+import { taskDateValuePattern } from '../DateTime/TaskDateTime';
 import { DefaultTaskSerializer, taskIdRegex, taskIdSequenceRegex } from './DefaultTaskSerializer';
 
 /**
@@ -81,12 +82,12 @@ export const DATAVIEW_SYMBOLS = {
     dependsOnSymbol: 'dependsOn::',
     TaskFormatRegularExpressions: {
         priorityRegex: toInlineFieldRegex(/priority:: *(highest|high|medium|low|lowest)/),
-        startDateRegex: toInlineFieldRegex(/start:: *(\d{4}-\d{2}-\d{2}(?: \d{2}:\d{2}:\d{2})?)/),
-        createdDateRegex: toInlineFieldRegex(/created:: *(\d{4}-\d{2}-\d{2}(?: \d{2}:\d{2}:\d{2})?)/),
-        scheduledDateRegex: toInlineFieldRegex(/scheduled:: *(\d{4}-\d{2}-\d{2}(?: \d{2}:\d{2}:\d{2})?)/),
-        dueDateRegex: toInlineFieldRegex(/due:: *(\d{4}-\d{2}-\d{2}(?: \d{2}:\d{2}:\d{2})?)/),
-        doneDateRegex: toInlineFieldRegex(/completion:: *(\d{4}-\d{2}-\d{2}(?: \d{2}:\d{2}:\d{2})?)/),
-        cancelledDateRegex: toInlineFieldRegex(/cancelled:: *(\d{4}-\d{2}-\d{2}(?: \d{2}:\d{2}:\d{2})?)/),
+        startDateRegex: toInlineFieldRegex(new RegExp(`start:: *(${taskDateValuePattern})`)),
+        createdDateRegex: toInlineFieldRegex(new RegExp(`created:: *(${taskDateValuePattern})`)),
+        scheduledDateRegex: toInlineFieldRegex(new RegExp(`scheduled:: *(${taskDateValuePattern})`)),
+        dueDateRegex: toInlineFieldRegex(new RegExp(`due:: *(${taskDateValuePattern})`)),
+        doneDateRegex: toInlineFieldRegex(new RegExp(`completion:: *(${taskDateValuePattern})`)),
+        cancelledDateRegex: toInlineFieldRegex(new RegExp(`cancelled:: *(${taskDateValuePattern})`)),
         recurrenceRegex: toInlineFieldRegex(/repeat:: *([a-zA-Z0-9, !]+)/),
         onCompletionRegex: toInlineFieldRegex(/onCompletion:: *([a-zA-Z]+)/),
         dependsOnRegex: toInlineFieldRegex(new RegExp('dependsOn:: *(' + taskIdSequenceRegex.source + ')')),
@@ -107,8 +108,8 @@ export class DataviewTaskSerializer extends DefaultTaskSerializer {
         return PriorityTools.priorityValue(p);
     }
 
-    public componentToString(task: Task, shortMode: boolean, component: TaskLayoutComponent) {
-        const stringComponent = super.componentToString(task, shortMode, component);
+    public componentToString(task: Task, shortMode: boolean, component: TaskLayoutComponent, forStorage = false) {
+        const stringComponent = super.componentToString(task, shortMode, component, forStorage);
         const notInlineFieldComponents: TaskLayoutComponent[] = [
             TaskLayoutComponent.BlockLink,
             TaskLayoutComponent.Description,

@@ -14,19 +14,12 @@
     </section>
     <section class="tasks-modal-priority-section">
       <div id="priority" class="tasks-priority-matrix" role="group" aria-label="Importance and urgency">
-        <div class="tasks-priority-title">Priority</div>
-        <div class="tasks-priority-axis tasks-priority-axis-x">Urgency</div>
-        <div class="tasks-priority-axis tasks-priority-axis-y">Importance</div>
-        <div class="tasks-priority-grid">
-          <button type="button" aria-pressed="false">Light / Slow</button>
-          <button type="button" aria-pressed="false">Light / Normal</button>
-          <button type="button" aria-pressed="false">Light / Urgent</button>
-          <button type="button" aria-pressed="false">Normal / Slow</button>
-          <button type="button" aria-pressed="true" class="tasks-priority-selected">Normal / Normal</button>
-          <button type="button" aria-pressed="false">Normal / Urgent</button>
-          <button type="button" aria-pressed="false">Heavy / Slow</button>
-          <button type="button" aria-pressed="false">Heavy / Normal</button>
-          <button type="button" aria-pressed="false">Heavy / Urgent</button>
+        <div class="tasks-priority-heading"><span>Priority</span></div>
+        <div class="tasks-priority-quadrants">
+          <button type="button" aria-pressed="false">Important / Urgent</button>
+          <button type="button" aria-pressed="false">Important / Not urgent</button>
+          <button type="button" aria-pressed="false">Not important / Urgent</button>
+          <button type="button" aria-pressed="false">Not important / Not urgent</button>
         </div>
       </div>
     </section>
@@ -36,52 +29,38 @@
         <span class="accesskey">R</span>
         ecurs
       </label>
-      <input
-        id="recurrence"
-        type="text"
-        class="tasks-modal-date-input"
-        placeholder="Try 'every day when done'"
-        accesskey="r" />
-      <select class="tasks-modal-recurrence-preset" aria-label="Common recurrence intervals">
-        <option value="">Choose interval...</option>
+      <select id="recurrence" class="tasks-modal-recurrence-select" accesskey="r">
+        <option value="">Does not recur</option>
         <option value="every 30 minutes">Every 30 minutes</option>
         <option value="every hour">Every hour</option>
         <option value="every day">Every day</option>
         <option value="every week">Every week</option>
         <option value="every month">Every month</option>
       </select>
-      <code class="tasks-modal-parsed-date">
-        🔁
-        <i>not recurring</i>
-      </code>
+      <label class="tasks-modal-recurrence-when-done" for="recurrence-when-done">
+        <input id="recurrence-when-done" type="checkbox" disabled="" />
+        When done
+      </label>
       <label for="due">
         <span class="accesskey">D</span>
         ue
       </label>
-      <input
-        id="due"
-        type="text"
-        class="tasks-modal-date-input"
-        placeholder="Try 'Mon' or 'tm' then space"
-        accesskey="d" />
-      <div class="tasks-modal-parsed-date">
-        📅
-        <input class="tasks-modal-date-editor-picker" type="text" id="date-editor-picker" tabindex="-1" />
+      <div class="tasks-modal-date-control">
+        <button id="due" type="button" class="tasks-modal-date-picker" accesskey="d">
+          <span>📅 Choose date</span>
+        </button>
       </div>
+      <input id="date-editor-picker-due" class="tasks-modal-date-picker-input" tabindex="-1" aria-hidden="true" />
       <label for="scheduled">
         <span class="accesskey">S</span>
         cheduled
       </label>
-      <input
-        id="scheduled"
-        type="text"
-        class="tasks-modal-date-input tasks-modal-error"
-        placeholder="Try 'Mon' or 'tm' then space"
-        accesskey="s" />
-      <div class="tasks-modal-parsed-date">
-        ⏳
-        <input class="tasks-modal-date-editor-picker" type="text" id="date-editor-picker" tabindex="-1" />
+      <div class="tasks-modal-date-control">
+        <button id="scheduled" type="button" class="tasks-modal-date-picker tasks-modal-error" accesskey="s">
+          <span>⏳ Choose date</span>
+        </button>
       </div>
+      <input id="date-editor-picker-scheduled" class="tasks-modal-date-picker-input" tabindex="-1" aria-hidden="true" />
       <code class="tasks-modal-parsed-date">
         ⏳
         <i>invalid scheduled date</i>
@@ -91,16 +70,13 @@
         <span class="accesskey">a</span>
         rt
       </label>
-      <input
-        id="start"
-        type="text"
-        class="tasks-modal-date-input"
-        placeholder="Try 'Mon' or 'tm' then space"
-        accesskey="a" />
-      <div class="tasks-modal-parsed-date">
-        🛫
-        <input class="tasks-modal-date-editor-picker" type="text" id="date-editor-picker" tabindex="-1" />
+      <div class="tasks-modal-date-control">
+        <button id="start" type="button" class="tasks-modal-date-picker" accesskey="a">
+          <span>🛫 2024-01-01</span>
+        </button>
+        <button type="button" class="tasks-modal-date-clear clickable-icon" aria-label="Clear start date">×</button>
       </div>
+      <input id="date-editor-picker-start" class="tasks-modal-date-picker-input" tabindex="-1" aria-hidden="true" />
       <div class="future-dates-only" id="only-future-dates">
         <label for="forwardOnly">
           Only
@@ -189,46 +165,34 @@
         <span class="accesskey">C</span>
         reated
       </label>
-      <input
-        id="created"
-        type="text"
-        class="tasks-modal-date-input"
-        placeholder="Try 'Mon' or 'tm' then space"
-        accesskey="c" />
-      <div class="tasks-modal-parsed-date">
-        ➕
-        <input class="tasks-modal-date-editor-picker" type="text" id="date-editor-picker" tabindex="-1" />
+      <div class="tasks-modal-date-control">
+        <button id="created" type="button" class="tasks-modal-date-picker" accesskey="c">
+          <span>➕ Choose date</span>
+        </button>
       </div>
+      <input id="date-editor-picker-created" class="tasks-modal-date-picker-input" tabindex="-1" aria-hidden="true" />
       <label for="done">
         Done (
         <span class="accesskey">x</span>
         )
       </label>
-      <input
-        id="done"
-        type="text"
-        class="tasks-modal-date-input"
-        placeholder="Try 'Mon' or 'tm' then space"
-        accesskey="x" />
-      <div class="tasks-modal-parsed-date">
-        ✅
-        <input class="tasks-modal-date-editor-picker" type="text" id="date-editor-picker" tabindex="-1" />
+      <div class="tasks-modal-date-control">
+        <button id="done" type="button" class="tasks-modal-date-picker" accesskey="x">
+          <span>✅ Choose date</span>
+        </button>
       </div>
+      <input id="date-editor-picker-done" class="tasks-modal-date-picker-input" tabindex="-1" aria-hidden="true" />
       <label for="cancelled">
         Cancelled (
         <span class="accesskey">-</span>
         )
       </label>
-      <input
-        id="cancelled"
-        type="text"
-        class="tasks-modal-date-input"
-        placeholder="Try 'Mon' or 'tm' then space"
-        accesskey="-" />
-      <div class="tasks-modal-parsed-date">
-        ❌
-        <input class="tasks-modal-date-editor-picker" type="text" id="date-editor-picker" tabindex="-1" />
+      <div class="tasks-modal-date-control">
+        <button id="cancelled" type="button" class="tasks-modal-date-picker" accesskey="-">
+          <span>❌ Choose date</span>
+        </button>
       </div>
+      <input id="date-editor-picker-cancelled" class="tasks-modal-date-picker-input" tabindex="-1" aria-hidden="true" />
     </section>
     <section class="tasks-modal-button-section">
       <button type="submit" class="mod-cta" disabled="">Apply</button>

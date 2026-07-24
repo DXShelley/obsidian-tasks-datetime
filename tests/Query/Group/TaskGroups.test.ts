@@ -73,9 +73,9 @@ describe('Grouping tasks', () => {
         // No grouping specified, so no headings generated
         expect(groups.toString()).toMatchInlineSnapshot(`
             "
-            - [ ] a 📅 1970-01-01
-            - [ ] b 📅 1970-01-02
-            - [ ] c 📅 1970-01-02
+            - [ ] a 📅 1970-01-01 00:00:00
+            - [ ] b 📅 1970-01-02 00:00:00
+            - [ ] c 📅 1970-01-02 00:00:00
             "
         `);
     });
@@ -189,11 +189,11 @@ describe('Grouping tasks', () => {
             "
             #### 2023-07-08 Saturday
 
-            - [ ] b 📅 2023-07-08
+            - [ ] b 📅 2023-07-08 00:00:00
 
             #### 2023-04-05 Wednesday
 
-            - [ ] a 📅 2023-04-05
+            - [ ] a 📅 2023-04-05 00:00:00
             "
         `);
     });
@@ -354,15 +354,15 @@ describe('Grouping tasks', () => {
 
             ##### 2022-09-19 Monday
 
-            - [ ] Task a - early date 📅 2022-09-19
+            - [ ] Task a - early date 📅 2022-09-19 00:00:00
 
             ##### 2022-10-06 Thursday
 
-            - [ ] Task c - intermediate date ⏳ 2022-10-06
+            - [ ] Task c - intermediate date ⏳ 2022-10-06 00:00:00
 
             ##### 2022-12-06 Tuesday
 
-            - [ ] Task b - later date ⏳ 2022-12-06
+            - [ ] Task b - later date ⏳ 2022-12-06 00:00:00
             "
         `);
     });

@@ -8,7 +8,7 @@ Note that limiting value used is `8.9999`.
 Searches that compare two urgency values for 'less than' or 'more than' (using one of `>`, `>=`, `<` or `<=`) **must adjust their values slightly to allow for rounding**.
 =>
 - [ ] #task Highest priority 🔺
-- [ ] due 2023-06-11 📅 2023-06-11
+- [ ] due 2023-06-11 📅 2023-06-11 00:00:00
 ====================================================================================
 
 
@@ -16,7 +16,7 @@ filter by function task.urgency > 7.9999 && task.urgency < 11.0001
 Find tasks with an urgency score between `8.0` and `11.0`, inclusive.
 =>
 - [ ] #task Highest priority 🔺
-- [ ] due 2023-06-11 📅 2023-06-11
+- [ ] due 2023-06-11 📅 2023-06-11 00:00:00
 ====================================================================================
 
 
@@ -38,7 +38,7 @@ Find tasks with any urgency other than the default score of `1.95`.
 - [ ] #task Medium priority 🔼
 - [ ] #task Low priority 🔽
 - [ ] #task Lowest priority ⏬
-- [ ] due 2023-06-11 📅 2023-06-11
+- [ ] due 2023-06-11 📅 2023-06-11 00:00:00
 ====================================================================================
 
 

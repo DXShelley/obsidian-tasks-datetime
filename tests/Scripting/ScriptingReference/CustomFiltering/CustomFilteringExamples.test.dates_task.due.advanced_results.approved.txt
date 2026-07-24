@@ -18,10 +18,10 @@ Find all tasks due today or earlier.
 As the second parameter determines the precision, and not just a single value to check, using 'day' will check for year, month and day.
 See the documentation of [isSameOrBefore](https://momentjscom.readthedocs.io/en/latest/moment/05-query/04-is-same-or-before/).
 =>
-- [ ] my description 📅 2023-05-30
-- [ ] my description 📅 2023-05-31
-- [ ] my description 📅 2023-06-01
-- [ ] my description 📅 2023-06-02
+- [ ] my description 📅 2023-05-30 00:00:00
+- [ ] my description 📅 2023-05-31 00:00:00
+- [ ] my description 📅 2023-06-01 00:00:00
+- [ ] my description 📅 2023-06-02 00:00:00
 ====================================================================================
 
 
@@ -35,16 +35,16 @@ Due today or later.
 filter by function task.due.moment?.isSame(moment('2023-05-31'), 'day') || false
 Find all tasks due on 31 May 2023.
 =>
-- [ ] my description 📅 2023-05-31
+- [ ] my description 📅 2023-05-31 00:00:00
 ====================================================================================
 
 
 filter by function task.due.moment?.isSame(moment('2023-05-31'), 'week') || false
 Find all tasks due in the week of 31 May 2023.
 =>
-- [ ] my description 📅 2023-05-30
-- [ ] my description 📅 2023-05-31
-- [ ] my description 📅 2023-06-01
-- [ ] my description 📅 2023-06-02
+- [ ] my description 📅 2023-05-30 00:00:00
+- [ ] my description 📅 2023-05-31 00:00:00
+- [ ] my description 📅 2023-06-01 00:00:00
+- [ ] my description 📅 2023-06-02 00:00:00
 ====================================================================================
 

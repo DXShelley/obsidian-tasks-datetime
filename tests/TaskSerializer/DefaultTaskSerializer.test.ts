@@ -171,6 +171,20 @@ describe.each(symbolMap)("DefaultTaskSerializer with '$taskFormat' symbols", ({ 
                 const taskDetails = deserialize(line);
                 expect(taskDetails).toMatchTaskDetails({ priority: Priority.High });
             });
+
+            it('should parse dates before a quadrant priority marker', () => {
+                const taskDetails = deserialize(
+                    'Test task 🛫 2026-07-24 08:00:00 📅 2026-07-24 23:00:25 🔥 ➕ 2026-07-24 12:02:13',
+                );
+
+                expect(taskDetails).toMatchTaskDetails({
+                    description: 'Test task 🔥',
+                    priority: Priority.Highest,
+                    startDate: moment('2026-07-24 08:00:00', 'YYYY-MM-DD HH:mm:ss'),
+                    dueDate: moment('2026-07-24 23:00:25', 'YYYY-MM-DD HH:mm:ss'),
+                    createdDate: moment('2026-07-24 12:02:13', 'YYYY-MM-DD HH:mm:ss'),
+                });
+            });
         });
 
         it('should parse a recurrence', () => {
@@ -284,7 +298,7 @@ describe.each(symbolMap)("DefaultTaskSerializer with '$taskFormat' symbols", ({ 
             { what: 'doneDate', symbol: doneDateSymbol },
         ] as const)('should serialize a $what', ({ what, symbol }) => {
             const serialized = serialize(new TaskBuilder()[what]('2021-06-20').description('').build());
-            expect(serialized).toEqual(` ${symbol} 2021-06-20`);
+            expect(serialized).toEqual(` ${symbol} 2021-06-20 00:00:00`);
         });
 
         it('should serialize a Highest, High, Medium, Low and Lowest priority', () => {

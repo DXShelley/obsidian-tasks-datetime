@@ -85,7 +85,9 @@ describe('CreateOrEditTaskParser - task recognition', () => {
 
         const task = taskFromLine({ line: taskLine, path });
 
-        expect(task.toFileLineString()).toStrictEqual(taskLine);
+        expect(task.toFileLineString()).toStrictEqual(
+            '- [ ] without global filter but with all the info ⏬ 🔁 every 2 days ➕ 2022-03-10 00:00:00 🛫 2022-01-31 00:00:00 ⏳ 2023-06-13 00:00:00 📅 2024-12-10 00:00:00 ✅ 2023-06-22 00:00:00',
+        );
         expect(task.path).toStrictEqual('a/b/c.md');
 
         // NEW_TASK_FIELD_EDIT_REQUIRED
@@ -115,19 +117,19 @@ describe('CreateOrEditTaskParser - created date', () => {
         [
             // bullet point only
             '- ',
-            '- [ ]  ➕ 2023-09-17',
+            '- [ ]  ➕ 2023-09-17 00:00:00',
             '2023-09-17',
         ],
         [
             // bullet point and a checkbox
             '- [ ] ',
-            '- [ ]  ➕ 2023-09-17',
+            '- [ ]  ➕ 2023-09-17 00:00:00',
             '2023-09-17',
         ],
         [
             // with an existing created date
             '- [ ] without global filter and with ➕ 2023-01-20',
-            '- [ ] without global filter and with ➕ 2023-01-20',
+            '- [ ] without global filter and with ➕ 2023-01-20 00:00:00',
             '2023-01-20',
         ],
     ])(
@@ -163,7 +165,7 @@ describe('CreateOrEditTaskParser - created date', () => {
         const task = taskFromLine({ line, path });
 
         // The global filter doesn't get added until the Modal rewrites the line
-        expect(task.toFileLineString()).toStrictEqual('- [ ] did not have the global filter ➕ 2023-09-17');
+        expect(task.toFileLineString()).toStrictEqual('- [ ] did not have the global filter ➕ 2023-09-17 00:00:00');
         expect(task.createdDate).toEqualMoment(moment('2023-09-17'));
     });
 });

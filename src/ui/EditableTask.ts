@@ -1,10 +1,19 @@
 import { GlobalFilter } from '../Config/GlobalFilter';
+import { getSettings } from '../Config/Settings';
 import { formatTaskDate, parseTypedDateForSaving } from '../DateTime/DateTools';
 import { replaceTaskWithTasks } from '../Obsidian/File';
 import type { Status } from '../Statuses/Status';
 import type { OnCompletion } from '../Task/OnCompletion';
 import { Occurrence } from '../Task/Occurrence';
 import { Priority } from '../Task/Priority';
+import {
+    dimensionsForPriorityQuadrant,
+    priorityForPriorityQuadrant,
+    priorityQuadrantForDimensions,
+    priorityQuadrantFromText,
+    priorityQuadrantIcons,
+    removePriorityQuadrantMarkers,
+} from '../Task/PriorityQuadrant';
 import { Recurrence } from '../Task/Recurrence';
 import { Task } from '../Task/Task';
 import { addDependencyToParent, ensureTaskHasId, generateUniqueId, removeDependency } from '../Task/TaskDependency';
@@ -18,7 +27,6 @@ import { StatusType } from '../Statuses/StatusConfiguration';
 export class EditableTask {
     private readonly addGlobalFilterOnSave: boolean;
     private readonly originalBlocking: Task[];
-    private readonly hasPriorityDimensions: boolean;
 
     // NEW_TASK_FIELD_EDIT_REQUIRED
     description: string;
@@ -26,6 +34,7 @@ export class EditableTask {
     priority: string;
     importance: 'light' | 'normal' | 'heavy';
     urgency: 'slow' | 'normal' | 'urgent';
+    priorityDimensionsEnabled: boolean;
     recurrenceRule: string;
     onCompletion: OnCompletion;
     createdDate: string;
@@ -41,7 +50,7 @@ export class EditableTask {
     private constructor(editableTask: {
         addGlobalFilterOnSave: boolean;
         originalBlocking: Task[];
-        hasPriorityDimensions: boolean;
+        priorityDimensionsEnabled: boolean;
 
         // NEW_TASK_FIELD_EDIT_REQUIRED
         description: string;
@@ -63,13 +72,13 @@ export class EditableTask {
     }) {
         this.addGlobalFilterOnSave = editableTask.addGlobalFilterOnSave;
         this.originalBlocking = editableTask.originalBlocking;
-        this.hasPriorityDimensions = editableTask.hasPriorityDimensions;
 
         this.description = editableTask.description;
         this.status = editableTask.status;
         this.priority = editableTask.priority;
         this.importance = editableTask.importance;
         this.urgency = editableTask.urgency;
+        this.priorityDimensionsEnabled = editableTask.priorityDimensionsEnabled;
         this.onCompletion = editableTask.onCompletion;
         this.recurrenceRule = editableTask.recurrenceRule;
         this.createdDate = editableTask.createdDate;
@@ -121,31 +130,21 @@ export class EditableTask {
         }
 
         const originalBlocking = allTasks.filter((cacheTask) => cacheTask.dependsOn.includes(task.id));
-        const hasPriorityDimensions = task.tags.some(
-            (tag) =>
-                /^#tasks-importance-(light|normal|heavy)$/u.test(tag) ||
-                /^#tasks-urgency-(slow|normal|urgent)$/u.test(tag),
-        );
+        const priorityQuadrant = priorityQuadrantFromText(task.description);
+        const priorityDimensions = priorityQuadrant ? dimensionsForPriorityQuadrant(priorityQuadrant) : undefined;
+        const hasPriorityDimensions = priorityQuadrant !== null;
 
         return new EditableTask({
             addGlobalFilterOnSave,
             originalBlocking,
-            hasPriorityDimensions,
+            priorityDimensionsEnabled: hasPriorityDimensions,
 
             // NEW_TASK_FIELD_EDIT_REQUIRED
-            description,
+            description: removePriorityQuadrantMarkers(description).trim(),
             status: task.status,
             priority,
-            importance: task.tags.includes('#tasks-importance-heavy')
-                ? 'heavy'
-                : task.tags.includes('#tasks-importance-light')
-                ? 'light'
-                : 'normal',
-            urgency: task.tags.includes('#tasks-urgency-urgent')
-                ? 'urgent'
-                : task.tags.includes('#tasks-urgency-slow')
-                ? 'slow'
-                : 'normal',
+            importance: priorityDimensions?.importance ?? 'normal',
+            urgency: priorityDimensions?.urgency ?? 'normal',
             recurrenceRule: task.recurrence ? task.recurrence.toText() : '',
             onCompletion: task.onCompletion,
             createdDate: formatTaskDate(task.createdDate),
@@ -170,26 +169,23 @@ export class EditableTask {
      */
     public async applyEdits(task: Task, allTasks: Task[]): Promise<Task[]> {
         // NEW_TASK_FIELD_EDIT_REQUIRED
-        let description = this.description
-            .replace(/\s*#tasks-importance-(light|normal|heavy)\b/gu, '')
-            .replace(/\s*#tasks-urgency-(slow|normal|urgent)\b/gu, '')
-            .trim();
-        const shouldPersistPriorityDimensions =
-            this.hasPriorityDimensions || this.importance !== 'normal' || this.urgency !== 'normal';
+        let description = removePriorityQuadrantMarkers(this.description).trim();
+        const usesDataviewFormat = getSettings().taskFormat === 'dataview';
+        const shouldPersistPriorityDimensions = this.priorityDimensionsEnabled && !usesDataviewFormat;
         if (shouldPersistPriorityDimensions) {
-            description += ` #tasks-importance-${this.importance} #tasks-urgency-${this.urgency}`;
+            description += ` ${priorityQuadrantIcons[priorityQuadrantForDimensions(this.importance, this.urgency)]}`;
         }
         if (this.addGlobalFilterOnSave) {
             description = GlobalFilter.getInstance().prependTo(description);
         }
 
-        const startDate = parseTypedDateForSaving(this.startDate, this.forwardOnly);
-        const scheduledDate = parseTypedDateForSaving(this.scheduledDate, this.forwardOnly);
-        const dueDate = parseTypedDateForSaving(this.dueDate, this.forwardOnly);
+        const startDate = parseEditableDate(this.startDate, this.forwardOnly, task.startDate);
+        const scheduledDate = parseEditableDate(this.scheduledDate, this.forwardOnly, task.scheduledDate);
+        const dueDate = parseEditableDate(this.dueDate, this.forwardOnly, task.dueDate);
 
-        const cancelledDate = parseTypedDateForSaving(this.cancelledDate, this.forwardOnly);
-        const createdDate = parseTypedDateForSaving(this.createdDate, this.forwardOnly);
-        const doneDate = parseTypedDateForSaving(this.doneDate, this.forwardOnly);
+        const cancelledDate = parseEditableDate(this.cancelledDate, this.forwardOnly, task.cancelledDate);
+        const createdDate = parseEditableDate(this.createdDate, this.forwardOnly, task.createdDate);
+        const doneDate = parseEditableDate(this.doneDate, this.forwardOnly, task.doneDate);
 
         let recurrence: Recurrence | null = null;
         if (this.recurrenceRule) {
@@ -228,7 +224,11 @@ export class EditableTask {
             ...task,
             description,
             status: task.status,
-            priority: shouldPersistPriorityDimensions
+            priority: usesDataviewFormat
+                ? this.priorityDimensionsEnabled
+                    ? priorityForDimensions(this.importance, this.urgency)
+                    : priorityFromEditableValue(this.priority)
+                : shouldPersistPriorityDimensions
                 ? priorityForDimensions(this.importance, this.urgency)
                 : task.priority,
             onCompletion: parsedOnCompletion,
@@ -317,12 +317,39 @@ function priorityForDimensions(
     importance: 'light' | 'normal' | 'heavy',
     urgency: 'slow' | 'normal' | 'urgent',
 ): Priority {
-    const priorities = {
-        light: { slow: Priority.Lowest, normal: Priority.Low, urgent: Priority.Medium },
-        normal: { slow: Priority.Low, normal: Priority.None, urgent: Priority.High },
-        heavy: { slow: Priority.Medium, normal: Priority.High, urgent: Priority.Highest },
-    } as const;
-    return priorities[importance][urgency];
+    return priorityForPriorityQuadrant(priorityQuadrantForDimensions(importance, urgency));
+}
+
+function priorityFromEditableValue(value: string): Priority {
+    const priorities: Record<string, Priority> = {
+        highest: Priority.Highest,
+        high: Priority.High,
+        medium: Priority.Medium,
+        low: Priority.Low,
+        lowest: Priority.Lowest,
+        none: Priority.None,
+    };
+    return priorities[value] ?? Priority.None;
+}
+
+function parseEditableDate(
+    typedDate: string,
+    forwardOnly: boolean,
+    originalDate: moment.Moment | null,
+): moment.Moment | null {
+    if (
+        !getSettings().enableDateTime &&
+        originalDate !== null &&
+        typedDate === formatTaskDate(originalDate) &&
+        !isMidnight(originalDate)
+    ) {
+        return originalDate;
+    }
+    return parseTypedDateForSaving(typedDate, forwardOnly);
+}
+
+function isMidnight(date: moment.Moment): boolean {
+    return date.hour() === 0 && date.minute() === 0 && date.second() === 0;
 }
 
 async function serialiseTaskId(task: Task, allTasks: Task[]) {

@@ -73,3 +73,26 @@ In **Reading mode** and **Tasks query search results** the options are:
 
 - Click or right-click ⏩ to use the [[Postponing|Postpone]] button.
 - Click the Pencil icon  (📝) to use the [[Create or edit Task]] modal/dialog.
+
+## Datetime storage and migration
+
+Task Markdown is the source of truth for task dates. Tasks Datetime always writes a modified task date in the canonical seconds-precision format:
+
+```text
+YYYY-MM-DD HH:mm:ss
+```
+
+The **Include time in task dates** setting controls presentation only. When it is disabled, time is hidden in supported views and date pickers can remain date-only, but the complete value in the Markdown file is retained. Turning the setting on and off does not discard, truncate, or reset stored time values.
+
+This rule applies to every task-date update path, including editing a task in a Markdown file, editing a task opened from a query result, date pickers and context-menu actions, status changes, and recurring tasks. When an edit supplies only a date, Tasks Datetime supplies the current hour, minute, and second before writing the task.
+
+Date query values may include a time, for example `2026-07-23 16:30:00`. A query value without a time continues to represent the whole calendar day.
+
+### Updating historical task dates
+
+Use either of these commands to upgrade legacy date-only task fields:
+
+- `Tasks: Update historical task data in current file`
+- `Tasks: Update historical task data in entire vault`
+
+The updater changes only incomplete task dates, adding `00:00:00` to preserve their original calendar date. It does not change values that already include a complete time. The commands are therefore idempotent: after a successful update, running either command again is safe and makes no further date changes.

@@ -4,41 +4,35 @@ publish: true
 
 # Priority
 
-## Priorities and Order
+## Priority Quadrants
 
-Tasks can have a priority.
-In order to specify the priority of a task, you can append one of the "priority signifiers", shown here in decreasing order of priority:
+Tasks uses a four-quadrant priority matrix. Select one quadrant, or leave the priority empty.
 
-1. 🔺 for highest priority
-2. ⏫ for high priority
-3. 🔼 for medium priority
-4. use no signifier to indicate no priority
-5. 🔽 for low priority
-6. ⏬️ for lowest priority
+| Quadrant | Icon |
+| --- | --- |
+| Important and urgent | 🔥 |
+| Important and not urgent | 🎯 |
+| Not important and urgent | ⚡ |
+| Not important and not urgent | 💤 |
 
-If a task has no priority at all, it is considered between low and medium priority.
-This means that the priority of 🔽 low tasks is considered lower than the priority of tasks without any specific priority.
-The idea is that you can easily filter out unimportant tasks without needing to assign a priority to all relevant tasks.
+When a quadrant is selected, its icon is written at the end of the task. The Priority field in a task list displays that one icon, while the task description does not repeat it.
 
 ```markdown
-- [ ] take out the trash 🔼
+- [ ] Respond to the production incident 🔥
 ```
 
-> [!released]
-> Priorities 'lowest' and 'highest' were introduced in Tasks 3.9.0.
+Tasks does not use `#IU`, `#IN`, `#NU`, `#NN`, or `#tasks-*` tags for quadrant priorities.
 
-## Easy adding of Priorities
+## Selecting a Priority
 
-Instead of adding the emoji manually, you can:
+You can select a quadrant in either of these places:
 
-- Use the `Tasks: Create or edit` command when creating or editing a task.
-  You will be able to select the priority from the options in the [[Create or edit Task|‘Create or edit Task’ Modal]].
-- Using [[Auto-Suggest|Intelligent Auto-Suggest]],
-  start typing the first few characters of `high`, `medium` or `low`, and press `<return>` to accept the suggested signifier.
+- In the `Tasks: Create or edit` modal, select one quadrant in the Priority matrix. Select the clear control to remove it.
+- In [[Auto-Suggest|Intelligent Auto-Suggest]], select one of the four quadrant icon suggestions when using the Tasks Emoji Format. The icon is inserted directly into the task. Dataview Format keeps its compatible `priority::` inline-field suggestions.
 
 ## Related Tasks Block Instructions
 
-The following instructions use the priority signifiers in tasks.
+The following instructions use the priority value derived from the selected quadrant.
 
 - `priority is (above, below)? (lowest, low, none, medium, high, highest)`
   - [[Filters#Priority|Documentation]]

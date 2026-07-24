@@ -8,6 +8,7 @@ import type { Task } from 'Task/Task';
 import { getSettings, resetSettings } from '../../src/Config/Settings';
 import type { SuggestInfo, SuggestionBuilder } from '../../src/Suggestor';
 import {
+    DEFAULT_MAX_GENERIC_SUGGESTIONS,
     canSuggestForLine,
     lastOpenBracket,
     makeDefaultSuggestionBuilder,
@@ -36,6 +37,12 @@ const CAN_SAVE_EDITS = true;
 
 afterAll(() => {
     chronoSpy.mockRestore();
+    jest.useRealTimers();
+});
+
+beforeAll(() => {
+    jest.useFakeTimers();
+    jest.setSystemTime(mockDate);
 });
 
 /**
@@ -79,6 +86,7 @@ describe('default auto-complete settings', () => {
         expect(settings.autoSuggestInEditor).toEqual(true);
         expect(settings.autoSuggestMinMatch).toEqual(0);
         expect(settings.autoSuggestMaxItems).toEqual(20);
+        expect(DEFAULT_MAX_GENERIC_SUGGESTIONS).toEqual(7);
     });
 });
 
@@ -231,10 +239,29 @@ ${JSON.stringify(suggestions[0], null, 4)}
         verifyAsJson(suggestions);
     });
 
+    it('does not offer a second quadrant priority', () => {
+        const suggestions = buildSuggestionsForEndOfLine('- [ ] already prioritised 🔥');
+
+        expect(suggestions.some((suggestion) => suggestion.displayText.includes('Important / Urgent'))).toBe(false);
+    });
+
     it('offers generic due date completions', () => {
         // Arrange
         const line = `- [ ] some task ${dueDateSymbol}`;
         shouldStartWithSuggestionsContaining(line, ['today', 'tomorrow']);
+    });
+
+    it.each([
+        [false, '2022-07-11'],
+        [true, '2022-07-11 15:00:00'],
+    ])('formats date suggestions according to enableDateTime=%s', (enableDateTime, expectedDisplayDate) => {
+        const line = `- [ ] some task ${dueDateSymbol}`;
+        const settings = { ...getSettings(), enableDateTime };
+        const suggestions = buildSuggestions(line, line.length - 1, settings, [], CAN_SAVE_EDITS);
+
+        const todaySuggestion = suggestions.find((suggestion) => suggestion.displayText.startsWith('today '));
+        expect(todaySuggestion?.displayText).toContain(expectedDisplayDate);
+        expect(todaySuggestion?.appendText).toContain(`${dueDateSymbol} 2022-07-11 15:00:00`);
     });
 
     it('offers specific due date completions', () => {
@@ -313,6 +340,13 @@ ${JSON.stringify(suggestions[0], null, 4)}
             expect(1).toEqual(2);
         }
         expect(suggestions[0].displayText).not.toContain('created today');
+    });
+
+    it('always writes a complete timestamp for the created date suggestion', () => {
+        const suggestions = buildSuggestionsForEndOfLine('- [ ] some task ');
+        const createdSuggestion = suggestions.find((suggestion) => suggestion.displayText.includes('created today'));
+
+        expect(createdSuggestion?.appendText).toContain(`${createdDateSymbol} 2022-07-11 15:00:00`);
     });
 
     describe('suggestions for dependency field ID', () => {

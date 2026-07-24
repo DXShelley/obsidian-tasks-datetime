@@ -6,7 +6,7 @@ sort by function reverse task.urgency
 Sort by task urgency values.
 We use `reverse` to put the most urgent tasks first.
 =>
-- [ ] due 2023-06-11 📅 2023-06-11
+- [ ] due 2023-06-11 📅 2023-06-11 00:00:00
 - [ ] #task Highest priority 🔺
 - [ ] #task High priority ⏫
 - [ ] #task Medium priority 🔼

@@ -6,6 +6,6 @@ filter by function task.scheduled.format('dddd') === 'Wednesday'
 Find tasks scheduled on Wednesdays, that is, any Wednesday.
 On non-English systems, you may need to supply the day of the week in the local language.
 =>
-- [ ] my description ⏳ 2023-05-31
+- [ ] my description ⏳ 2023-05-31 00:00:00
 ====================================================================================
 

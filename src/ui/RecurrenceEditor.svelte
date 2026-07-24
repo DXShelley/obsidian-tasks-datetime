@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { TASK_FORMATS } from '../Config/Settings';
     import type { EditableTask } from './EditableTask';
     import { labelContentWithAccessKey } from './EditTaskHelpers';
 
@@ -7,10 +6,12 @@
     export let isRecurrenceValid: boolean;
     export let accesskey: string | null;
 
-    let parsedRecurrence: string;
+    let hasCustomRecurrence: boolean;
+    let recurrenceInterval: string;
+    let recurrenceWhenDone: boolean;
 
     const recurrencePresets = [
-        { label: 'Choose interval...', value: '' },
+        { label: 'Does not recur', value: '' },
         { label: 'Every 30 minutes', value: 'every 30 minutes' },
         { label: 'Every hour', value: 'every hour' },
         { label: 'Every day', value: 'every day' },
@@ -18,30 +19,49 @@
         { label: 'Every month', value: 'every month' },
     ];
 
-    function applyPreset(event: Event) {
-        const value = (event.target as HTMLSelectElement).value;
-        if (value) editableTask.recurrenceRule = value;
+    function setRecurrence(rule: string, whenDone: boolean) {
+        editableTask.recurrenceRule = rule ? `${rule}${whenDone ? ' when done' : ''}` : '';
     }
 
-    $: ({ parsedRecurrence, isRecurrenceValid } = editableTask.parseAndValidateRecurrence());
+    function onIntervalChange(event: Event) {
+        setRecurrence((event.target as HTMLSelectElement).value, recurrenceWhenDone);
+    }
 
-    const { recurrenceSymbol } = TASK_FORMATS.tasksPluginEmoji.taskSerializer.symbols;
+    function onWhenDoneChange(event: Event) {
+        setRecurrence(recurrenceInterval, (event.target as HTMLInputElement).checked);
+    }
+
+    $: ({ isRecurrenceValid } = editableTask.parseAndValidateRecurrence());
+    $: recurrenceInterval = editableTask.recurrenceRule.replace(/ when done$/u, '');
+    $: recurrenceWhenDone = editableTask.recurrenceRule.endsWith(' when done');
+    $: hasCustomRecurrence = !recurrencePresets.some((preset) => preset.value === recurrenceInterval);
+
 </script>
 
 <label for="recurrence">{@html labelContentWithAccessKey('Recurs', accesskey)}</label>
 <!-- svelte-ignore a11y-accesskey -->
-<input
-    bind:value={editableTask.recurrenceRule}
+<select
+    value={recurrenceInterval}
     id="recurrence"
-    type="text"
     class:tasks-modal-error={!isRecurrenceValid}
-    class="tasks-modal-date-input"
-    placeholder="Try 'every day when done'"
+    class="tasks-modal-recurrence-select"
     {accesskey}
-/>
-<select class="tasks-modal-recurrence-preset" aria-label="Common recurrence intervals" on:change={applyPreset}>
+    on:change={onIntervalChange}
+>
     {#each recurrencePresets as preset}
         <option value={preset.value}>{preset.label}</option>
     {/each}
+    {#if hasCustomRecurrence}
+        <option value={recurrenceInterval}>{recurrenceInterval}</option>
+    {/if}
 </select>
-<code class="tasks-modal-parsed-date">{recurrenceSymbol} {@html parsedRecurrence}</code>
+<label class="tasks-modal-recurrence-when-done" for="recurrence-when-done">
+    <input
+        id="recurrence-when-done"
+        type="checkbox"
+        checked={recurrenceWhenDone}
+        disabled={!recurrenceInterval}
+        on:change={onWhenDoneChange}
+    />
+    When done
+</label>

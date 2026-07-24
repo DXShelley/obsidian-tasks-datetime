@@ -1,8 +1,12 @@
 <script lang="ts">
     import { onDestroy, onMount } from 'svelte';
     import { getSettings } from '../Config/Settings';
-    import { doAutocomplete } from '../DateTime/DateAbbreviations';
-    import { parseTypedDateForDisplayUsingFutureDate, taskDateFormat } from '../DateTime/DateTools';
+    import {
+        formatTaskDateForStorage,
+        formatTaskDateForStorageWithCurrentTime,
+        parseTypedDateForDisplayUsingFutureDate,
+        taskDateFormat,
+    } from '../DateTime/DateTools';
     import { labelContentWithAccessKey } from './EditTaskHelpers';
     import { createDateTimePicker, type DateTimePickerInstance } from './DateTimePicker';
 
@@ -18,10 +22,12 @@
 
     let pickedDate = '';
     let pickerInput: HTMLInputElement;
+    let pickerTrigger: HTMLButtonElement;
     let picker: DateTimePickerInstance | undefined;
+    let emptyPickerLabel: string;
 
     $: {
-        date = doAutocomplete(date);
+        emptyPickerLabel = getSettings().enableDateTime ? 'Choose date and time' : 'Choose date';
         parsedDate = parseTypedDateForDisplayUsingFutureDate(id, date, forwardOnly);
         isDateValid = !parsedDate.includes('invalid');
         if (isDateValid && !parsedDate.startsWith('<')) {
@@ -31,11 +37,14 @@
         }
     }
 
-    function onDatePicked(e: Event) {
-        if (e.target === null) {
-            return;
-        }
-        date = pickedDate;
+    function openPicker() {
+        picker?.open();
+    }
+
+    function clearDate() {
+        picker?.clear();
+        pickedDate = '';
+        date = '';
     }
 
     onMount(() => {
@@ -44,46 +53,56 @@
         }
         picker = createDateTimePicker({
             input: pickerInput,
+            positionElement: pickerTrigger,
             enableTime: getSettings().enableDateTime,
             onDateSelected: (selectedDate) => {
-                pickedDate = window.moment(selectedDate).format(taskDateFormat());
-                date = pickedDate;
+                if (!selectedDate) {
+                    pickedDate = '';
+                    date = '';
+                    return;
+                }
+
+                const selectedMoment = window.moment(selectedDate);
+                if (!getSettings().enableDateTime) {
+                    date = formatTaskDateForStorageWithCurrentTime(selectedMoment);
+                } else {
+                    date = formatTaskDateForStorage(selectedMoment);
+                }
+                pickedDate = selectedMoment.format(taskDateFormat());
             },
         });
     });
 
     onDestroy(() => picker?.destroy());
 
-    // 'weekend' abbreviation omitted due to lack of space.
-    const datePlaceholder = "Try 'Mon' or 'tm' then space";
 </script>
 
 <label for={id}>{@html labelContentWithAccessKey(id, accesskey)}</label>
 <!-- svelte-ignore a11y-accesskey -->
-<input
-    bind:value={date}
-    {id}
-    type="text"
-    class:tasks-modal-error={!isDateValid}
-    class="tasks-modal-date-input"
-    placeholder={datePlaceholder}
-    {accesskey}
-/>
-
-<div class="tasks-modal-parsed-date">
-    {dateSymbol}<input
-        class="tasks-modal-date-editor-picker"
-        type="text"
-        bind:value={pickedDate}
-        bind:this={pickerInput}
-        id="date-editor-picker"
-        on:input={onDatePicked}
-        tabindex="-1"
-    />
+<div class="tasks-modal-date-control">
+    <button
+        bind:this={pickerTrigger}
+        {id}
+        type="button"
+        class:tasks-modal-error={!isDateValid}
+        class="tasks-modal-date-picker"
+        {accesskey}
+        on:click={openPicker}
+    >
+        <span>{dateSymbol} {pickedDate || emptyPickerLabel}</span>
+    </button>
+    {#if pickedDate}
+        <button type="button" class="tasks-modal-date-clear clickable-icon" aria-label={`Clear ${id} date`} on:click={clearDate}>×</button>
+    {/if}
 </div>
+<input
+    id={`date-editor-picker-${id}`}
+    class="tasks-modal-date-picker-input"
+    bind:value={pickedDate}
+    bind:this={pickerInput}
+    tabindex="-1"
+    aria-hidden="true"
+/>
 {#if !isDateValid}
     <code class="tasks-modal-parsed-date">{dateSymbol} {@html parsedDate}</code>
 {/if}
-
-<style>
-</style>

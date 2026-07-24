@@ -8,8 +8,8 @@ Note that this is **case-sensitive**: capitalisation matters.
 =>
 - [ ] xyz in '' in heading 'heading'
 - [ ] xyz in 'a_b_c.md' in heading 'a_b_c'
-- [ ] Due on 2023-06-10 📅 2023-06-10
-- [ ] Due on 2023-06-11 📅 2023-06-11
+- [ ] Due on 2023-06-10 📅 2023-06-10 00:00:00
+- [ ] Due on 2023-06-11 📅 2023-06-11 00:00:00
 - [ ] No due date but I have 2023-06-10 in my preceding heading
 - [ ] No due date but I have 2023-06-11 in my preceding heading
 - [ ] I have a tag #context/home

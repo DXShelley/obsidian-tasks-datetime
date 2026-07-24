@@ -10,6 +10,11 @@ import { StatusRegistry } from '../Statuses/StatusRegistry';
 import type { ListItem } from '../Task/ListItem';
 import { Task } from '../Task/Task';
 import { TaskRegularExpressions } from '../Task/TaskRegularExpressions';
+import {
+    priorityQuadrantFromText,
+    priorityQuadrantIcons,
+    removePriorityQuadrantMarkers,
+} from '../Task/PriorityQuadrant';
 import { DateMenu } from '../ui/Menus/DateMenu';
 import { promptForDate } from '../ui/Menus/DatePicker';
 import { StatusMenu } from '../ui/Menus/StatusMenu';
@@ -52,6 +57,11 @@ export function createAndAppendElement<K extends keyof HTMLElementTagNameMap>(
     const el: HTMLElementTagNameMap[K] = document.createElement(tagName);
     parentElement.appendChild(el);
     return el;
+}
+
+export function priorityQuadrantIcon(task: Task): string | null {
+    const priorityQuadrant = priorityQuadrantFromText(task.description);
+    return priorityQuadrant ? priorityQuadrantIcons[priorityQuadrant] : null;
 }
 
 /**
@@ -240,11 +250,11 @@ export class TaskLineRenderer {
         const emojiSerializer = TASK_FORMATS.tasksPluginEmoji.taskSerializer;
         // Render and build classes for all the task's visible components
         for (const component of this.taskLayoutOptions.shownComponents) {
-            const componentString = emojiSerializer.componentToString(
-                task,
-                this.queryLayoutOptions.shortMode,
-                component,
-            );
+            const componentString =
+                component === TaskLayoutComponent.Priority
+                    ? priorityQuadrantIcon(task) ??
+                      emojiSerializer.componentToString(task, this.queryLayoutOptions.shortMode, component)
+                    : emojiSerializer.componentToString(task, this.queryLayoutOptions.shortMode, component);
             if (componentString) {
                 // Create the text span that will hold the rendered component
                 const span = createAndAppendElement('span', parentElement);
@@ -318,6 +328,7 @@ export class TaskLineRenderer {
 
     private async renderDescription(task: Task, span: HTMLSpanElement, isTaskInQueryFile: boolean) {
         let description = this.adjustRelativeLinksInDescription(task, isTaskInQueryFile);
+        description = removePriorityQuadrantMarkers(description).trim();
         description = GlobalFilter.getInstance().removeAsWordFromDependingOnSettings(description);
 
         const { debugSettings } = getSettings();

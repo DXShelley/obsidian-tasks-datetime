@@ -8,8 +8,8 @@ export class DateParser {
                 forwardDate: forwardDate,
             }),
         );
-        // Preserve an explicitly supplied time for datetime-aware filters.
-        return /\d{1,2}:\d{2}/.test(input) ? date : date.startOf('day');
+        // Preserve any time that chrono identified, including natural-language values such as "noon" and "8pm".
+        return DateParser.hasExplicitTime(input) ? date : date.startOf('day');
     }
 
     /**
@@ -59,7 +59,10 @@ export class DateParser {
     }
 
     public static hasExplicitTime(input: string): boolean {
-        return /\b\d{1,2}:\d{2}(?::\d{2})?\b/u.test(input);
+        return (
+            chrono.parse(input).some((result) => result.start.isCertain('hour')) ||
+            /\b(?:noon|midnight)\b/iu.test(input)
+        );
     }
 
     private static parseRelativeDateRange(this: void, input: string, _forwardDate: boolean): DateRange {

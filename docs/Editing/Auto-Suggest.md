@@ -57,7 +57,7 @@ Here is a more detailed walk through of the creation of a new task, which can be
 
     **Note**: When the `⏎` item is shown at the top of the menu, it is given as a default option to enter a new line instead of choosing a suggestion. It is only shown when there is no concrete match when using the [[Tasks Emoji Format]].
 
-3. Here we selected the 'high priority' item, and so now the menu is updated to show the next most likely items you might want to add. We are going to select 'recurring (repeat)' from this menu:
+3. In the Tasks Emoji Format, select one of the four priority quadrant icons: `🔥`, `🎯`, `⚡`, or `💤`. The selected icon is written directly into the task, and the menu then shows the next most likely items you might want to add. We are going to select 'recurring (repeat)' from this menu:
 
     ![auto-suggest-menu-after-priority](../images/auto-suggest-menu-after-priority.png)
 
@@ -69,7 +69,7 @@ Here is a more detailed walk through of the creation of a new task, which can be
 
     ![auto-suggest-menu-after-repeat-text](../images/auto-suggest-menu-after-repeat-text.png)
 
-6. We selected the 'due date', and so now the menu offers a selection of commonly-used dates, calculated based on the current date:
+6. We selected the 'due date', and so now the menu offers common date expressions calculated from the current date:
 
     ![auto-suggest-menu-after-due-emoji](../images/auto-suggest-menu-after-due-emoji.png)
 
@@ -93,6 +93,7 @@ The menu is smart: it will only offer valid options:
 - For example, if you have already added a due date, that option will be removed from the menu.
 - When the `⏎` item is shown at the top of the menu, it is given as a default option to enter a new line instead of choosing a suggestion. It is only shown when there is no concrete match.
 - There are many more recognized options than are showing in the menus, including many more dates, such as `2 months`, `15 days`.
+- For an empty date value, date suggestions include `today`, `tomorrow`, weekdays, and relative dates such as `next week`.
 
 Since Tasks 7.4.0, the menu supports easy creation of [[Task Dependencies]].
 
@@ -113,7 +114,7 @@ Since Tasks 7.4.0, the menu supports easy creation of [[Task Dependencies]].
 The auto-suggest menu supports powerful keyboard control:
 
 - Example: type some fraction of the word `start` and you will get a suggestion to turn it into the start emoji. Pressing `<enter>` then immediately adds the start emoji: 🛫.
-- You can use the [[Create or edit Task#Date abbreviations|date abbreviations offered by "Create or edit task"]], followed by a space character.
+- Date suggestions include `today`, `tomorrow`, weekdays, and relative dates.
 - The filtering matches anywhere. For example, if you haven't yet added any dates to the task, typing `du` would then offer `📅 due date` and `⏳ scheduled date`.
 - You can use the up/down arrow keys on your keyboard, then press `<enter>` to select from the menu.
 - The menu is controlled by the [[#Minimum match length for auto-suggest]] setting. The higher its value, the more you have to type before the menu pops up.
@@ -136,7 +137,6 @@ There are some Auto-Suggest behaviours that might be improved in future releases
     - This phrase still needs to be typed manually.
     - We are tracking this in [issue #2066](https://github.com/obsidian-tasks-group/obsidian-tasks/issues/2066).
 - It currently pops up when editing completed tasks. This may be changed in future.
-- The [[Create or edit Task#Date abbreviations|date abbreviations offered by "Create or edit task"]] only work after a space is typed.
 - When Auto-Suggest is used in [[Kanban plugin]] cards (or any other plugins that use the [[Tasks Api#Auto-Suggest Integration|auto-suggest integration]]), the [[Task Dependencies|dependencies]] suggestions are not available, because there is not yet a mechanism for plugins to access all the tasks in the vault.
   - We are tracking this in [issue #3274](https://github.com/obsidian-tasks-group/obsidian-tasks/issues/3274).
 
@@ -327,7 +327,7 @@ For more on filtering, and some examples, see [[#What keywords may I type to mak
 
 Increase the [[#Minimum match length for auto-suggest]] value in settings (and re-start Obsidian) so that the menu will only appear when you have typed a few characters from your chosen menu option.
 
-For example, if you set the `Minimum match length for auto-suggest` to 3, you would need to type in your task "pri" or "hig" or "med" or "low" to get auto-suggest for the priority emoji(s).
+For example, if you set the `Minimum match length for auto-suggest` to 3, you would need to type in your task `imp`, `urg`, or `not` to get auto-suggest for the priority quadrant icons.
 
 ### What keywords may I type to make auto-suggest write the emoji for me?
 
@@ -347,13 +347,12 @@ Similarly, you can type some fraction of the word `start` (of whatever length is
 | 📅 due date | 📅  |
 | 🛫 start date | 🛫  |
 | ⏳ scheduled date | ⏳  |
-| ⏫ high priority | ⏫  |
-| 🔼 medium priority | 🔼  |
-| 🔽 low priority | 🔽  |
-| 🔺 highest priority | 🔺  |
-| ⏬ lowest priority | ⏬  |
+| 🔥 Important / Urgent | 🔥  |
+| 🎯 Important / Not urgent | 🎯  |
+| ⚡ Not important / Urgent | ⚡  |
+| 💤 Not important / Not urgent | 💤  |
 | 🔁 recurring (repeat) | 🔁  |
-| ➕ created today (2022-07-11) | ➕ 2022-07-11  |
+| ➕ created today (2022-07-11) | ➕ 2022-07-11 15:00:00  |
 | 🆔 id | 🆔  |
 | ⛔ depends on id | ⛔  |
 | 🏁 on completion | 🏁  |
@@ -370,42 +369,42 @@ Similarly, you can type some fraction of the word `start` (of whatever length is
 | every week on Thursday | 🔁 every week on Thursday  |
 | every week on Friday | 🔁 every week on Friday  |
 | every week on Saturday | 🔁 every week on Saturday  |
-| today (2022-07-11) | 📅 2022-07-11  |
-| tomorrow (2022-07-12) | 📅 2022-07-12  |
-| Sunday (2022-07-17) | 📅 2022-07-17  |
-| Monday (2022-07-18) | 📅 2022-07-18  |
-| Tuesday (2022-07-12) | 📅 2022-07-12  |
-| Wednesday (2022-07-13) | 📅 2022-07-13  |
-| Thursday (2022-07-14) | 📅 2022-07-14  |
-| Friday (2022-07-15) | 📅 2022-07-15  |
-| Saturday (2022-07-16) | 📅 2022-07-16  |
-| next week (2022-07-18) | 📅 2022-07-18  |
-| next month (2022-08-11) | 📅 2022-08-11  |
-| next year (2023-07-11) | 📅 2023-07-11  |
-| today (2022-07-11) | ⏳ 2022-07-11  |
-| tomorrow (2022-07-12) | ⏳ 2022-07-12  |
-| Sunday (2022-07-17) | ⏳ 2022-07-17  |
-| Monday (2022-07-18) | ⏳ 2022-07-18  |
-| Tuesday (2022-07-12) | ⏳ 2022-07-12  |
-| Wednesday (2022-07-13) | ⏳ 2022-07-13  |
-| Thursday (2022-07-14) | ⏳ 2022-07-14  |
-| Friday (2022-07-15) | ⏳ 2022-07-15  |
-| Saturday (2022-07-16) | ⏳ 2022-07-16  |
-| next week (2022-07-18) | ⏳ 2022-07-18  |
-| next month (2022-08-11) | ⏳ 2022-08-11  |
-| next year (2023-07-11) | ⏳ 2023-07-11  |
-| today (2022-07-11) | 🛫 2022-07-11  |
-| tomorrow (2022-07-12) | 🛫 2022-07-12  |
-| Sunday (2022-07-17) | 🛫 2022-07-17  |
-| Monday (2022-07-18) | 🛫 2022-07-18  |
-| Tuesday (2022-07-12) | 🛫 2022-07-12  |
-| Wednesday (2022-07-13) | 🛫 2022-07-13  |
-| Thursday (2022-07-14) | 🛫 2022-07-14  |
-| Friday (2022-07-15) | 🛫 2022-07-15  |
-| Saturday (2022-07-16) | 🛫 2022-07-16  |
-| next week (2022-07-18) | 🛫 2022-07-18  |
-| next month (2022-08-11) | 🛫 2022-08-11  |
-| next year (2023-07-11) | 🛫 2023-07-11  |
+| today (2022-07-11) | 📅 2022-07-11 15:00:00  |
+| tomorrow (2022-07-12) | 📅 2022-07-12 15:00:00  |
+| Sunday (2022-07-17) | 📅 2022-07-17 15:00:00  |
+| Monday (2022-07-18) | 📅 2022-07-18 15:00:00  |
+| Tuesday (2022-07-12) | 📅 2022-07-12 15:00:00  |
+| Wednesday (2022-07-13) | 📅 2022-07-13 15:00:00  |
+| Thursday (2022-07-14) | 📅 2022-07-14 15:00:00  |
+| Friday (2022-07-15) | 📅 2022-07-15 15:00:00  |
+| Saturday (2022-07-16) | 📅 2022-07-16 15:00:00  |
+| next week (2022-07-18) | 📅 2022-07-18 15:00:00  |
+| next month (2022-08-11) | 📅 2022-08-11 15:00:00  |
+| next year (2023-07-11) | 📅 2023-07-11 15:00:00  |
+| today (2022-07-11) | ⏳ 2022-07-11 15:00:00  |
+| tomorrow (2022-07-12) | ⏳ 2022-07-12 15:00:00  |
+| Sunday (2022-07-17) | ⏳ 2022-07-17 15:00:00  |
+| Monday (2022-07-18) | ⏳ 2022-07-18 15:00:00  |
+| Tuesday (2022-07-12) | ⏳ 2022-07-12 15:00:00  |
+| Wednesday (2022-07-13) | ⏳ 2022-07-13 15:00:00  |
+| Thursday (2022-07-14) | ⏳ 2022-07-14 15:00:00  |
+| Friday (2022-07-15) | ⏳ 2022-07-15 15:00:00  |
+| Saturday (2022-07-16) | ⏳ 2022-07-16 15:00:00  |
+| next week (2022-07-18) | ⏳ 2022-07-18 15:00:00  |
+| next month (2022-08-11) | ⏳ 2022-08-11 15:00:00  |
+| next year (2023-07-11) | ⏳ 2023-07-11 15:00:00  |
+| today (2022-07-11) | 🛫 2022-07-11 15:00:00  |
+| tomorrow (2022-07-12) | 🛫 2022-07-12 15:00:00  |
+| Sunday (2022-07-17) | 🛫 2022-07-17 15:00:00  |
+| Monday (2022-07-18) | 🛫 2022-07-18 15:00:00  |
+| Tuesday (2022-07-12) | 🛫 2022-07-12 15:00:00  |
+| Wednesday (2022-07-13) | 🛫 2022-07-13 15:00:00  |
+| Thursday (2022-07-14) | 🛫 2022-07-14 15:00:00  |
+| Friday (2022-07-15) | 🛫 2022-07-15 15:00:00  |
+| Saturday (2022-07-16) | 🛫 2022-07-16 15:00:00  |
+| next week (2022-07-18) | 🛫 2022-07-18 15:00:00  |
+| next month (2022-08-11) | 🛫 2022-08-11 15:00:00  |
+| next year (2023-07-11) | 🛫 2023-07-11 15:00:00  |
 | delete | 🏁 delete  |
 | keep | 🏁 keep  |
 | generate unique id | 🆔 ******  |

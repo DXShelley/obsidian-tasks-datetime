@@ -1,6 +1,6 @@
 {
   "name": "obsidian-tasks-datetime",
-  "version": "8.2.2",
+  "version": "8.3.10",
   "description": "Tasks with date and time support down to seconds",
   "main": "main.js",
   "engines": {
@@ -41,6 +41,7 @@
   "homepage": "https://github.com/DXShelley/obsidian-tasks-datetime#readme",
   "license": "MIT",
   "devDependencies": {
+    "@codemirror/state": "^6.0.0",
     "@codemirror/view": "^6.2.0",
     "@eslint/js": "^8.57.0",
     "@eslint/json": "0.14.0",

@@ -6,6 +6,6 @@ filter by function task.due.format('dddd') === 'Tuesday'
 Find tasks due on Tuesdays, that is, any Tuesday.
 On non-English systems, you may need to supply the day of the week in the local language.
 =>
-- [ ] my description 📅 2023-05-30
+- [ ] my description 📅 2023-05-30 00:00:00
 ====================================================================================
 

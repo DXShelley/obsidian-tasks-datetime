@@ -24,7 +24,12 @@ import {
 } from './RenderingTestHelpers';
 
 jest.mock('../../src/ui/DateTimePicker', () => ({
-    createDateTimePicker: jest.fn(() => ({ destroy: jest.fn() })),
+    createDateTimePicker: jest.fn(({ input, onDateSelected }) => {
+        input.addEventListener('tasks-date-selected', (event: Event) => {
+            onDateSelected(new Date((event as CustomEvent<string>).detail));
+        });
+        return { clear: jest.fn(), destroy: jest.fn(), open: jest.fn() };
+    }),
 }));
 
 window.moment = moment;
@@ -123,9 +128,15 @@ async function editFieldAndSave(line: string, elementId: string, newValue: strin
     const { waitForClose, onSubmit } = constructSerialisingOnSubmit(task);
     const { result, container } = renderAndCheckModal(task, onSubmit);
 
-    const description = getAndCheckRenderedElement<HTMLInputElement>(container, elementId);
     const submit = getAndCheckApplyButton(result);
 
+    if (dateFieldIds.has(elementId)) {
+        await selectDate(container, elementId, newValue);
+        submit.click();
+        return await waitForClose;
+    }
+
+    const description = getAndCheckRenderedElement<HTMLInputElement>(container, elementId);
     return await editInputElementAndSubmit(description, newValue, submit, waitForClose);
 }
 
@@ -160,8 +171,7 @@ async function renderChangeDateAndStatus(line: string, elementId: string, newVal
     const { waitForClose, onSubmit } = constructSerialisingOnSubmit(task);
     const { result, container } = renderAndCheckModal(task, onSubmit);
 
-    const inputElement = getAndCheckRenderedElement<HTMLInputElement>(container, elementId);
-    await editInputElement(inputElement, newValue);
+    await selectDate(container, elementId, newValue);
 
     const statusSelector = getAndCheckRenderedElement<HTMLSelectElement>(container, 'status-type');
     await fireEvent.change(statusSelector, {
@@ -172,7 +182,17 @@ async function renderChangeDateAndStatus(line: string, elementId: string, newVal
     return { waitForClose, container, submit };
 }
 
+const dateFieldIds = new Set(['start', 'scheduled', 'due', 'done', 'created', 'cancelled']);
+
+async function selectDate(container: HTMLElement, elementId: string, value: string) {
+    const datePicker = getAndCheckRenderedElement<HTMLInputElement>(container, `date-editor-picker-${elementId}`);
+    await fireEvent(datePicker, new CustomEvent('tasks-date-selected', { detail: value }));
+}
+
 function getElementValue(container: HTMLElement, elementId: string) {
+    if (dateFieldIds.has(elementId)) {
+        return getAndCheckRenderedElement<HTMLInputElement>(container, `date-editor-picker-${elementId}`).value;
+    }
     const element = getAndCheckRenderedElement<HTMLInputElement>(container, elementId);
     return element.value;
 }
@@ -198,8 +218,14 @@ describe('Task rendering', () => {
         const onSubmit = (_: Task[]): void => {};
         const { container } = renderAndCheckModal(task, onSubmit);
 
-        const inputElement = getAndCheckRenderedElement<HTMLInputElement>(container, elementId);
-        expect(inputElement!.value).toEqual(expectedElementValue);
+        if (expectedElementValue === invalidDateText) {
+            expect(container.querySelector('.tasks-modal-parsed-date')?.textContent).toContain(
+                `invalid ${elementId} date`,
+            );
+            return;
+        }
+
+        expect(getElementValue(container, elementId)).toEqual(expectedElementValue);
     }
 
     function testDescriptionRender(taskDescription: string, expectedDescription: string) {
@@ -366,7 +392,9 @@ describe('Task editing', () => {
             expect(getElementValue(container, 'done')).toEqual(today);
 
             submit.click();
-            expect(await waitForClose).toMatchInlineSnapshot('"- [x] expecting done date to be added ✅ 2024-02-29"');
+            expect(await waitForClose).toMatchInlineSnapshot(
+                '"- [x] expecting done date to be added ✅ 2024-02-29 00:00:00"',
+            );
         });
 
         it('should change status to Done and keep doneDate', async () => {
@@ -377,7 +405,9 @@ describe('Task editing', () => {
             expect(getElementValue(container, 'done')).toEqual('2024-09-19');
 
             submit.click();
-            expect(await waitForClose).toMatchInlineSnapshot('"- [x] expecting done date to be kept ✅ 2024-09-19"');
+            expect(await waitForClose).toMatchInlineSnapshot(
+                '"- [x] expecting done date to be kept ✅ 2024-09-19 00:00:00"',
+            );
         });
 
         it('should change status to Todo and remove doneDate', async () => {
@@ -400,7 +430,7 @@ describe('Task editing', () => {
 
             submit.click();
             expect(await waitForClose).toMatchInlineSnapshot(
-                '"- [-] expecting cancelled date to be added ❌ 2024-02-29"',
+                '"- [-] expecting cancelled date to be added ❌ 2024-02-29 00:00:00"',
             );
         });
 
@@ -413,7 +443,7 @@ describe('Task editing', () => {
 
             submit.click();
             expect(await waitForClose).toMatchInlineSnapshot(
-                '"- [-] expecting cancelled date to be kept ❌ 2024-09-20"',
+                '"- [-] expecting cancelled date to be kept ❌ 2024-09-20 00:00:00"',
             );
         });
 
@@ -464,7 +494,7 @@ describe('Task editing', () => {
                 'done',
                 '2024-09-20',
                 'x',
-                '- [x] input done date, change status to done and expect the date to be kept ✅ 2024-09-20',
+                '- [x] input done date, change status to done and expect the date to be kept ✅ 2024-09-20 00:00:00',
             ],
             [
                 '- [ ] input cancelled date, change status to cancelled and expect the date to be kept',
@@ -472,7 +502,7 @@ describe('Task editing', () => {
                 '2024-09-21',
                 '-',
                 // https://github.com/obsidian-tasks-group/obsidian-tasks/issues/3089
-                '- [-] input cancelled date, change status to cancelled and expect the date to be kept ❌ 2024-09-21',
+                '- [-] input cancelled date, change status to cancelled and expect the date to be kept ❌ 2024-09-21 00:00:00',
             ],
         ])(
             'for "%s" task, change %s date to %s and status to %s',
@@ -502,8 +532,8 @@ describe('Task editing', () => {
 
             submit.click();
             expect(await waitForClose).toMatchInlineSnapshot(`
-                "- [ ] Recurring 🔁 every day 📅 2024-02-18
-                - [x] Recurring 🔁 every day 📅 2024-02-17 ✅ 2024-02-29"
+                "- [ ] Recurring 🔁 every day 📅 2024-02-18 00:00:00
+                - [x] Recurring 🔁 every day 📅 2024-02-17 00:00:00 ✅ 2024-02-29 00:00:00"
             `);
         });
 
@@ -516,8 +546,8 @@ describe('Task editing', () => {
 
             submit.click();
             expect(await waitForClose).toMatchInlineSnapshot(`
-                "- [x] Recurring 🔁 every day 📅 2024-02-17 ✅ 2024-02-29
-                - [ ] Recurring 🔁 every day 📅 2024-02-18"
+                "- [x] Recurring 🔁 every day 📅 2024-02-17 00:00:00 ✅ 2024-02-29 00:00:00
+                - [ ] Recurring 🔁 every day 📅 2024-02-18 00:00:00"
             `);
         });
 
@@ -531,8 +561,8 @@ describe('Task editing', () => {
 
             submit.click();
             expect(await waitForClose).toMatchInlineSnapshot(`
-                "- [ ] Recurring 🔁 every day when done ➕ 2024-02-29 📅 2024-03-01
-                - [x] Recurring 🔁 every day when done 📅 2024-02-17 ✅ 2024-02-29"
+                "- [ ] Recurring 🔁 every day when done ➕ 2024-02-29 00:00:00 📅 2024-03-01 00:00:00
+                - [x] Recurring 🔁 every day when done 📅 2024-02-17 00:00:00 ✅ 2024-02-29 00:00:00"
             `);
         });
 
@@ -544,13 +574,12 @@ describe('Task editing', () => {
                 'x',
             );
 
-            const doneField = getAndCheckRenderedElement<HTMLInputElement>(container, 'done');
-            await editInputElement(doneField, '2024-02-23');
+            await selectDate(container, 'done', '2024-02-23');
 
             submit.click();
             expect(await waitForClose).toMatchInlineSnapshot(`
-                "- [ ] Recurring 🔁 every day when done ➕ 2024-02-29 📅 2024-02-24
-                - [x] Recurring 🔁 every day when done 📅 2024-02-17 ✅ 2024-02-23"
+                "- [ ] Recurring 🔁 every day when done ➕ 2024-02-29 00:00:00 📅 2024-02-24 00:00:00
+                - [x] Recurring 🔁 every day when done 📅 2024-02-17 00:00:00 ✅ 2024-02-23 00:00:00"
             `);
         });
     });
@@ -558,7 +587,7 @@ describe('Task editing', () => {
     describe('Date editing', () => {
         beforeEach(() => {
             jest.useFakeTimers();
-            jest.setSystemTime(new Date('2024-11-27'));
+            jest.setSystemTime(new Date('2024-11-27T13:14:15'));
         });
 
         afterEach(() => {
@@ -568,42 +597,33 @@ describe('Task editing', () => {
         const line = '- [ ] simple';
 
         it('should edit and save cancelled date', async () => {
-            expect(await editFieldAndSave(line, 'cancelled', '2024-01-01')).toEqual('- [ ] simple ❌ 2024-01-01');
+            expect(await editFieldAndSave(line, 'cancelled', '2024-01-01')).toEqual(
+                '- [ ] simple ❌ 2024-01-01 13:14:15',
+            );
         });
 
         it('should edit and save created date', async () => {
-            expect(await editFieldAndSave(line, 'created', '2024-01-01')).toEqual('- [ ] simple ➕ 2024-01-01');
+            expect(await editFieldAndSave(line, 'created', '2024-01-01')).toEqual(
+                '- [ ] simple ➕ 2024-01-01 13:14:15',
+            );
         });
 
         it('should edit and save done date', async () => {
-            expect(await editFieldAndSave(line, 'done', '2024-01-01')).toEqual('- [ ] simple ✅ 2024-01-01');
+            expect(await editFieldAndSave(line, 'done', '2024-01-01')).toEqual('- [ ] simple ✅ 2024-01-01 13:14:15');
         });
 
         it('should edit and save due date', async () => {
-            expect(await editFieldAndSave(line, 'due', '2024-01-01')).toEqual('- [ ] simple 📅 2024-01-01');
+            expect(await editFieldAndSave(line, 'due', '2024-01-01')).toEqual('- [ ] simple 📅 2024-01-01 13:14:15');
         });
 
         it('should edit and save scheduled date', async () => {
-            expect(await editFieldAndSave(line, 'scheduled', '2024-01-01')).toEqual('- [ ] simple ⏳ 2024-01-01');
+            expect(await editFieldAndSave(line, 'scheduled', '2024-01-01')).toEqual(
+                '- [ ] simple ⏳ 2024-01-01 13:14:15',
+            );
         });
 
         it('should edit and save start date', async () => {
-            expect(await editFieldAndSave(line, 'start', '2024-01-01')).toEqual('- [ ] simple 🛫 2024-01-01');
-        });
-
-        it('should edit and save start date "today"', async () => {
-            expect(await editFieldAndSave(line, 'start', 'today')).toEqual('- [ ] simple 🛫 2024-11-27');
-        });
-
-        it('should edit and save start date "this week"', async () => {
-            // Confirm understanding that today's date is a Wednesday
-            expect(moment().format('YYYY-MM-DD dddd')).toEqual('2024-11-27 Wednesday');
-
-            // See https://github.com/obsidian-tasks-group/obsidian-tasks/issues/2588
-            // With 'only future dates' being on by default, the selection of a date
-            // earlier than today is unexpected.
-            // This was written with Tasks using "chrono-node": "2.3.9"
-            expect(await editFieldAndSave(line, 'start', 'this week')).toEqual('- [ ] simple 🛫 2024-11-24');
+            expect(await editFieldAndSave(line, 'start', '2024-01-01')).toEqual('- [ ] simple 🛫 2024-01-01 13:14:15');
         });
     });
 
@@ -611,8 +631,8 @@ describe('Task editing', () => {
         it('should retain any OnCompletion value', async () => {
             // We cannot yet edit the OnCompletion in the modal.
             // So for now, just test to ensure that any initial value is retained.
-            expect(await editFieldAndSave('- [ ] description  🏁 delete', 'start', '2024-01-01')).toEqual(
-                '- [ ] description 🏁 delete 🛫 2024-01-01',
+            await expect(editFieldAndSave('- [ ] description  🏁 delete', 'start', '2024-01-01')).resolves.toMatch(
+                /^- \[ \] description 🏁 delete 🛫 2024-01-01 \d{2}:\d{2}:\d{2}$/u,
             );
         });
     });

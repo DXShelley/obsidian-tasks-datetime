@@ -8,7 +8,7 @@ The first suggestion is:
 {
     "suggestionType": "match",
     "displayText": "today (2022-07-11)",
-    "appendText": "due:: 2022-07-11] ",
+    "appendText": "due:: 2022-07-11 15:00:00] ",
     "insertAt": 16,
     "insertSkip": 5
 }
@@ -21,7 +21,7 @@ The first suggestion is:
 {
     "suggestionType": "match",
     "displayText": "2022-10-27",
-    "appendText": "due:: 2022-10-27] ",
+    "appendText": "due:: 2022-10-27 15:00:00] ",
     "insertAt": 16,
     "insertSkip": 12
 }
@@ -34,7 +34,7 @@ The first suggestion is:
 {
     "suggestionType": "match",
     "displayText": "2023-07-11",
-    "appendText": "due:: 2023-07-11] ",
+    "appendText": "due:: 2023-07-11 15:00:00] ",
     "insertAt": 16,
     "insertSkip": 12
 }

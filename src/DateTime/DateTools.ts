@@ -1,6 +1,13 @@
 import * as chrono from 'chrono-node';
 import { getSettings } from '../Config/Settings';
 import { TaskRegularExpressions } from '../Task/TaskRegularExpressions';
+import { applyCurrentTime, parseTaskDateForSaving } from './TaskDateTime';
+
+export {
+    formatTaskDateForStorage,
+    formatTaskDateForStorageWithCurrentTime,
+    parseTaskDateForSaving,
+} from './TaskDateTime';
 
 export function taskDateFormat(): string {
     return getSettings().enableDateTime ? TaskRegularExpressions.dateTimeFormat : TaskRegularExpressions.dateFormat;
@@ -71,9 +78,8 @@ function parseTypedDateForDisplay(
     });
     if (parsed !== null) {
         const date = window.moment(parsed);
-        if (getSettings().enableDateTime && !/\d{1,2}:\d{2}/.test(typedDate)) {
-            const now = window.moment();
-            date.hour(now.hour()).minute(now.minute()).second(now.second()).millisecond(0);
+        if (!/\d{1,2}:\d{2}/.test(typedDate)) {
+            applyCurrentTime(date);
         }
         return date.format(taskDateFormat());
     }
@@ -100,17 +106,4 @@ export function parseTypedDateForDisplayUsingFutureDate(
  * @param typedDate - what the user has entered, such as '2023-01-23' or 'tomorrow'
  * @param forwardDate
  */
-export function parseTypedDateForSaving(typedDate: string, forwardDate: boolean): moment.Moment | null {
-    let date: moment.Moment | null = null;
-    const parsedDate = chrono.parseDate(typedDate, new Date(), { forwardDate });
-    if (parsedDate !== null) {
-        date = window.moment(parsedDate);
-        // A date-only entry deliberately remains convenient: when time support is on,
-        // use the current clock time instead of silently treating it as midnight.
-        if (getSettings().enableDateTime && !/\d{1,2}:\d{2}/.test(typedDate)) {
-            const now = window.moment();
-            date.hour(now.hour()).minute(now.minute()).second(now.second()).millisecond(0);
-        }
-    }
-    return date;
-}
+export const parseTypedDateForSaving = parseTaskDateForSaving;

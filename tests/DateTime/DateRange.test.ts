@@ -12,7 +12,7 @@ function testDateRange(dateRange: DateRange, start: string, end: string) {
     expect(dateRange.end).toBeDefined();
     expect(dateRange.isValid()).toEqual(true);
     expect(dateRange.start.format('YYYY-MM-DD HH:mm')).toStrictEqual(`${start} 00:00`);
-    expect(dateRange.end.format('YYYY-MM-DD HH:mm')).toStrictEqual(`${end} 00:00`);
+    expect(dateRange.end.format('YYYY-MM-DD HH:mm:ss.SSS')).toStrictEqual(`${end} 23:59:59.999`);
 }
 
 describe('DateRange - absolute date ranges', () => {
@@ -24,6 +24,19 @@ describe('DateRange - absolute date ranges', () => {
     it('should return date range even if dates are reversed', () => {
         const dateRange = new DateRange(moment('2023-08-02'), moment('2017-11-02'));
         testDateRange(dateRange, '2017-11-02', '2023-08-02');
+    });
+
+    it('should retain exact bounds for an explicit datetime range', () => {
+        const dateRange = new DateRange(moment('2023-09-28 08:00:00'), moment('2023-10-01 17:30:00'), true);
+
+        expect(dateRange.start.format('YYYY-MM-DD HH:mm:ss')).toStrictEqual('2023-09-28 08:00:00');
+        expect(dateRange.end.format('YYYY-MM-DD HH:mm:ss')).toStrictEqual('2023-10-01 17:30:00');
+    });
+
+    it('should treat midnight datetime bounds as a date-only range for legacy compatibility', () => {
+        const dateRange = new DateRange(moment('2023-09-28 00:00:00'), moment('2023-09-28 00:00:00'), true);
+
+        testDateRange(dateRange, '2023-09-28', '2023-09-28');
     });
 });
 

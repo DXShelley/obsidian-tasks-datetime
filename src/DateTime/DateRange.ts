@@ -4,10 +4,11 @@
 export class DateRange {
     start: Moment;
     end: Moment;
+    private readonly preserveTime: boolean;
 
     /**
      * Builds the date range. If start is after the end, the dates will be automatically reversed.
-     * Start and end default to 00:00 local time for date-only query semantics.
+     * Date-only ranges start at 00:00 local time and end at 23:59:59.999.
      * Explicit datetime queries can preserve their supplied time.
      * The stored values of are mutable.
      * Note that there is no validation of the start and end moment. They can be checked with start.isValid() and end.isValid().
@@ -17,15 +18,16 @@ export class DateRange {
     constructor(start: Moment, end: Moment, preserveTime: boolean = false) {
         this.start = start;
         this.end = end;
+        this.preserveTime = preserveTime && !(isMidnight(start) && isMidnight(end));
 
         if (end.isBefore(start)) {
             this.start = end;
             this.end = start;
         }
 
-        if (!preserveTime) {
+        if (!this.preserveTime) {
             this.start = this.start.startOf('day');
-            this.end = this.end.startOf('day');
+            this.end = this.end.endOf('day');
         }
     }
 
@@ -40,10 +42,12 @@ export class DateRange {
         // Treat all weeks as ISO 8601 weeks
         const unitOfTime = range === 'week' ? 'isoWeek' : range;
 
-        return new DateRange(
-            window.moment().startOf(unitOfTime).startOf('day'),
-            window.moment().endOf(unitOfTime).startOf('day'),
-        );
+        return new DateRange(window.moment().startOf(unitOfTime).startOf('day'), window.moment().endOf(unitOfTime));
+    }
+
+    /** Returns whether this range represents one date rather than a date span. */
+    public isSingleDate(): boolean {
+        return this.start.isSame(this.end) || (!this.preserveTime && this.start.isSame(this.end, 'day'));
     }
 
     /**
@@ -76,7 +80,7 @@ export class DateRange {
         if (duration === 'month' || duration === 'quarter') {
             // Month and quarter durations in days may differ (28/30/31 days).
             // We will need to adjust the end.
-            this.end = this.end.endOf(duration).startOf('day');
+            this.end = this.end.endOf(duration);
         }
     }
 
@@ -93,7 +97,11 @@ export class DateRange {
         if (duration === 'month' || duration === 'quarter') {
             // Month and quarter durations in days may differ (28/30/31 days).
             // We will need to adjust the end.
-            this.end = this.end.endOf(duration).startOf('day');
+            this.end = this.end.endOf(duration);
         }
     }
+}
+
+function isMidnight(date: Moment): boolean {
+    return date.hour() === 0 && date.minute() === 0 && date.second() === 0 && date.millisecond() === 0;
 }
