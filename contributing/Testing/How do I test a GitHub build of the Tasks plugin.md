@@ -33,7 +33,7 @@ You can use these steps to install the built plugin either in the Tasks-Demo vau
 2. Optionally, rename the zip file to give it a meaningful name.
     - For example, you could append 'testing PR 1234 - nicer styling'.
 3. Expand the downloaded zip file
-4. Copy the files in the expanded folder to the `.obsidian/plugins/obsidian-tasks-datetime/` folder in your vault, overwriting the previous files.
+4. Copy the files in the expanded folder to the `.obsidian/plugins/tasks-datetime/` folder in your vault, overwriting the previous files.
 5. Restart Obsidian.
 
 ## Option 3: On iPhone and iPad, in local storage

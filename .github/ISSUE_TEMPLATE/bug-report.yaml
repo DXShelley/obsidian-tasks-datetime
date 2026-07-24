@@ -6,7 +6,7 @@ body:
     attributes:
       value: |
         ## Before you start
-        This repository supports **Tasks Datetime**, the independently maintained derivative with plugin ID `obsidian-tasks-datetime`.
+        This repository supports **Tasks Datetime**, the independently maintained derivative with plugin ID `tasks-datetime`.
         Do not report issues from the upstream Obsidian Tasks plugin here unless they also reproduce in Tasks Datetime.
   - type: checkboxes
     id: checks

@@ -27,7 +27,7 @@ The upstream project remains the date-only compatibility baseline. Tasks Datetim
 Until Tasks Datetime is accepted into the Obsidian Community Plugins directory, install it manually:
 
 1. Download `main.js`, `manifest.json`, and `styles.css` from a release.
-2. Create `.obsidian/plugins/obsidian-tasks-datetime/` in your vault.
+2. Create `.obsidian/plugins/tasks-datetime/` in your vault.
 3. Copy the three files into that directory and enable **Tasks Datetime** in Obsidian.
 
 ## Development

@@ -1,5 +1,5 @@
 {
-  "name": "obsidian-tasks-datetime",
+  "name": "tasks-datetime",
   "version": "8.3.10",
   "description": "Tasks with date and time support down to seconds",
   "main": "main.js",
@@ -26,7 +26,7 @@
   "keywords": [
     "obsidian",
     "obsidian-plugin",
-    "obsidian-tasks-datetime",
+    "tasks-datetime",
     "task-manager",
     "task-management"
   ],

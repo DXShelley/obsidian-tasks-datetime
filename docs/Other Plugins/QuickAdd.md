@@ -16,7 +16,7 @@ For this you need to enter the following code as the Capture format:
 
 ````markdown
 ```js quickadd
-return await this.app.plugins.plugins['obsidian-tasks-datetime'].apiV1.createTaskLineModal();
+return await this.app.plugins.plugins['tasks-datetime'].apiV1.createTaskLineModal();
 ```
 ````
 
@@ -24,7 +24,7 @@ Or if you would like a newline character to be added after your new task line, u
 
 ````markdown
 ```js quickadd
-return (await this.app.plugins.plugins['obsidian-tasks-datetime'].apiV1.createTaskLineModal()) + '\n';
+return (await this.app.plugins.plugins['tasks-datetime'].apiV1.createTaskLineModal()) + '\n';
 ```
 ````
 

@@ -15,7 +15,7 @@
       },
       "format": {
         "enabled": true,
-        "format": "```js quickadd\nreturn await this.app.plugins.plugins['obsidian-tasks-datetime'].apiV1.createTaskLineModal() + '\\n';\n```"
+        "format": "```js quickadd\nreturn await this.app.plugins.plugins['tasks-datetime'].apiV1.createTaskLineModal() + '\\n';\n```"
       },
       "insertAfter": {
         "enabled": true,

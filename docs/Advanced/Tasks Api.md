@@ -14,7 +14,7 @@ The Tasks API Interface was introduced in Tasks 2.0.0.
 Tasks Datetime exposes an API that can be used to integrate it in other Plugins, scripts or
 dynamic code blocks.
 
-The Tasks Datetime API is available from `app.plugins.plugins['obsidian-tasks-datetime'].apiV1`,
+The Tasks Datetime API is available from `app.plugins.plugins['tasks-datetime'].apiV1`,
 where `app` is the Obsidian App. A reference to the Obsidian App is usually available via `this.app`,
 however, this depends on the context of the executing script.
 
@@ -66,7 +66,7 @@ This method opens the Tasks [[Create or edit Task|Create or edit task UI]] and r
 If data entry is cancelled, an empty string is returned.
 
 ```javascript
-const tasksApi = this.app.plugins.plugins['obsidian-tasks-datetime'].apiV1;
+const tasksApi = this.app.plugins.plugins['tasks-datetime'].apiV1;
 let taskLine = await tasksApi.createTaskLineModal();
 
 // Do whatever you want with the returned value.
@@ -99,7 +99,7 @@ This method opens the Tasks [[Create or edit Task|Create or edit task UI]] with 
 If data entry is cancelled, an empty string is returned.
 
 ```javascript
-const tasksApi = this.app.plugins.plugins['obsidian-tasks-datetime'].apiV1;
+const tasksApi = this.app.plugins.plugins['tasks-datetime'].apiV1;
 let editedTaskLine = await tasksApi.editTaskLineModal('- [ ] My existing task');
 
 // Do whatever you want with the returned value.
@@ -118,7 +118,7 @@ console.log(editedTaskLine);
 Executes the 'Tasks: Toggle task done' command on the supplied line string. It toggles and updates a task line according to a user's preferences, accounting for recurrence rules and completed status. It returns a string representing the toggled task.
 
 ```typescript
-const tasksApi = this.app.plugins.plugins['obsidian-tasks-datetime'].apiV1;
+const tasksApi = this.app.plugins.plugins['tasks-datetime'].apiV1;
 const sourceFile: TFile = file;
 const taskLine = '- [ ] This is a task 📅 2024-04-24';
 

@@ -212,7 +212,7 @@ show tree
 - Preparation
   - Go to Settings -> Community plugins -> Installed plugins -> click on the folder icon to **Open plugins folder**
   - Quit Obsidian
-  - Open the `obsidian-tasks-datetime` folder
+  - Open the `tasks-datetime` folder
   - Delete `data.json`
 - Test
   - Restart obsidian

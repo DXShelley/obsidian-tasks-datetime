@@ -48,7 +48,7 @@
       "color": "#2798a0"
     },
     {
-      "id": "open-plugin-settings:obsidian-tasks-datetime",
+      "id": "open-plugin-settings:tasks-datetime",
       "icon": "lucide-settings-2",
       "name": "Open Plugin Settings: Open Tasks plugin settings",
       "mode": "any",
