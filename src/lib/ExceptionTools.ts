@@ -3,13 +3,13 @@
  * @param whatWasHappening - a description of what was happening at the time, preferably including any user inputs.
  * @param exception - object that was caught in a try/catch block.
  */
-export function errorMessageForException(whatWasHappening: string, exception: any): string {
+export function errorMessageForException(whatWasHappening: string, exception: unknown): string {
     const errorMessage = `Error: ${whatWasHappening}.
 The error message was:
     `;
     let detail: string = '';
     if (exception instanceof Error) {
-        detail += exception;
+        detail = `${exception.name}: ${exception.message}`;
     } else {
         detail += 'Unknown error';
     }

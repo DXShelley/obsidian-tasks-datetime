@@ -104,11 +104,11 @@ describe.each([
     beforeEach(() => {
         // Note: Dependency suggestions are temporarily turned off in the released plugin,
         //       but turned on in tests so that we continue to check the behaviour.
-        global.SHOW_DEPENDENCY_SUGGESTIONS = true;
+        window.SHOW_DEPENDENCY_SUGGESTIONS = true;
     });
 
     afterEach(() => {
-        global.SHOW_DEPENDENCY_SUGGESTIONS = false;
+        window.SHOW_DEPENDENCY_SUGGESTIONS = false;
     });
 
     /** Build suggestions for the simple case where the cursor is at the very end of the line.
@@ -510,7 +510,7 @@ ${JSON.stringify(suggestions[0], null, 4)}
         // Turn off dependency suggestions for now, as per default value,
         // as the outputs of this test are embedded in the documentation,
         // and I wish to hide ID and dependsOn there.
-        global.SHOW_DEPENDENCY_SUGGESTIONS = showDependencySuggestionsDefault;
+        window.SHOW_DEPENDENCY_SUGGESTIONS = showDependencySuggestionsDefault;
 
         const originalSettings = getSettings();
         originalSettings.autoSuggestMaxItems = 200;
@@ -525,7 +525,7 @@ ${JSON.stringify(suggestions[0], null, 4)}
             `- [ ] some task ${startDateSymbol} `,
             `- [ ] some task ${onCompletionSymbol} `,
         ];
-        if (global.SHOW_DEPENDENCY_SUGGESTIONS) {
+        if (window.SHOW_DEPENDENCY_SUGGESTIONS) {
             lines.push(`- [ ] some task ${idSymbol} `);
             lines.push(`- [ ] some task ${dependsOnSymbol} `);
         }

@@ -271,12 +271,12 @@ export class HtmlQueryResultsRenderer extends QueryResultsRendererBase {
         link.text = linkText;
 
         // Go to the line the task is defined at
-        link.addEventListener('click', async (ev: MouseEvent) => {
-            await this.htmlQueryRendererParameters.backlinksClickHandler(ev, task);
+        link.addEventListener('click', (ev: MouseEvent) => {
+            void this.htmlQueryRendererParameters.backlinksClickHandler(ev, task);
         });
 
-        link.addEventListener('mousedown', async (ev: MouseEvent) => {
-            await this.htmlQueryRendererParameters.backlinksMousedownHandler(ev, task);
+        link.addEventListener('mousedown', (ev: MouseEvent) => {
+            void this.htmlQueryRendererParameters.backlinksMousedownHandler(ev, task);
         });
 
         if (!shortMode) {
@@ -296,10 +296,10 @@ export class HtmlQueryResultsRenderer extends QueryResultsRendererBase {
         }
         button.title = buttonTooltipText;
 
-        button.addEventListener('click', async (ev: MouseEvent) => {
+        button.addEventListener('click', (ev: MouseEvent) => {
             ev.preventDefault(); // suppress the default click behavior
             ev.stopPropagation(); // suppress further event propagation
-            await PostponeMenu.postponeOnClickCallback(button, task, amount, timeUnit);
+            void PostponeMenu.postponeOnClickCallback(button, task, amount, timeUnit);
         });
 
         /** Open a context menu on right-click.

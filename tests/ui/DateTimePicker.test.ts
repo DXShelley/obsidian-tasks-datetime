@@ -74,6 +74,7 @@ describe('DateTimePicker', () => {
 
         const options = (flatpickr as unknown as jest.Mock).mock.calls.at(-1)![1];
         const calendarContainer = document.createElement('div');
+        calendarContainer.setCssProps = (props) => Object.assign(calendarContainer.style, props);
         Object.defineProperty(calendarContainer, 'offsetHeight', { value: 300 });
         options.position({ calendarContainer });
 
@@ -101,6 +102,19 @@ describe('DateTimePicker', () => {
         const input = document.createElement('input');
         const trigger = document.createElement('button');
         const calendarContainer = document.createElement('div');
+        calendarContainer.createDiv = (cls) => {
+            const element = document.createElement('div');
+            if (typeof cls === 'string') {
+                element.classList.add(cls);
+            }
+            element.createEl = function <K extends keyof HTMLElementTagNameMap>(tagName: K): HTMLElementTagNameMap[K] {
+                const child = document.createElement(tagName);
+                this.append(child);
+                return child;
+            };
+            calendarContainer.append(element);
+            return element;
+        };
         const clear = jest.fn();
         const setDate = jest.fn();
         const close = jest.fn();

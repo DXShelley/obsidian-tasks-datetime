@@ -152,7 +152,7 @@ class LivePreviewExtension implements PluginValue {
         if (this.dateTimeDecorationRefreshFrame !== undefined) {
             return;
         }
-        this.dateTimeDecorationRefreshFrame = requestAnimationFrame(() => {
+        this.dateTimeDecorationRefreshFrame = window.requestAnimationFrame(() => {
             this.dateTimeDecorationRefreshFrame = undefined;
             this.refreshDateTimeDecorations();
         });
@@ -192,7 +192,7 @@ class LivePreviewExtension implements PluginValue {
             // event target's opinion of the new status, as that facility means
             // that the new status *may* be different from that in the event.
             const desiredCheckedStatus = toggled[0].status.symbol !== ' ';
-            setTimeout(() => {
+            window.setTimeout(() => {
                 checkbox.checked = desiredCheckedStatus;
             }, 1);
         }

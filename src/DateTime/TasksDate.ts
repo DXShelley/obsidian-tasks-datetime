@@ -1,4 +1,3 @@
-import { Notice } from 'obsidian';
 import { PropertyCategory } from '../lib/PropertyCategory';
 import { TaskRegularExpressions } from '../Task/TaskRegularExpressions';
 import { formatTaskDate } from './DateTools';
@@ -124,7 +123,7 @@ export class TasksDate {
     }
 
     public postpone(unitOfTime: moment.unitOfTime.DurationConstructor = 'days', amount: number = 1) {
-        if (!this._date) throw new Notice('Cannot postpone a null date');
+        if (!this._date) throw new Error('Cannot postpone a null date');
 
         const today = window.moment().startOf('day');
         // According to the moment.js docs, isBefore is not stable so we use !isSameOrAfter: https://momentjs.com/docs/#/query/is-before/

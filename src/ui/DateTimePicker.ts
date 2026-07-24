@@ -35,10 +35,12 @@ export function createDateTimePicker({
                               ? Math.max(modalBounds.top + 8, inputBounds.top - calendarHeight - 2)
                               : inputBounds.bottom + 2;
 
-                      calendar.style.position = 'absolute';
-                      calendar.style.top = `${top - modalBounds.top}px`;
-                      calendar.style.left = `${Math.max(0, inputBounds.left - modalBounds.left)}px`;
-                      calendar.style.right = 'auto';
+                      calendar.setCssProps({
+                          position: 'absolute',
+                          top: `${top - modalBounds.top}px`,
+                          left: `${Math.max(0, inputBounds.left - modalBounds.left)}px`,
+                          right: 'auto',
+                      });
                   },
               }
             : {}),
