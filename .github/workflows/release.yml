@@ -40,7 +40,7 @@ jobs:
     - name: Package
       id: package
       run: |
-        plugin_id="$(node -p \"require('./manifest.json').id\")"
+        plugin_id="$(node -p "require('./manifest.json').id")"
         mkdir "$plugin_id"
         cp main.js manifest.json styles.css README.md "$plugin_id"
         zip -r "$plugin_id.zip" "$plugin_id"
