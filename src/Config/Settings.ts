@@ -12,6 +12,7 @@ import type { SuggestionBuilder } from '../Suggestor';
 import type { LogOptions } from '../lib/logging';
 import { DataviewTaskSerializer } from '../TaskSerializer/DataviewTaskSerializer';
 import { i18n } from '../i18n/i18n';
+import type { PluginLanguage } from '../i18n/i18n';
 import { type PresetsMap, defaultPresets } from '../Query/Presets/Presets';
 import { DebugSettings } from './DebugSettings';
 import { type EditModalShowSettings, defaultEditModalShowSettings } from './EditModalShowSettings';
@@ -63,7 +64,15 @@ export const TASK_FORMATS = {
 
 export type TASK_FORMATS = typeof TASK_FORMATS; // For convenience to make some typing easier
 
+export interface DefaultDateTimes {
+    start: string;
+    scheduled: string;
+    due: string;
+}
+
 export interface Settings {
+    /** Language used by Tasks' UI. */
+    language: PluginLanguage;
     presets: PresetsMap;
     globalQuery: string;
     globalFilter: string;
@@ -71,6 +80,8 @@ export interface Settings {
     taskFormat: keyof TASK_FORMATS;
     /** Whether task dates are stored and displayed with a time of day. */
     enableDateTime: boolean;
+    /** Time used when a start, scheduled, or due date is entered without a time. */
+    defaultDateTimes: DefaultDateTimes;
     setCreatedDate: boolean;
     setDoneDate: boolean;
     setCancelledDate: boolean;
@@ -112,12 +123,18 @@ export interface Settings {
 }
 
 const defaultSettings: Readonly<Settings> = {
+    language: 'en',
     presets: defaultPresets,
     globalQuery: '',
     globalFilter: '',
     removeGlobalFilter: false,
     taskFormat: 'tasksPluginEmoji',
     enableDateTime: false,
+    defaultDateTimes: {
+        start: '09:00',
+        scheduled: '11:30',
+        due: '22:00',
+    },
     setCreatedDate: false,
     setDoneDate: true,
     setCancelledDate: true,
@@ -197,6 +214,8 @@ export const getSettings = (): Settings => {
     addNewOptionsToUserSettings(Feature.settingsFlags, settings.features);
     addNewOptionsToUserSettings(defaultSettings.loggingOptions.minLevels, settings.loggingOptions.minLevels);
     addNewOptionsToUserSettings(defaultSettings.debugSettings, settings.debugSettings);
+    settings.defaultDateTimes ??= { ...defaultSettings.defaultDateTimes };
+    addNewOptionsToUserSettings(defaultSettings.defaultDateTimes, settings.defaultDateTimes);
 
     // In case saves pre-dated StatusConfiguration.type
     // TODO Special case for symbol 'X' or 'x' (just in case)

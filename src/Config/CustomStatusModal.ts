@@ -134,7 +134,7 @@ export class CustomStatusModal extends Modal {
         const footerEl = contentEl.createDiv();
         const footerButtons = new Setting(footerEl);
         footerButtons.addButton((b) => {
-            b.setTooltip('Save')
+            b.setTooltip(i18n.t('ui.common.save'))
                 .setIcon('checkmark')
                 .onClick(async () => {
                     const errors = validator.validate(this.statusConfiguration());
@@ -152,7 +152,7 @@ export class CustomStatusModal extends Modal {
         });
         footerButtons.addExtraButton((b) => {
             b.setIcon('cross')
-                .setTooltip('Cancel')
+                .setTooltip(i18n.t('ui.common.cancel'))
                 .onClick(() => {
                     this.saved = false;
                     this.close();

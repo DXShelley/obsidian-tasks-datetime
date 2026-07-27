@@ -1,4 +1,6 @@
 import flatpickr from 'flatpickr';
+import { Mandarin } from 'flatpickr/dist/l10n/zh.js';
+import { getPluginLanguage } from '../i18n/i18n';
 import { addFlatpickrPickerControls } from './FlatpickrPickerControls';
 
 export interface DateTimePickerInstance {
@@ -11,14 +13,17 @@ export function createDateTimePicker({
     input,
     positionElement,
     enableTime,
+    defaultTime,
     onDateSelected,
 }: {
     input: HTMLInputElement;
     positionElement: HTMLElement;
     enableTime: boolean;
+    defaultTime?: string | null;
     onDateSelected: (date: Date | undefined) => void;
 }): DateTimePickerInstance {
     const now = window.moment();
+    const [defaultHour, defaultMinute] = defaultTime?.split(':').map(Number) ?? [now.hour(), now.minute()];
     const modal = input.closest<HTMLElement>('.tasks-edit-modal-container');
     return flatpickr(input, {
         allowInput: true,
@@ -48,11 +53,12 @@ export function createDateTimePicker({
         positionElement,
         enableTime,
         enableSeconds: enableTime,
-        defaultHour: now.hour(),
-        defaultMinute: now.minute(),
+        defaultHour,
+        defaultMinute,
         defaultSeconds: now.second(),
         time_24hr: true,
         dateFormat: enableTime ? 'Y-m-d H:i:S' : 'Y-m-d',
+        locale: getPluginLanguage() === 'zh' ? Mandarin : 'default',
         onOpen: (_selectedDates, _dateStr, instance) => {
             const focusTarget = instance.calendarContainer.querySelector<HTMLElement>(
                 '.flatpickr-hour, .flatpickr-day:not(.flatpickr-disabled)',

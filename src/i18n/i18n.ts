@@ -1,6 +1,8 @@
 import i18next from 'i18next';
 import { getLanguage } from 'obsidian';
 
+export type PluginLanguage = 'en' | 'zh';
+
 // alphabetical order:
 import be from './locales/be.json';
 import de from './locales/de.json';
@@ -52,6 +54,14 @@ export const initializeI18n = async () => {
         isInitialized = true;
     }
 };
+
+/** Changes the language used by Tasks' own UI, independently of Obsidian's language. */
+export const setPluginLanguage = async (language: PluginLanguage): Promise<void> => {
+    await initializeI18n();
+    await i18next.changeLanguage(language);
+};
+
+export const getPluginLanguage = (): PluginLanguage => (i18next.language === 'zh' ? 'zh' : 'en');
 
 export const i18n = new Proxy(i18next, {
     get(target, prop) {

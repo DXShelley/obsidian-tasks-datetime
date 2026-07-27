@@ -5,6 +5,7 @@ import EditTask from '../ui/EditTask.svelte';
 import type { Task } from '../Task/Task';
 import { StatusRegistry } from '../Statuses/StatusRegistry';
 import { Status } from '../Statuses/Status';
+import { i18n } from '../i18n/i18n';
 import { OptionsModal } from './OptionsModal';
 
 export interface TaskModalParams {
@@ -39,7 +40,7 @@ export class TaskModal extends Modal {
     }
 
     public onOpen(): void {
-        this.titleEl.setText('Create or edit Task');
+        this.titleEl.setText(i18n.t('modals.taskEditor.title'));
         this.modalEl.addClass('tasks-edit-modal-container');
 
         const optionsButton = this.modalEl.createEl('button');
@@ -48,6 +49,7 @@ export class TaskModal extends Modal {
         // But overload the 'inset-inline-end' property for a correct position.
         optionsButton.addClass('modal-option-button');
         setIcon(optionsButton, 'settings');
+        optionsButton.setAttribute('aria-label', i18n.t('modals.taskEditor.fieldVisibility'));
         optionsButton.onclick = () => {
             const optionsModal = new OptionsModal({
                 app: this.app,

@@ -126,7 +126,7 @@ export class PresetsSettingsUI {
         // Add drag handle
         setting.addExtraButton((btn) => {
             btn.extraSettingsEl.addClass('tasks-presets-drag-handle');
-            btn.setIcon('grip-vertical').setTooltip('Drag to reorder');
+            btn.setIcon('grip-vertical').setTooltip(i18n.t('ui.presets.dragToReorder'));
 
             btn.extraSettingsEl.addEventListener('mousedown', (_e) => {
                 // Enable dragging only when mousedown starts on the handle
@@ -142,7 +142,7 @@ export class PresetsSettingsUI {
         setting.addExtraButton((btn) => {
             btn.extraSettingsEl.addClass('tasks-presets-delete-button');
             btn.setIcon('cross')
-                .setTooltip('Delete')
+                .setTooltip(i18n.t('ui.common.delete'))
                 .onClick(async () => {
                     const updatedPresets = this.presetsSettingsService.deletePreset(settings.presets, key);
                     this.savePresetsSettings(updatedPresets, settings, refreshView);

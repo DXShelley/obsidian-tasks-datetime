@@ -5,7 +5,7 @@ import { verifyAll, verifyAsJson } from 'approvals/lib/Providers/Jest/JestApprov
 import moment from 'moment';
 import * as chrono from 'chrono-node';
 import type { Task } from 'Task/Task';
-import { getSettings, resetSettings } from '../../src/Config/Settings';
+import { getSettings, resetSettings, updateSettings } from '../../src/Config/Settings';
 import type { SuggestInfo, SuggestionBuilder } from '../../src/Suggestor';
 import {
     DEFAULT_MAX_GENERIC_SUGGESTIONS,
@@ -105,6 +105,7 @@ describe.each([
         // Note: Dependency suggestions are temporarily turned off in the released plugin,
         //       but turned on in tests so that we continue to check the behaviour.
         window.SHOW_DEPENDENCY_SUGGESTIONS = true;
+        updateSettings({ defaultDateTimes: { start: '15:00', scheduled: '15:00', due: '15:00' } });
     });
 
     afterEach(() => {
@@ -249,6 +250,18 @@ ${JSON.stringify(suggestions[0], null, 4)}
         // Arrange
         const line = `- [ ] some task ${dueDateSymbol}`;
         shouldStartWithSuggestionsContaining(line, ['today', 'tomorrow']);
+    });
+
+    it('uses the configured default time for start and due date suggestions', () => {
+        updateSettings({ defaultDateTimes: { start: '09:00', scheduled: '11:30', due: '22:00' } });
+
+        const suggestionFor = (symbol: string) => {
+            const line = `- [ ] some task ${symbol}`;
+            return buildSuggestionsForEndOfLine(line)[0];
+        };
+
+        expect(suggestionFor(startDateSymbol)?.appendText).toContain(`${startDateSymbol} 2022-07-11 09:00:00`);
+        expect(suggestionFor(dueDateSymbol)?.appendText).toContain(`${dueDateSymbol} 2022-07-11 22:00:00`);
     });
 
     it.each([

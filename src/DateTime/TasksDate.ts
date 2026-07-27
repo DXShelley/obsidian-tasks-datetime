@@ -1,4 +1,5 @@
 import { Notice } from 'obsidian';
+import { i18n } from '../i18n/i18n';
 
 import { PropertyCategory } from '../lib/PropertyCategory';
 import { TaskRegularExpressions } from '../Task/TaskRegularExpressions';
@@ -126,8 +127,8 @@ export class TasksDate {
 
     public postpone(unitOfTime: moment.unitOfTime.DurationConstructor = 'days', amount: number = 1) {
         if (!this._date) {
-            new Notice('Cannot postpone a null date');
-            throw new Error('Cannot postpone a null date');
+            new Notice(i18n.t('ui.notices.cannotPostponeNullDate'));
+            throw new Error(i18n.t('ui.notices.cannotPostponeNullDate'));
         }
 
         const today = window.moment().startOf('day');

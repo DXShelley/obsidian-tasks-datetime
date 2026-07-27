@@ -1,5 +1,6 @@
 import { type App, type Component, Notice, debounce, setIcon, setTooltip } from 'obsidian';
 import { GlobalQuery } from '../Config/GlobalQuery';
+import { i18n } from '../i18n/i18n';
 import type { IQuery } from '../IQuery';
 import { PerformanceTracker } from '../lib/PerformanceTracker';
 import { State } from '../Obsidian/Cache';
@@ -204,8 +205,8 @@ export class QueryResultsRenderer {
         setIcon(label, 'lucide-filter');
         const searchBox = createAndAppendElement('input', label);
         searchBox.value = this._filterString;
-        searchBox.placeholder = 'Filter by description...';
-        setTooltip(searchBox, 'Filter results');
+        searchBox.placeholder = i18n.t('ui.queryResults.filterByDescription');
+        setTooltip(searchBox, i18n.t('ui.queryResults.filterResults'));
         const doSearch = async () => {
             const filterString = searchBox.value;
             await this.applySearchBoxFilterAndRerender(filterString, content);
@@ -258,11 +259,11 @@ export class QueryResultsRenderer {
     private addCopyButton(toolbar: HTMLDivElement) {
         const copyButton = createAndAppendElement('button', toolbar);
         setIcon(copyButton, 'lucide-copy');
-        setTooltip(copyButton, 'Copy results');
+        setTooltip(copyButton, i18n.t('ui.queryResults.copyResults'));
         copyButton.addEventListener('click', async () => {
             const markdown = await this.resultsAsMarkdown();
             await navigator.clipboard.writeText(markdown);
-            new Notice('Results copied to clipboard');
+            new Notice(i18n.t('ui.notices.resultsCopied'));
         });
     }
 

@@ -13,6 +13,7 @@ import { Status } from '../../src/Statuses/Status';
 import { StatusRegistry } from '../../src/Statuses/StatusRegistry';
 import { StatusConfiguration, StatusType } from '../../src/Statuses/StatusConfiguration';
 import { resetSettings, updateSettings } from '../../src/Config/Settings';
+import { setPluginLanguage } from '../../src/i18n/i18n';
 
 jest.mock('obsidian', () => ({
     Notice: jest.fn(),
@@ -25,9 +26,10 @@ beforeEach(() => {
     jest.setSystemTime(new Date('2026-02-27'));
 });
 
-afterEach(() => {
+afterEach(async () => {
     jest.useRealTimers();
     resetSettings();
+    await setPluginLanguage('en');
 });
 
 describe('setStatusOnLine', () => {
@@ -138,6 +140,15 @@ describe('Change status commands', () => {
 
         expect(commands[1].id).toBe('set-status-symbol-to-/');
         expect(commands[1].name).toBe('Change status to: [/] In Progress');
+    });
+
+    it('should generate Chinese status command names when Chinese is selected', async () => {
+        await setPluginLanguage('zh');
+        registry.add(Status.TODO);
+
+        const commands = createSetStatusCommands(registry);
+
+        expect(commands[0].name).toBe('将状态更改为：[ ] Todo');
     });
 
     it('should only create commands for the first of any statuses with duplicate symbols', () => {

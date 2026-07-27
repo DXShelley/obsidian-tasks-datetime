@@ -1,6 +1,7 @@
 <script lang="ts">
     import { defaultEditModalShowSettings } from '../Config/EditModalShowSettings';
     import { settingsStore } from './SettingsStore';
+    import { i18n } from '../i18n/i18n';
 
     export let onSave: () => void;
     export let onClose: () => void;
@@ -19,10 +20,7 @@
         onSave();
     };
 
-    // Helper to format field names for display
-    const formatFieldName = (fieldName: string): string => {
-        return fieldName.charAt(0).toUpperCase() + fieldName.slice(1).replace('_', ' ');
-    };
+    const formatFieldName = (fieldName: string): string => i18n.t(`ui.fieldVisibility.fields.${fieldName}`);
 
     const withLinesAfterFields = ['priority', 'start', 'after_this'];
 </script>
@@ -42,7 +40,7 @@
     </div>
 
     <div class="tasks-options-modal-footer">
-        <button type="button" class="mod-cta" on:click={_onSave}>Apply</button>
-        <button type="button" on:click={onClose}>Cancel</button>
+        <button type="button" class="mod-cta" on:click={_onSave}>{i18n.t('ui.common.apply')}</button>
+        <button type="button" on:click={onClose}>{i18n.t('ui.common.cancel')}</button>
     </div>
 </div>

@@ -86,6 +86,16 @@ describe('resetSettings behaviour', () => {
         expect(currentSettings.searchResults.taskCountLocation).toBe('bottom');
     });
 
+    it('should provide separate default times for planning date fields', () => {
+        expect(getSettings().defaultDateTimes).toEqual({ start: '09:00', scheduled: '11:30', due: '22:00' });
+    });
+
+    it('should default the plugin interface to English and allow Chinese', () => {
+        expect(getSettings().language).toBe('en');
+        updateSettings({ language: 'zh' });
+        expect(getSettings().language).toBe('zh');
+    });
+
     it('should completely remove properties not in defaultSettings', () => {
         // Arrange: Add an extra property that isn't in defaultSettings
         updateSettings({

@@ -533,7 +533,7 @@ describe('Task editing', () => {
             submit.click();
             expect(await waitForClose).toMatchInlineSnapshot(`
                 "- [ ] Recurring 🔁 every day 📅 2024-02-18 00:00:00
-                - [x] Recurring 🔁 every day 📅 2024-02-17 00:00:00 ✅ 2024-02-29 00:00:00"
+                - [x] Recurring 🔁 every day 📅 2024-02-17 22:00:00 ✅ 2024-02-29 00:00:00"
             `);
         });
 
@@ -546,7 +546,7 @@ describe('Task editing', () => {
 
             submit.click();
             expect(await waitForClose).toMatchInlineSnapshot(`
-                "- [x] Recurring 🔁 every day 📅 2024-02-17 00:00:00 ✅ 2024-02-29 00:00:00
+                "- [x] Recurring 🔁 every day 📅 2024-02-17 22:00:00 ✅ 2024-02-29 00:00:00
                 - [ ] Recurring 🔁 every day 📅 2024-02-18 00:00:00"
             `);
         });
@@ -562,7 +562,7 @@ describe('Task editing', () => {
             submit.click();
             expect(await waitForClose).toMatchInlineSnapshot(`
                 "- [ ] Recurring 🔁 every day when done ➕ 2024-02-29 00:00:00 📅 2024-03-01 00:00:00
-                - [x] Recurring 🔁 every day when done 📅 2024-02-17 00:00:00 ✅ 2024-02-29 00:00:00"
+                - [x] Recurring 🔁 every day when done 📅 2024-02-17 22:00:00 ✅ 2024-02-29 00:00:00"
             `);
         });
 
@@ -579,7 +579,7 @@ describe('Task editing', () => {
             submit.click();
             expect(await waitForClose).toMatchInlineSnapshot(`
                 "- [ ] Recurring 🔁 every day when done ➕ 2024-02-29 00:00:00 📅 2024-02-24 00:00:00
-                - [x] Recurring 🔁 every day when done 📅 2024-02-17 00:00:00 ✅ 2024-02-23 00:00:00"
+                - [x] Recurring 🔁 every day when done 📅 2024-02-17 22:00:00 ✅ 2024-02-23 00:00:00"
             `);
         });
     });
@@ -613,17 +613,17 @@ describe('Task editing', () => {
         });
 
         it('should edit and save due date', async () => {
-            expect(await editFieldAndSave(line, 'due', '2024-01-01')).toEqual('- [ ] simple 📅 2024-01-01 13:14:15');
+            expect(await editFieldAndSave(line, 'due', '2024-01-01')).toEqual('- [ ] simple 📅 2024-01-01 22:00:00');
         });
 
         it('should edit and save scheduled date', async () => {
             expect(await editFieldAndSave(line, 'scheduled', '2024-01-01')).toEqual(
-                '- [ ] simple ⏳ 2024-01-01 13:14:15',
+                '- [ ] simple ⏳ 2024-01-01 11:30:00',
             );
         });
 
         it('should edit and save start date', async () => {
-            expect(await editFieldAndSave(line, 'start', '2024-01-01')).toEqual('- [ ] simple 🛫 2024-01-01 13:14:15');
+            expect(await editFieldAndSave(line, 'start', '2024-01-01')).toEqual('- [ ] simple 🛫 2024-01-01 09:00:00');
         });
     });
 

@@ -66,7 +66,7 @@ describe('SetTaskDate', () => {
 
         // Assert
         expect(newTasks.length).toEqual(1);
-        expect(newTasks[0].dueDate).toEqualMoment(moment('2024-10-02 12:34:56'));
+        expect(newTasks[0].dueDate).toEqualMoment(moment('2024-10-02 22:00:00'));
     });
 
     it('should not edit task if already has chosen date', () => {
@@ -101,8 +101,16 @@ describe('SetRelativeTaskDate', () => {
         // Assert
         expect(instruction.instructionDisplayName()).toEqual(expectedTitle);
         expect(newTasks.length).toEqual(1);
+        const defaultTimes = {
+            dueDate: [22, 0],
+            startDate: [9, 0],
+            scheduledDate: [11, 30],
+        } as const;
+        const [hour, minute, second] = defaultTimes[dateFieldToEdit as keyof typeof defaultTimes]
+            ? [...defaultTimes[dateFieldToEdit as keyof typeof defaultTimes], 0]
+            : [12, 34, 56];
         expect(newTasks[0][dateFieldToEdit]).toEqualMoment(
-            expectedNewDate.clone().hour(12).minute(34).second(56).millisecond(0),
+            expectedNewDate.clone().hour(hour).minute(minute).second(second).millisecond(0),
         );
     }
 

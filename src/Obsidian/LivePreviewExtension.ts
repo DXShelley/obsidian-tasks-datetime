@@ -1,7 +1,7 @@
 import { RangeSetBuilder } from '@codemirror/state';
 import type { DecorationSet, PluginValue, ViewUpdate } from '@codemirror/view';
 import { Decoration, EditorView, ViewPlugin } from '@codemirror/view';
-import { editorLivePreviewField } from 'obsidian';
+import { type App, editorLivePreviewField } from 'obsidian';
 import { TasksFile } from '../Scripting/TasksFile';
 
 import { Task } from '../Task/Task';
@@ -11,14 +11,20 @@ import { taskDateSymbolsPattern } from '../DateTime/TaskDateTime';
 import { type SettingsSaver, showDismissibleNotice } from '../Config/DismissibleNotices';
 import { getSettings } from '../Config/Settings';
 import { i18n } from '../i18n/i18n';
-import { ToggleTaskDoneCommandName } from '../Commands';
+import { getToggleTaskDoneCommandName } from '../Commands';
 import { StatusRegistry } from '../Statuses/StatusRegistry';
 import { StatusMenu } from '../ui/Menus/StatusMenu';
 import { showMenu } from '../ui/Menus/TaskEditingMenu';
+import { TaskModal } from './TaskModal';
+
+interface LivePreviewPlugin extends SettingsSaver {
+    app: App;
+    getTasks(): Task[];
+}
 
 // CodeMirror constructs view plugins with only the EditorView, so capture the Tasks plugin here
 // to enable us to ask the plugin to save settings.
-export const newLivePreviewExtension = (plugin: SettingsSaver) => {
+export const newLivePreviewExtension = (plugin: LivePreviewPlugin) => {
     return ViewPlugin.fromClass(
         class extends LivePreviewExtension {
             constructor(view: EditorView) {
@@ -78,12 +84,12 @@ export function taskLineDisplaysMarkdownSource(lineElement: Element | null): boo
  */
 class LivePreviewExtension implements PluginValue {
     private readonly view: EditorView;
-    private readonly plugin: SettingsSaver;
+    private readonly plugin: LivePreviewPlugin;
     public dateTimeDecorations: DecorationSet;
     private dateTimeDecorationsNeedRefresh = false;
     private dateTimeDecorationRefreshFrame: number | undefined;
 
-    constructor(view: EditorView, plugin: SettingsSaver) {
+    constructor(view: EditorView, plugin: LivePreviewPlugin) {
         this.view = view;
         this.plugin = plugin;
         this.dateTimeDecorations = this.buildDateTimeDecorations();
@@ -207,12 +213,23 @@ class LivePreviewExtension implements PluginValue {
         }
 
         const { line, task } = taskAndLine;
-        showMenu(
-            event,
-            new StatusMenu(StatusRegistry.getInstance(), task, async (_originalTask, newTasks) => {
-                this.replaceTaskLine(line, Array.isArray(newTasks) ? newTasks : [newTasks]);
+        const menu = new StatusMenu(StatusRegistry.getInstance(), task, async (_originalTask, newTasks) => {
+            this.replaceTaskLine(line, Array.isArray(newTasks) ? newTasks : [newTasks]);
+        });
+        menu.addSeparator();
+        menu.addItem((item) =>
+            item.setTitle(i18n.t('ui.taskEditor.edit')).onClick(() => {
+                const taskModal = new TaskModal({
+                    app: this.plugin.app,
+                    task,
+                    onSaveSettings: () => this.plugin.saveSettings(),
+                    onSubmit: (updatedTasks) => this.replaceTaskLine(line, updatedTasks),
+                    allTasks: this.plugin.getTasks(),
+                });
+                taskModal.open();
             }),
         );
+        showMenu(event, menu);
         return true;
     };
 
@@ -247,7 +264,9 @@ class LivePreviewExtension implements PluginValue {
                     '\n' +
                     i18n.t('notices.live-preview-callout-warning.line5') +
                     '\n' +
-                    i18n.t('notices.live-preview-callout-warning.line6', { commandName: ToggleTaskDoneCommandName });
+                    i18n.t('notices.live-preview-callout-warning.line6', {
+                        commandName: getToggleTaskDoneCommandName(),
+                    });
                 showDismissibleNotice(dontShowAgainKey, msg, this.plugin);
             }
             return null;

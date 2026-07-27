@@ -13,6 +13,7 @@
     import PriorityEditor from './PriorityEditor.svelte';
     import RecurrenceEditor from './RecurrenceEditor.svelte';
     import StatusEditor from './StatusEditor.svelte';
+    import { i18n } from '../i18n/i18n';
 
     // These exported variables are passed in as props by TaskModal.onOpen():
     export let task: Task;
@@ -154,14 +155,14 @@ Availability of access keys:
     <!--  Description  -->
     <!-- --------------------------------------------------------------------------- -->
     <section class="tasks-modal-description-section">
-        <label for="description">{@html labelContentWithAccessKey('Description', accesskey('t'))}</label>
+        <label for="description">{@html labelContentWithAccessKey(i18n.t('ui.taskEditor.description'), accesskey('t'))}</label>
         <!-- svelte-ignore a11y-accesskey -->
         <textarea
             bind:value={editableTask.description}
             bind:this={descriptionInput}
             id="description"
             class="tasks-modal-description"
-            placeholder="Take out the trash"
+            placeholder={i18n.t('ui.taskEditor.descriptionPlaceholder')}
             accesskey={accesskey('t')}
             on:keydown={_onDescriptionKeyDown}
             on:paste={_removeLinebreaksFromDescription}
@@ -240,7 +241,7 @@ Availability of access keys:
         <!-- --------------------------------------------------------------------------- -->
         {#if isShownInEditModal.due || isShownInEditModal.scheduled || isShownInEditModal.start}
             <div class="future-dates-only" id="only-future-dates">
-                <label for="forwardOnly">{@html labelContentWithAccessKey('Only future dates:', accesskey('f'))}</label>
+                <label for="forwardOnly">{@html labelContentWithAccessKey(i18n.t('ui.taskEditor.onlyFutureDates'), accesskey('f'))}</label>
                 <!-- svelte-ignore a11y-accesskey -->
                 <input
                     bind:checked={editableTask.forwardOnly}
@@ -268,13 +269,13 @@ Availability of access keys:
                 <Dependency
                     id="before_this"
                     type="blockedBy"
-                    labelText="Before this"
+                    labelText={i18n.t('ui.taskEditor.beforeThis')}
                     {task}
                     {editableTask}
                     {allTasks}
                     {_onDescriptionKeyDown}
                     accesskey={accesskey('b')}
-                    placeholder="Search for tasks that the task being edited depends on..."
+                    placeholder={i18n.t('ui.taskEditor.blockedByPlaceholder')}
                 />
             {/if}
 
@@ -285,17 +286,17 @@ Availability of access keys:
                 <Dependency
                     id="after_this"
                     type="blocking"
-                    labelText="After this"
+                    labelText={i18n.t('ui.taskEditor.afterThis')}
                     {task}
                     {editableTask}
                     {allTasks}
                     {_onDescriptionKeyDown}
                     accesskey={accesskey('e')}
-                    placeholder="Search for tasks that depend on this task being done..."
+                    placeholder={i18n.t('ui.taskEditor.blockingPlaceholder')}
                 />
             {/if}
         {:else}
-            <div><i>Blocking and blocked by fields are disabled when vault tasks is empty</i></div>
+            <div><i>{i18n.t('ui.taskEditor.dependenciesUnavailable')}</i></div>
         {/if}
     </section>
     {#if isShownInEditModal.before_this || isShownInEditModal.after_this}
@@ -354,7 +355,7 @@ Availability of access keys:
     </section>
 
     <section class="tasks-modal-button-section">
-        <button disabled={!formIsValid} type="submit" class="mod-cta">Apply </button>
-        <button type="button" on:click={_onClose}>Cancel</button>
+        <button disabled={!formIsValid} type="submit" class="mod-cta">{i18n.t('ui.common.apply')}</button>
+        <button type="button" on:click={_onClose}>{i18n.t('ui.common.cancel')}</button>
     </section>
 </form>
