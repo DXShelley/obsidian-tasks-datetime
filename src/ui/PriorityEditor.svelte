@@ -1,13 +1,14 @@
 <script lang="ts">
+    import { i18n } from '../i18n/i18n';
     export let importance: 'light' | 'normal' | 'heavy';
     export let urgency: 'slow' | 'normal' | 'urgent';
     export let enabled: boolean;
 
     const quadrants = [
-        { importance: 'heavy', urgency: 'urgent', label: 'Important / Urgent' },
-        { importance: 'heavy', urgency: 'slow', label: 'Important / Not urgent' },
-        { importance: 'light', urgency: 'urgent', label: 'Not important / Urgent' },
-        { importance: 'light', urgency: 'slow', label: 'Not important / Not urgent' },
+        { importance: 'heavy', urgency: 'urgent', label: i18n.t('ui.priority.importantUrgent') },
+        { importance: 'heavy', urgency: 'slow', label: i18n.t('ui.priority.importantNotUrgent') },
+        { importance: 'light', urgency: 'urgent', label: i18n.t('ui.priority.notImportantUrgent') },
+        { importance: 'light', urgency: 'slow', label: i18n.t('ui.priority.notImportantNotUrgent') },
     ] as const;
 
     function choose(nextImportance: typeof importance, nextUrgency: typeof urgency) {
@@ -23,11 +24,11 @@
     }
 </script>
 
-<div id="priority" class="tasks-priority-matrix" role="group" aria-label="Importance and urgency">
+<div id="priority" class="tasks-priority-matrix" role="group" aria-label={i18n.t('ui.priority.ariaLabel')}>
     <div class="tasks-priority-heading">
-        <span>Priority</span>
+        <span>{i18n.t('ui.priority.title')}</span>
         {#if enabled}
-            <button type="button" class="tasks-priority-clear clickable-icon" aria-label="Clear priority" on:click={clear}>×</button>
+            <button type="button" class="tasks-priority-clear clickable-icon" aria-label={i18n.t('ui.priority.clear')} on:click={clear}>×</button>
         {/if}
     </div>
     <div class="tasks-priority-quadrants">

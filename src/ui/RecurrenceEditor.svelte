@@ -1,6 +1,7 @@
 <script lang="ts">
     import type { EditableTask } from './EditableTask';
     import { labelContentWithAccessKey } from './EditTaskHelpers';
+    import { i18n } from '../i18n/i18n';
 
     export let editableTask: EditableTask;
     export let isRecurrenceValid: boolean;
@@ -11,12 +12,12 @@
     let recurrenceWhenDone: boolean;
 
     const recurrencePresets = [
-        { label: 'Does not recur', value: '' },
-        { label: 'Every 30 minutes', value: 'every 30 minutes' },
-        { label: 'Every hour', value: 'every hour' },
-        { label: 'Every day', value: 'every day' },
-        { label: 'Every week', value: 'every week' },
-        { label: 'Every month', value: 'every month' },
+        { label: i18n.t('ui.recurrence.doesNotRecur'), value: '' },
+        { label: i18n.t('ui.recurrence.every30Minutes'), value: 'every 30 minutes' },
+        { label: i18n.t('ui.recurrence.everyHour'), value: 'every hour' },
+        { label: i18n.t('ui.recurrence.everyDay'), value: 'every day' },
+        { label: i18n.t('ui.recurrence.everyWeek'), value: 'every week' },
+        { label: i18n.t('ui.recurrence.everyMonth'), value: 'every month' },
     ];
 
     function setRecurrence(rule: string, whenDone: boolean) {
@@ -38,7 +39,7 @@
 
 </script>
 
-<label for="recurrence">{@html labelContentWithAccessKey('Recurs', accesskey)}</label>
+<label for="recurrence">{@html labelContentWithAccessKey(i18n.t('ui.taskEditor.recurs'), accesskey)}</label>
 <!-- svelte-ignore a11y-accesskey -->
 <select
     value={recurrenceInterval}
@@ -63,5 +64,5 @@
         disabled={!recurrenceInterval}
         on:change={onWhenDoneChange}
     />
-    When done
+    {i18n.t('ui.recurrence.whenDone')}
 </label>

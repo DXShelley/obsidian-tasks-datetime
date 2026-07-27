@@ -1,4 +1,5 @@
 import { type Command, Notice } from 'obsidian';
+import { i18n } from '../i18n/i18n';
 import { TasksFile } from '../Scripting/TasksFile';
 import type { Status } from '../Statuses/Status';
 import { Task } from '../Task/Task';
@@ -41,7 +42,7 @@ export const createSetStatusLineTransformer = (newStatus: Status): LineTransform
     return (line: string, path: string) => {
         const result = setStatusOnLine(line, path, newStatus);
         if (result === undefined) {
-            new Notice('Cannot set status: line is not a task or does not match global filter');
+            new Notice(i18n.t('ui.notices.cannotSetStatus'));
         }
         return result;
     };

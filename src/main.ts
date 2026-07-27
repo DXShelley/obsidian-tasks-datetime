@@ -1,7 +1,7 @@
 import { Plugin, type Reference, getLinkpath } from 'obsidian';
 
 import type { Task } from 'Task/Task';
-import { i18n, initializeI18n } from './i18n/i18n';
+import { i18n, initializeI18n, setPluginLanguage } from './i18n/i18n';
 import { Cache, State } from './Obsidian/Cache';
 import { Commands } from './Commands';
 import { GlobalQuery } from './Config/GlobalQuery';
@@ -28,6 +28,7 @@ export default class TasksPlugin extends Plugin {
     private cache: Cache | undefined;
     public inlineRenderer: InlineRenderer | undefined;
     public queryRenderer: QueryRenderer | undefined;
+    private commands: Commands | undefined;
 
     get apiV1() {
         return tasksApiV1(this);
@@ -82,10 +83,10 @@ export default class TasksPlugin extends Plugin {
 
         this.registerEditorExtension(newLivePreviewExtension(this));
         this.registerEditorSuggest(new EditorSuggestor(this.app, getSettings(), this));
-        this.addRibbonIcon('chart-no-axes-combined', 'Open task dashboard', () => {
+        this.addRibbonIcon('chart-no-axes-combined', i18n.t('ui.dashboard.open'), () => {
             new TaskDashboardModal(this.app, this.getTasks()).open();
         });
-        new Commands({ plugin: this });
+        this.commands = new Commands({ plugin: this });
     }
 
     async loadTaskStatuses() {
@@ -102,6 +103,8 @@ export default class TasksPlugin extends Plugin {
         let newSettings = await this.loadData();
         updateSettings(newSettings);
 
+        await setPluginLanguage(getSettings().language);
+
         // Fetch the updated settings, in case the user has not yet edited the settings,
         // in which case newSettings is currently empty.
         newSettings = getSettings();
@@ -114,6 +117,10 @@ export default class TasksPlugin extends Plugin {
 
     async saveSettings() {
         await this.saveData(getSettings());
+    }
+
+    public refreshCommandsLanguage(): void {
+        this.commands?.refreshLanguage();
     }
 
     public getTasks(): Task[] {

@@ -5,6 +5,7 @@ import {
     formatTaskDate,
     formatTaskDateForStorage,
     formatTaskDateForStorageWithCurrentTime,
+    formatTaskDateForStorageWithDefaultTime,
     parseTypedDateForSaving,
 } from '../../src/DateTime/DateTools';
 import { DEFAULT_SYMBOLS, DefaultTaskSerializer } from '../../src/TaskSerializer/DefaultTaskSerializer';
@@ -58,5 +59,13 @@ describe('task datetime format', () => {
 
         expect(formatTaskDateForStorageWithCurrentTime(selectedDate)).toBe('2026-08-01 11:12:13');
         jest.useRealTimers();
+    });
+
+    it('uses independently configured defaults for start, scheduled, and due dates', () => {
+        const selectedDate = moment('2026-08-01');
+
+        expect(formatTaskDateForStorageWithDefaultTime(selectedDate.clone(), 'start')).toBe('2026-08-01 09:00:00');
+        expect(formatTaskDateForStorageWithDefaultTime(selectedDate.clone(), 'scheduled')).toBe('2026-08-01 11:30:00');
+        expect(formatTaskDateForStorageWithDefaultTime(selectedDate.clone(), 'due')).toBe('2026-08-01 22:00:00');
     });
 });

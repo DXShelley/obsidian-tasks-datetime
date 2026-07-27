@@ -3,7 +3,22 @@
     "loadingPlugin": "加载插件: {{name}} v{{version}}",
     "unloadingPlugin": "卸载插件: {{name}} v{{version}}"
   },
+  "commands": {
+    "addQueryFileDefaultsProperties": "添加所有 Query File Defaults 属性",
+    "createOrEditTask": "创建或编辑任务",
+    "openTaskDashboard": "打开任务面板",
+    "toggleTaskDone": "切换任务完成状态",
+    "updateHistoricalTaskDataInCurrentFile": "更新当前文件中的历史任务数据",
+    "updateHistoricalTaskDataInVault": "更新整个仓库中的历史任务数据"
+  },
   "modals": {
+    "fieldVisibility": {
+      "title": "隐藏未使用字段"
+    },
+    "taskEditor": {
+      "fieldVisibility": "配置显示字段",
+      "title": "创建或编辑任务"
+    },
     "customStatusModal": {
       "editAvailableAsCommand": {
         "description": "如果启用，此状态将作为命令可用,因此您可以指定快捷键并使用它切换状态。",
@@ -118,6 +133,24 @@
     },
     "changeRequiresRestart": "需要重启。",
     "dates": {
+      "defaultTimes": {
+        "due": {
+          "description": "仅填写截止日期而未填写时间时使用。",
+          "name": "默认截止时间"
+        },
+        "scheduled": {
+          "description": "仅填写计划日期而未填写时间时使用。",
+          "name": "默认计划时间"
+        },
+        "start": {
+          "description": "仅填写开始日期而未填写时间时使用。",
+          "name": "默认开始时间"
+        }
+      },
+      "includeTime": {
+        "description": "任务日期始终以 YYYY-MM-DD HH:mm:ss 保存。关闭后，实时预览和查询结果中将隐藏时间。",
+        "name": "在任务日期中包含时间"
+      },
       "cancelledDate": {
         "description": "启用此功能将在任务设置为取消时，在其末尾添加时间戳 ❌ YYYY-MM-DD。",
         "name": "设置每个已取消的任务的取消日期"
@@ -200,9 +233,17 @@
         "placeholder": "例如...\npath does not include _templates/\nlimit 300\nshow urgency"
       }
     },
+    "language": {
+      "description": "选择 Tasks 插件界面使用的语言。",
+      "name": "语言",
+      "options": {
+        "en": "English",
+        "zh": "简体中文"
+      }
+    },
     "presets": {
       "buttons": {
-        "addNewPreset": ""
+        "addNewPreset": "新增预设"
       },
       "line1": "您可以在这里定义命名指令，可以在多个查询中重复使用。一个名为 '{{name}}' 的预设可以在任务查询中使用 '{{instruction1}}' 或 '{{instruction2}}'。",
       "line2": "任何打开的任务查询在预设被编辑时都会自动重新加载。",
@@ -223,27 +264,27 @@
       }
     },
     "searchResults": {
-      "heading": "",
+      "heading": "搜索结果",
       "taskCountLocation": {
-        "description": "",
-        "name": "",
+        "description": "选择在查询结果顶部或底部显示任务数量。",
+        "name": "任务数量位置",
         "options": {
-          "bottom": "",
-          "top": ""
+          "bottom": "底部",
+          "top": "顶部"
         }
       }
     },
     "searches": {
       "enableCustomSearches": {
         "description": {
-          "line1": "",
-          "line2": "",
-          "line3": "",
-          "line4": ""
+          "line1": "启用会执行 Tasks 查询中的 '{{filterByFunction}}'、'{{sortByFunction}}' 和 '{{groupByFunction}}'。",
+          "line2": "Tasks 查询或 Markdown 文件中的恶意 JavaScript 可能会在 Obsidian 内运行，并访问或修改你的仓库内容、本地文件或其他系统资源。",
+          "line3": "仅当你信任当前仓库及未来加入其中的所有内容时才启用，包括之后可能下载、复制或与他人同步的文件。",
+          "line4": "此设置仅保存在当前设备上；请在每台使用此仓库的设备上分别启用。"
         },
-        "name": ""
+        "name": "启用自定义搜索"
       },
-      "heading": ""
+      "heading": "搜索"
     },
     "seeTheDocumentation": "参阅文档",
     "statuses": {
@@ -296,6 +337,29 @@
         "heading": "自定义状态"
       },
       "heading": "任务状态"
+    }
+  },
+  "ui": {
+    "common": { "apply": "应用", "cancel": "取消", "delete": "删除", "edit": "编辑", "save": "保存" },
+    "dashboard": { "caption": "已完成 {{completed}} / 截止 {{planned}}", "open": "打开任务面板", "periods": { "This month": "本月", "This week": "本周", "Today": "今天" }, "title": "任务面板" },
+    "datePicker": {
+      "chooseDate": "选择日期", "chooseDateTime": "选择日期和时间", "clear": "清除", "clearDate": "清除{{date}}日期", "confirm": "确认", "today": "今天"
+    },
+    "fieldVisibility": {
+      "fields": {
+        "after_this": "后置任务", "before_this": "前置任务", "cancelled": "取消日期", "created": "创建日期", "done": "完成日期", "due": "截止日期", "priority": "优先级", "recurrence": "重复规则", "scheduled": "计划日期", "start": "开始日期", "status": "状态"
+      }
+    },
+    "menus": { "changeStatusTo": "将状态更改为：[{{symbol}}] {{name}}", "priority": "优先级：{{priority}}" },
+    "notices": { "allPropertiesPresent": "所有支持的属性均已存在。", "cannotPostponeNullDate": "无法推迟空日期", "cannotSetStatus": "无法设置状态：该行不是任务，或不符合全局筛选器", "propertiesUpdated": "属性更新成功。", "resultsCopied": "结果已复制到剪贴板" },
+    "presets": { "dragToReorder": "拖动以重新排序" },
+    "queryResults": { "copyResults": "复制结果", "filterByDescription": "按任务描述筛选...", "filterResults": "筛选结果" },
+    "priority": {
+      "ariaLabel": "重要性和紧急程度", "clear": "清除优先级", "importantNotUrgent": "重要 / 不紧急", "importantUrgent": "重要 / 紧急", "notImportantNotUrgent": "不重要 / 不紧急", "notImportantUrgent": "不重要 / 紧急", "title": "优先级"
+    },
+    "recurrence": { "doesNotRecur": "不重复", "every30Minutes": "每 30 分钟", "everyDay": "每天", "everyHour": "每小时", "everyMonth": "每月", "everyWeek": "每周", "whenDone": "完成后计算" },
+    "taskEditor": {
+      "afterThis": "后置任务", "beforeThis": "前置任务", "blockedByPlaceholder": "搜索当前任务所依赖的任务...", "blockingPlaceholder": "搜索依赖当前任务完成的任务...", "dates": { "cancelled": "已取消", "created": "已创建", "done": "已完成", "due": "截止", "scheduled": "计划", "start": "开始" }, "dependenciesUnavailable": "仓库中没有任务时，前置和后置任务字段不可用", "description": "任务描述", "descriptionPlaceholder": "例如：倒垃圾", "edit": "编辑任务", "onlyFutureDates": "仅未来日期：", "recurs": "重复", "status": "状态"
     }
   }
 }

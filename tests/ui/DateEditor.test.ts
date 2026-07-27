@@ -61,7 +61,7 @@ describe('date editor wrapper tests', () => {
         await selectDate(container, '2024-11-03');
 
         expect(getAndCheckRenderedElement<HTMLButtonElement>(container, 'due').textContent).toContain('2024-11-03');
-        testInputValue(container, 'dueDateFromDateEditor', '2024-11-03 13:14:15');
+        testInputValue(container, 'dueDateFromDateEditor', '2024-11-03 22:00:00');
         testInputValue(container, 'parsedDateFromDateEditor', '2024-11-03');
         testInputValue(container, 'parsedDateValidFromDateEditor', 'true');
     });

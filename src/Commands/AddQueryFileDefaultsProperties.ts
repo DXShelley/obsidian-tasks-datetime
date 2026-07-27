@@ -1,4 +1,5 @@
 import { type App, Notice, type TFile } from 'obsidian';
+import { i18n } from '../i18n/i18n';
 import { QueryFileDefaults } from '../Query/QueryFileDefaults';
 
 export async function ensureQueryFileDefaultsInFrontmatter(app: App, file: TFile) {
@@ -13,9 +14,9 @@ export async function ensureQueryFileDefaultsInFrontmatter(app: App, file: TFile
         });
 
         if (!updated) {
-            new Notice('All supported properties are already present.');
+            new Notice(i18n.t('ui.notices.allPropertiesPresent'));
         } else {
-            new Notice('Properties updated successfully.');
+            new Notice(i18n.t('ui.notices.propertiesUpdated'));
         }
     });
 }

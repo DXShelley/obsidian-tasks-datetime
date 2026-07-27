@@ -1,6 +1,7 @@
 import type { App } from 'obsidian';
 import { Modal } from 'obsidian';
 import ModalOptionsEditor from '../ui/ModalOptionsEditor.svelte';
+import { i18n } from '../i18n/i18n';
 
 /**
  * Constructor parameter for {@link OptionsModal}.
@@ -24,7 +25,7 @@ export class OptionsModal extends Modal {
     }
 
     public onOpen(): void {
-        this.titleEl.setText('Hide unused fields');
+        this.titleEl.setText(i18n.t('modals.fieldVisibility.title'));
 
         this.modalEl.addClass('tasks-options-modal-container');
 

@@ -331,7 +331,7 @@ describe('EditableTask tests', () => {
         editableTask.dueDate = '2024-07-13';
 
         const editedTasks = await editableTask.applyEdits(task, allTasks);
-        expect(editedTasks[0].dueDate).toEqualMoment(moment('2024-07-13T13:14:15.000Z'));
+        expect(editedTasks[0].dueDate).toEqualMoment(moment('2024-07-13T22:00:00.000Z'));
     });
 
     it('preserves a hidden time when editing an existing task', async () => {
@@ -344,15 +344,15 @@ describe('EditableTask tests', () => {
         expect(editedTask.dueDate?.format('YYYY-MM-DD HH:mm:ss')).toBe('2024-07-13 13:14:15');
     });
 
-    it('upgrades a legacy midnight date to the current time when saving', async () => {
+    it('upgrades a legacy midnight date to the configured due time when saving', async () => {
         updateSettings({ enableDateTime: false });
         const task = new TaskBuilder().dueDate('2024-07-13 00:00:00').build();
         const editableTask = EditableTask.fromTask(task, [task]);
 
         const [editedTask] = await editableTask.applyEdits(task, [task]);
 
-        expect(editedTask.dueDate?.format('YYYY-MM-DD HH:mm:ss')).toBe('2024-07-13 13:14:15');
-        expect(editedTask.toFileLineString()).toContain('📅 2024-07-13 13:14:15');
+        expect(editedTask.dueDate?.format('YYYY-MM-DD HH:mm:ss')).toBe('2024-07-13 22:00:00');
+        expect(editedTask.toFileLineString()).toContain('📅 2024-07-13 22:00:00');
     });
 
     it('should honour the forwardOnly value', async () => {
@@ -363,8 +363,8 @@ describe('EditableTask tests', () => {
         jest.setSystemTime(new Date('2024-05-22')); // Wednesday 22nd May
 
         editableTask.dueDate = 'tuesday';
-        const tuesdayBefore = moment('2024-05-28T00:00:00.000Z');
-        const tuesdayAfter = moment('2024-05-21T00:00:00.000Z');
+        const tuesdayBefore = moment('2024-05-28T22:00:00.000Z');
+        const tuesdayAfter = moment('2024-05-21T22:00:00.000Z');
 
         editableTask.forwardOnly = true;
         const tasksFutureDay = await editableTask.applyEdits(task, allTasks);

@@ -3,6 +3,7 @@ import { Status } from '../../Statuses/Status';
 import type { Task } from '../../Task/Task';
 import type { StatusRegistry } from '../../Statuses/StatusRegistry';
 import { StatusSettings } from '../../Config/StatusSettings';
+import { i18n } from '../../i18n/i18n';
 import type { TaskEditingInstruction } from './TaskEditingInstruction';
 
 /**
@@ -25,8 +26,7 @@ export class SetStatus implements TaskEditingInstruction {
     }
 
     public instructionDisplayName(): string {
-        const commonTitle = 'Change status to:';
-        return `${commonTitle} [${this.newStatus.symbol}] ${this.newStatus.name}`;
+        return i18n.t('ui.menus.changeStatusTo', { symbol: this.newStatus.symbol, name: this.newStatus.name });
     }
 
     public isCheckedForTask(task: Task): boolean {

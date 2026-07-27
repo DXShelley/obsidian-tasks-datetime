@@ -3,7 +3,8 @@ import type { Editor, EditorPosition } from 'obsidian';
 import type { Settings } from '../Config/Settings';
 import { DateParser } from '../DateTime/DateParser';
 import { doAutocomplete } from '../DateTime/DateAbbreviations';
-import { formatTaskDateForStorageWithCurrentTime } from '../DateTime/TaskDateTime';
+import { applyTaskDateTime, formatTaskDateForStorage } from '../DateTime/TaskDateTime';
+import type { DefaultDateTimeField } from '../DateTime/TaskDateTime';
 import { Occurrence } from '../Task/Occurrence';
 import { priorityQuadrantIcons } from '../Task/PriorityQuadrant';
 import { Recurrence } from '../Task/Recurrence';
@@ -81,7 +82,9 @@ export function makeDefaultSuggestionBuilder(
         };
 
         // add date suggestions if relevant
-        suggestions = suggestions.concat(addDatesSuggestions(datePrefixRegex, maxGenericSuggestions, parameters));
+        suggestions = suggestions.concat(
+            addDatesSuggestions(datePrefixRegex, maxGenericSuggestions, parameters, symbols),
+        );
 
         // add recurrence suggestions if relevant
         suggestions = suggestions.concat(addRecurrenceValueSuggestions(symbols.recurrenceSymbol, parameters));
@@ -292,20 +295,31 @@ function defaultExtractor(symbol: string, suggestionText: any) {
     return { displayText, appendText };
 }
 
-function formatSuggestedDate(date: moment.Moment, settings: Settings): { displayValue: string; storageValue: string } {
-    const storageValue = formatTaskDateForStorageWithCurrentTime(date);
-    const displayValue = date.format(
+function formatSuggestedDate(
+    date: moment.Moment,
+    settings: Settings,
+    field?: DefaultDateTimeField,
+): { displayValue: string; storageValue: string } {
+    const dateWithTime = applyTaskDateTime(date, field);
+    const storageValue = formatTaskDateForStorage(dateWithTime);
+    const displayValue = dateWithTime.format(
         settings.enableDateTime ? TaskRegularExpressions.dateTimeFormat : TaskRegularExpressions.dateFormat,
     );
     return { displayValue, storageValue };
 }
 
-function dateExtractor(symbol: string, date: string, settings: Settings) {
+function dateExtractor(symbol: string, date: string, settings: Settings, symbols: DefaultTaskSerializerSymbols) {
     const parsedDate = DateParser.parseDate(date, true);
-    const formattedDate = formatSuggestedDate(parsedDate, settings);
+    const formattedDate = formatSuggestedDate(parsedDate, settings, defaultTimeFieldForSymbol(symbol, symbols));
     const displayText = `${date} (${formattedDate.displayValue})`;
     const appendText = `${symbol} ${formattedDate.storageValue}`;
     return { displayText, appendText };
+}
+
+function defaultTimeFieldForSymbol(symbol: string, symbols: DefaultTaskSerializerSymbols): DefaultDateTimeField {
+    if (symbol === symbols.startDateSymbol) return 'start';
+    if (symbol === symbols.scheduledDateSymbol) return 'scheduled';
+    return 'due';
 }
 
 /*
@@ -320,6 +334,7 @@ function addDatesSuggestions(
     datePrefixRegex: string,
     maxGenericSuggestions: number,
     parameters: SuggestorParameters,
+    symbols: DefaultTaskSerializerSymbols,
 ): SuggestInfo[] {
     const genericSuggestions = [
         'today',
@@ -353,16 +368,22 @@ function addDatesSuggestions(
         if (possibleDate?.isValid()) {
             // Seems like the text that the user typed can be parsed as a valid date.
             // Present its completed form as a 1st suggestion
-            const absoluteDate = formatSuggestedDate(possibleDate, parameters.settings);
-            const extractor = (symbol: string) => ({
-                displayText: absoluteDate.displayValue,
-                appendText: `${symbol} ${absoluteDate.storageValue}`,
-            });
+            const extractor = (symbol: string) => {
+                const absoluteDate = formatSuggestedDate(
+                    possibleDate,
+                    parameters.settings,
+                    defaultTimeFieldForSymbol(symbol, symbols),
+                );
+                return {
+                    displayText: absoluteDate.displayValue,
+                    appendText: `${symbol} ${absoluteDate.storageValue}`,
+                };
+            };
             constructSuggestions(parameters, dateMatch, [''], extractor, results);
         }
 
         const genericMatches = filterGenericSuggestions(genericSuggestions, dateString, maxGenericSuggestions, true);
-        const extractor = (symbol: string, date: string) => dateExtractor(symbol, date, parameters.settings);
+        const extractor = (symbol: string, date: string) => dateExtractor(symbol, date, parameters.settings, symbols);
         constructSuggestions(parameters, dateMatch, genericMatches, extractor, results);
     }
     return results;

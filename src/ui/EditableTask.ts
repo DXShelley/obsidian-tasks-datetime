@@ -179,9 +179,9 @@ export class EditableTask {
             description = GlobalFilter.getInstance().prependTo(description);
         }
 
-        const startDate = parseEditableDate(this.startDate, this.forwardOnly, task.startDate);
-        const scheduledDate = parseEditableDate(this.scheduledDate, this.forwardOnly, task.scheduledDate);
-        const dueDate = parseEditableDate(this.dueDate, this.forwardOnly, task.dueDate);
+        const startDate = parseEditableDate(this.startDate, this.forwardOnly, task.startDate, 'start');
+        const scheduledDate = parseEditableDate(this.scheduledDate, this.forwardOnly, task.scheduledDate, 'scheduled');
+        const dueDate = parseEditableDate(this.dueDate, this.forwardOnly, task.dueDate, 'due');
 
         const cancelledDate = parseEditableDate(this.cancelledDate, this.forwardOnly, task.cancelledDate);
         const createdDate = parseEditableDate(this.createdDate, this.forwardOnly, task.createdDate);
@@ -336,6 +336,7 @@ function parseEditableDate(
     typedDate: string,
     forwardOnly: boolean,
     originalDate: moment.Moment | null,
+    field?: 'start' | 'scheduled' | 'due',
 ): moment.Moment | null {
     if (
         !getSettings().enableDateTime &&
@@ -345,7 +346,7 @@ function parseEditableDate(
     ) {
         return originalDate;
     }
-    return parseTypedDateForSaving(typedDate, forwardOnly);
+    return parseTypedDateForSaving(typedDate, forwardOnly, field);
 }
 
 function isMidnight(date: moment.Moment): boolean {

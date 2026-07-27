@@ -3,12 +3,13 @@
     import { getSettings } from '../Config/Settings';
     import {
         formatTaskDateForStorage,
-        formatTaskDateForStorageWithCurrentTime,
         parseTypedDateForDisplayUsingFutureDate,
         taskDateFormat,
     } from '../DateTime/DateTools';
     import { labelContentWithAccessKey } from './EditTaskHelpers';
     import { createDateTimePicker, type DateTimePickerInstance } from './DateTimePicker';
+    import { i18n } from '../i18n/i18n';
+    import { applyTaskDateTime, defaultTimeForField } from '../DateTime/TaskDateTime';
 
     export let id: 'start' | 'scheduled' | 'due' | 'done' | 'created' | 'cancelled';
     export let dateSymbol: string;
@@ -27,7 +28,9 @@
     let emptyPickerLabel: string;
 
     $: {
-        emptyPickerLabel = getSettings().enableDateTime ? 'Choose date and time' : 'Choose date';
+        emptyPickerLabel = getSettings().enableDateTime
+            ? i18n.t('ui.datePicker.chooseDateTime')
+            : i18n.t('ui.datePicker.chooseDate');
         parsedDate = parseTypedDateForDisplayUsingFutureDate(id, date, forwardOnly);
         isDateValid = !parsedDate.includes('invalid');
         if (isDateValid && !parsedDate.startsWith('<')) {
@@ -55,6 +58,7 @@
             input: pickerInput,
             positionElement: pickerTrigger,
             enableTime: getSettings().enableDateTime,
+            defaultTime: defaultTimeForField(id),
             onDateSelected: (selectedDate) => {
                 if (!selectedDate) {
                     pickedDate = '';
@@ -64,11 +68,13 @@
 
                 const selectedMoment = window.moment(selectedDate);
                 if (!getSettings().enableDateTime) {
-                    date = formatTaskDateForStorageWithCurrentTime(selectedMoment);
+                    const dateWithTime = applyTaskDateTime(selectedMoment, id);
+                    date = formatTaskDateForStorage(dateWithTime);
+                    pickedDate = dateWithTime.format(taskDateFormat());
                 } else {
                     date = formatTaskDateForStorage(selectedMoment);
+                    pickedDate = selectedMoment.format(taskDateFormat());
                 }
-                pickedDate = selectedMoment.format(taskDateFormat());
             },
         });
     });
@@ -77,7 +83,7 @@
 
 </script>
 
-<label for={id}>{@html labelContentWithAccessKey(id, accesskey)}</label>
+<label for={id}>{@html labelContentWithAccessKey(i18n.t(`ui.taskEditor.dates.${id}`), accesskey)}</label>
 <!-- svelte-ignore a11y-accesskey -->
 <div class="tasks-modal-date-control">
     <button
@@ -92,7 +98,7 @@
         <span>{dateSymbol} {pickedDate || emptyPickerLabel}</span>
     </button>
     {#if pickedDate}
-        <button type="button" class="tasks-modal-date-clear clickable-icon" aria-label={`Clear ${id} date`} on:click={clearDate}>×</button>
+        <button type="button" class="tasks-modal-date-clear clickable-icon" aria-label={i18n.t('ui.datePicker.clearDate', { date: i18n.t(`ui.taskEditor.dates.${id}`).toLowerCase() })} on:click={clearDate}>×</button>
     {/if}
 </div>
 <input

@@ -2,7 +2,7 @@ import type { AllTaskDateFields } from '../../DateTime/DateFieldTypes';
 import { Task } from '../../Task/Task';
 import { postponeMenuItemTitleFromDate, removeDateMenuItemTitleForField } from '../../DateTime/Postponer';
 import { TasksDate } from '../../DateTime/TasksDate';
-import { applyCurrentTime } from '../../DateTime/TaskDateTime';
+import { applyTaskDateTime } from '../../DateTime/TaskDateTime';
 import type { TaskEditingInstruction } from './TaskEditingInstruction';
 import { MenuDividerInstruction } from './MenuDividerInstruction';
 
@@ -29,16 +29,14 @@ export class SetTaskDate implements TaskEditingInstruction {
             return [
                 new Task({
                     ...task,
-                    [this.dateFieldToEdit]: this.dateWithCurrentTime(),
+                    [this.dateFieldToEdit]: this.dateWithTaskTime(),
                 }),
             ];
         }
     }
 
-    private dateWithCurrentTime(): moment.Moment {
-        const date = window.moment(this.newDate);
-        applyCurrentTime(date);
-        return date;
+    private dateWithTaskTime(): moment.Moment {
+        return applyTaskDateTime(window.moment(this.newDate), this.dateFieldToEdit);
     }
 
     public instructionDisplayName(): string {

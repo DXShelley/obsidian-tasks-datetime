@@ -3,7 +3,22 @@
     "loadingPlugin": "Loading plugin: {{name}} v{{version}}",
     "unloadingPlugin": "Unloading plugin: {{name}} v{{version}}"
   },
+  "commands": {
+    "addQueryFileDefaultsProperties": "Add all Query File Defaults properties",
+    "createOrEditTask": "Create or edit task",
+    "openTaskDashboard": "Open task dashboard",
+    "toggleTaskDone": "Toggle task done",
+    "updateHistoricalTaskDataInCurrentFile": "Update historical task data in current file",
+    "updateHistoricalTaskDataInVault": "Update historical task data in entire vault"
+  },
   "modals": {
+    "fieldVisibility": {
+      "title": "Hide unused fields"
+    },
+    "taskEditor": {
+      "fieldVisibility": "Configure visible fields",
+      "title": "Create or edit Task"
+    },
     "customStatusModal": {
       "editAvailableAsCommand": {
         "description": "If enabled this status will be available as a command so you can assign a hotkey and toggle the status using it.",
@@ -118,6 +133,24 @@
     },
     "changeRequiresRestart": "REQUIRES RESTART.",
     "dates": {
+      "defaultTimes": {
+        "due": {
+          "description": "Used when a due date is entered without a time.",
+          "name": "Default due time"
+        },
+        "scheduled": {
+          "description": "Used when a scheduled date is entered without a time.",
+          "name": "Default scheduled time"
+        },
+        "start": {
+          "description": "Used when a start date is entered without a time.",
+          "name": "Default start time"
+        }
+      },
+      "includeTime": {
+        "description": "Task dates are always stored as YYYY-MM-DD HH:mm:ss. When disabled, Live Preview and query results hide the time.",
+        "name": "Include time in task dates"
+      },
       "cancelledDate": {
         "description": "Enabling this will add a timestamp ❌ YYYY-MM-DD at the end when a task is toggled to cancelled.",
         "name": "Set cancelled date on every cancelled task"
@@ -198,6 +231,14 @@
       "query": {
         "description": "A query that is automatically included at the start of every Tasks block in the vault. Useful for adding default filters, or layout options.",
         "placeholder": "For example...\npath does not include _templates/\nlimit 300\nshow urgency"
+      }
+    },
+    "language": {
+      "description": "Choose the language used by the Tasks plugin interface.",
+      "name": "Language",
+      "options": {
+        "en": "English",
+        "zh": "Simplified Chinese"
       }
     },
     "presets": {
@@ -296,6 +337,29 @@
         "heading": "Custom Statuses"
       },
       "heading": "Task Statuses"
+    }
+  },
+  "ui": {
+    "common": { "apply": "Apply", "cancel": "Cancel", "delete": "Delete", "edit": "Edit", "save": "Save" },
+    "dashboard": { "caption": "{{completed}} completed / {{planned}} due", "open": "Open task dashboard", "periods": { "This month": "This month", "This week": "This week", "Today": "Today" }, "title": "Task dashboard" },
+    "datePicker": {
+      "chooseDate": "Choose date", "chooseDateTime": "Choose date and time", "clear": "Clear", "clearDate": "Clear {{date}} date", "confirm": "Confirm", "today": "Today"
+    },
+    "fieldVisibility": {
+      "fields": {
+        "after_this": "After this", "before_this": "Before this", "cancelled": "Cancelled", "created": "Created", "done": "Done", "due": "Due", "priority": "Priority", "recurrence": "Recurrence", "scheduled": "Scheduled", "start": "Start", "status": "Status"
+      }
+    },
+    "menus": { "changeStatusTo": "Change status to: [{{symbol}}] {{name}}", "priority": "Priority: {{priority}}" },
+    "notices": { "allPropertiesPresent": "All supported properties are already present.", "cannotPostponeNullDate": "Cannot postpone a null date", "cannotSetStatus": "Cannot set status: line is not a task or does not match global filter", "propertiesUpdated": "Properties updated successfully.", "resultsCopied": "Results copied to clipboard" },
+    "presets": { "dragToReorder": "Drag to reorder" },
+    "queryResults": { "copyResults": "Copy results", "filterByDescription": "Filter by description...", "filterResults": "Filter results" },
+    "priority": {
+      "ariaLabel": "Importance and urgency", "clear": "Clear priority", "importantNotUrgent": "Important / Not urgent", "importantUrgent": "Important / Urgent", "notImportantNotUrgent": "Not important / Not urgent", "notImportantUrgent": "Not important / Urgent", "title": "Priority"
+    },
+    "recurrence": { "doesNotRecur": "Does not recur", "every30Minutes": "Every 30 minutes", "everyDay": "Every day", "everyHour": "Every hour", "everyMonth": "Every month", "everyWeek": "Every week", "whenDone": "When done" },
+    "taskEditor": {
+      "afterThis": "After this", "beforeThis": "Before this", "blockedByPlaceholder": "Search for tasks that the task being edited depends on...", "blockingPlaceholder": "Search for tasks that depend on this task being done...", "dates": { "cancelled": "Cancelled", "created": "Created", "done": "Done", "due": "Due", "scheduled": "Scheduled", "start": "Start" }, "dependenciesUnavailable": "Blocking and blocked by fields are disabled when vault tasks is empty", "description": "Description", "descriptionPlaceholder": "Take out the trash", "edit": "Edit task", "onlyFutureDates": "Only future dates:", "recurs": "Recurs", "status": "Status"
     }
   }
 }

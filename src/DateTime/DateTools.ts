@@ -1,10 +1,11 @@
 import * as chrono from 'chrono-node';
 import { getSettings } from '../Config/Settings';
 import { TaskRegularExpressions } from '../Task/TaskRegularExpressions';
-import { applyCurrentTime, parseTaskDateForSaving } from './TaskDateTime';
+import { applyTaskDateTime, parseTaskDateForSaving } from './TaskDateTime';
 
 export {
     formatTaskDateForStorage,
+    formatTaskDateForStorageWithDefaultTime,
     formatTaskDateForStorageWithCurrentTime,
     parseTaskDateForSaving,
 } from './TaskDateTime';
@@ -79,7 +80,7 @@ function parseTypedDateForDisplay(
     if (parsed !== null) {
         const date = window.moment(parsed);
         if (!/\d{1,2}:\d{2}/.test(typedDate)) {
-            applyCurrentTime(date);
+            return applyTaskDateTime(date, fieldName).format(taskDateFormat());
         }
         return date.format(taskDateFormat());
     }

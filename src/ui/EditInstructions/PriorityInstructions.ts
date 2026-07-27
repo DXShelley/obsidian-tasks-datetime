@@ -1,6 +1,7 @@
 import { Task } from '../../Task/Task';
 import { PriorityTools } from '../../lib/PriorityTools';
 import { Priority } from '../../Task/Priority';
+import { i18n } from '../../i18n/i18n';
 import type { TaskEditingInstruction } from './TaskEditingInstruction';
 
 /**
@@ -28,7 +29,7 @@ export class SetPriority implements TaskEditingInstruction {
     }
 
     public instructionDisplayName(): string {
-        return `Priority: ${PriorityTools.priorityNameUsingNormal(this.newPriority)}`;
+        return i18n.t('ui.menus.priority', { priority: PriorityTools.priorityNameUsingNormal(this.newPriority) });
     }
 
     public isCheckedForTask(task: Task) {

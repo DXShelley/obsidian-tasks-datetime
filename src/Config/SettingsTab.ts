@@ -6,6 +6,7 @@ import { Status } from '../Statuses/Status';
 import type { StatusCollection } from '../Statuses/StatusCollection';
 import { createStatusRegistryReport } from '../Statuses/StatusRegistryReport';
 import { i18n } from '../i18n/i18n';
+import { type PluginLanguage, setPluginLanguage } from '../i18n/i18n';
 import type { TasksEvents } from '../Obsidian/TasksEvents';
 import { refreshLivePreviewTaskDateDisplay } from '../Obsidian/LivePreviewExtension';
 import * as Themes from './Themes';
@@ -88,6 +89,25 @@ export class SettingsTab extends PluginSettingTab {
 
         containerEl.empty();
         this.containerEl.addClass('tasks-settings');
+
+        new Setting(containerEl)
+            .setName(i18n.t('settings.language.name'))
+            .setDesc(i18n.t('settings.language.description'))
+            .addDropdown((dropdown) => {
+                dropdown
+                    .addOption('en', i18n.t('settings.language.options.en'))
+                    .addOption('zh', i18n.t('settings.language.options.zh'))
+                    .setValue(getSettings().language)
+                    .onChange(async (value) => {
+                        const language = value as PluginLanguage;
+                        updateSettings({ language });
+                        await setPluginLanguage(language);
+                        this.plugin.refreshCommandsLanguage();
+                        await this.plugin.saveSettings();
+                        this.events.triggerReloadOpenSearchResults();
+                        this.display();
+                    });
+            });
 
         new Setting(containerEl)
             .setName(i18n.t('settings.format.name'))
@@ -349,10 +369,8 @@ export class SettingsTab extends PluginSettingTab {
         // ---------------------------------------------------------------------------
 
         new Setting(containerEl)
-            .setName('Include time in task dates')
-            .setDesc(
-                'Task dates are always stored as YYYY-MM-DD HH:mm:ss. When disabled, Live Preview and query results hide the time.',
-            )
+            .setName(i18n.t('settings.dates.includeTime.name'))
+            .setDesc(i18n.t('settings.dates.includeTime.description'))
             .addToggle((toggle) => {
                 toggle.setValue(getSettings().enableDateTime).onChange(async (value) => {
                     updateSettings({ enableDateTime: value });
@@ -361,6 +379,28 @@ export class SettingsTab extends PluginSettingTab {
                     refreshLivePreviewTaskDateDisplay();
                 });
             });
+
+        addDefaultDateTimeSetting(
+            containerEl,
+            i18n.t('settings.dates.defaultTimes.start.name'),
+            i18n.t('settings.dates.defaultTimes.start.description'),
+            'start',
+            this.plugin,
+        );
+        addDefaultDateTimeSetting(
+            containerEl,
+            i18n.t('settings.dates.defaultTimes.scheduled.name'),
+            i18n.t('settings.dates.defaultTimes.scheduled.description'),
+            'scheduled',
+            this.plugin,
+        );
+        addDefaultDateTimeSetting(
+            containerEl,
+            i18n.t('settings.dates.defaultTimes.due.name'),
+            i18n.t('settings.dates.defaultTimes.due.description'),
+            'due',
+            this.plugin,
+        );
 
         new Setting(containerEl)
             .setName(i18n.t('settings.dates.createdDate.name'))
@@ -951,7 +991,7 @@ function createRowForTaskStatus(
         setting.addExtraButton((extra) => {
             extra
                 .setIcon('cross')
-                .setTooltip('Delete')
+                .setTooltip(i18n.t('ui.common.delete'))
                 .onClick(() => {
                     if (StatusSettings.deleteStatus(statuses, statusType)) {
                         updateAndSaveStatusSettings(statusSettings, settings);
@@ -963,7 +1003,7 @@ function createRowForTaskStatus(
     setting.addExtraButton((extra) => {
         extra
             .setIcon('pencil')
-            .setTooltip('Edit')
+            .setTooltip(i18n.t('ui.common.edit'))
             .onClick(() => {
                 const modal = new CustomStatusModal(plugin, statusType, isCoreStatus);
 
@@ -1030,4 +1070,32 @@ function setSettingVisibility(setting: Setting | null, visible: boolean) {
     } else {
         console.warn('Setting has not be initialised. Can update visibility of setting UI - in setSettingVisibility');
     }
+}
+
+function addDefaultDateTimeSetting(
+    containerEl: HTMLElement,
+    name: string,
+    description: string,
+    field: 'start' | 'scheduled' | 'due',
+    plugin: TasksPlugin,
+) {
+    new Setting(containerEl)
+        .setName(name)
+        .setDesc(description)
+        .addText((text) => {
+            text.inputEl.type = 'time';
+            text.setValue(getSettings().defaultDateTimes[field]).onChange(async (value) => {
+                if (!/^([01]\d|2[0-3]):[0-5]\d$/u.test(value)) {
+                    return;
+                }
+
+                updateSettings({
+                    defaultDateTimes: {
+                        ...getSettings().defaultDateTimes,
+                        [field]: value,
+                    },
+                });
+                await plugin.saveSettings();
+            });
+        });
 }
