@@ -1,7 +1,7 @@
 # Tasks Datetime
 
 <p align="center">
-  <img src="docs/images/tasks-datetime-logo.svg" width="128" alt="Tasks Datetime logo">
+  <img src="docs/images/tasks-datetime-line-icon/tasks-datetime-line-512.png" width="128" alt="Tasks Datetime logo">
 </p>
 
 <p align="center">Tasks with date and time support down to seconds</p>
