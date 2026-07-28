@@ -341,7 +341,7 @@
   },
   "ui": {
     "common": { "apply": "Apply", "cancel": "Cancel", "delete": "Delete", "edit": "Edit", "save": "Save" },
-    "dashboard": { "caption": "{{completed}} completed / {{planned}} due", "open": "Open task dashboard", "periods": { "This month": "This month", "This week": "This week", "Today": "Today" }, "title": "Task dashboard" },
+    "dashboard": { "actions": { "dueToday": "Due today", "highPriority": "High priority without a due date", "overdue": "Overdue" }, "caption": "{{completed}} completed / {{planned}} due", "completeTask": "Complete {{description}}", "empty": "Nothing here", "metrics": { "completed": "Completed today", "completionRate": "Today's due-date completion", "dueToday": "Due today", "overdue": "Overdue" }, "open": "Open task dashboard", "periods": { "This month": "This month", "This week": "This week", "Today": "Today" }, "title": "Task dashboard" },
     "datePicker": {
       "chooseDate": "Choose date", "chooseDateTime": "Choose date and time", "clear": "Clear", "clearDate": "Clear {{date}} date", "confirm": "Confirm", "today": "Today"
     },

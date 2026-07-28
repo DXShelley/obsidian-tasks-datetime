@@ -3,7 +3,12 @@
  */
 import moment from 'moment';
 
-import { evaluateExpression, evaluateExpressionOrCatch, parseExpression } from '../../src/Scripting/Expression';
+import {
+    type ExpressionFunction,
+    evaluateExpression,
+    evaluateExpressionOrCatch,
+    parseExpression,
+} from '../../src/Scripting/Expression';
 import { TaskBuilder } from '../TestingTools/TaskBuilder';
 import { verifyMarkdownForDocs } from '../TestingTools/VerifyMarkdown';
 import { continueLinesFlattened } from '../../src/Query/Scanner';
@@ -35,7 +40,7 @@ describe('Expression', () => {
             EnableJsInTasksQueries.getInstance().set(true);
             const functionOrError = parseExpression([], '42');
             expect(functionOrError.queryComponent).toBeDefined();
-            const func: Function = functionOrError.queryComponent!;
+            const func: ExpressionFunction = functionOrError.queryComponent!;
 
             // Turn off JS execution, so we can test evaluation fails.
             EnableJsInTasksQueries.getInstance().set(false);
@@ -87,6 +92,10 @@ describe('Expression', () => {
     const queryContext = makeQueryContext(createTestTasksFile('temp.md'));
 
     describe('detect errors at parse stage', () => {
+        it('should preserve the existing error for an empty expression', () => {
+            expect(parseExpression([], '').error).toEqual('Problem parsing expression ""');
+        });
+
         it('should report meaningful error message for parentheses too few parentheses', () => {
             expect(parseExpression([], 'x(').error).toEqual(
                 'Error: Failed parsing expression "x(".\nThe error message was:\n    "SyntaxError: Unexpected token \'}\'"',

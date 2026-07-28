@@ -14,6 +14,14 @@ These instructions are powerful, but JavaScript in Tasks queries runs inside Obs
 
 For this reason, JavaScript in Tasks queries is disabled by default.
 
+## Security and compatibility boundary
+
+Tasks keeps this feature for compatibility with existing JavaScript queries. When enabled, an expression is evaluated as JavaScript in the plugin context; it is not a sandbox and must not be treated as one.
+
+- Trust every query and Markdown file in the vault before enabling this setting.
+- Treat the result of an expression as specific to its instruction: `filter by function` must return a boolean, while sorting and grouping have their own documented result requirements.
+- A syntax or runtime error in an expression is reported in the query result. Disable the setting again if you no longer need JavaScript queries.
+
 ## What changed?
 
 Tasks no longer runs JavaScript in queries by default.

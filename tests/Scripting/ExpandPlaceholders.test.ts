@@ -162,6 +162,16 @@ The problem is in:
         );
     });
 
+    it('should not treat an incomplete query object as a QueryContext', () => {
+        EnableJsInTasksQueries.getInstance().set(false);
+
+        try {
+            expect(expandPlaceholders('{{query.file.path}}', { query: { file: undefined } })).toEqual('');
+        } finally {
+            EnableJsInTasksQueries.getInstance().set(true);
+        }
+    });
+
     it('should not treat absent property values as string, but report the error ', () => {
         const rawString = '{{ query.file.property("non-existent")}}';
 

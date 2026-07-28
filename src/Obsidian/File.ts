@@ -56,10 +56,10 @@ export const replaceTaskWithTasks = async ({
 }: {
     originalTask: ListItem;
     newTasks: ListItem | ListItem[];
-}): Promise<void> => {
+}): Promise<boolean> => {
     if (vault === undefined || metadataCache === undefined || workspace === undefined) {
         errorAndNotice('Tasks: cannot use File before initializing it.');
-        return;
+        return false;
     }
 
     if (!Array.isArray(newTasks)) {
@@ -71,7 +71,7 @@ export const replaceTaskWithTasks = async ({
     logStartOfTaskEdit(logger, codeLocation, originalTask);
     logEndOfTaskEdit(logger, codeLocation, newTasks);
 
-    await tryRepetitive({
+    return tryRepetitive({
         originalTask,
         newTasks,
         vault,
@@ -125,10 +125,10 @@ const tryRepetitive = async ({
     metadataCache: MetadataCache;
     workspace: Workspace;
     previousTries: number;
-}): Promise<void> => {
+}): Promise<boolean> => {
     const logger = getFileLogger();
     logger.debug(`tryRepetitive after ${previousTries} previous tries`);
-    const retry = async () => {
+    const retry = async (): Promise<boolean> => {
         if (previousTries > 10) {
             const message = `Tasks: Could not find the correct task line to update.
 
@@ -147,21 +147,22 @@ Recommendations:
 2. Check for exactly identical copies of the task line, in this file, and see if you can make them different.
 `;
             errorAndNotice(message);
-            return;
+            return false;
         }
 
         const timeout = Math.min(Math.pow(10, previousTries), 100); // 1, 10, 100, 100, 100, ...
         logger.debug(`timeout = ${timeout}`);
-        window.setTimeout(() => {
-            void tryRepetitive({
-                originalTask,
-                newTasks,
-                vault,
-                metadataCache,
-                workspace,
-                previousTries: previousTries + 1,
-            });
-        }, timeout);
+        await new Promise<void>((resolve) => {
+            window.setTimeout(resolve, timeout);
+        });
+        return tryRepetitive({
+            originalTask,
+            newTasks,
+            vault,
+            metadataCache,
+            workspace,
+            previousTries: previousTries + 1,
+        });
     };
 
     try {
@@ -174,17 +175,17 @@ Recommendations:
         ];
 
         await vault.modify(file, updatedFileLines.join('\n'));
+        return true;
     } catch (e) {
         if (e instanceof WarningWorthRetrying) {
             if (e.message) warnAndNotice(e.message);
-            await retry();
-            return;
+            return retry();
         } else if (e instanceof RetryWithoutWarning) {
-            await retry();
-            return;
+            return retry();
         } else if (e instanceof Error) {
             errorAndNotice(e.message);
         }
+        return false;
     }
 };
 

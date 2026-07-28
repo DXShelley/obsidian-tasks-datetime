@@ -12,7 +12,22 @@
     display: grid;
     grid-template-columns: repeat(3, minmax(9rem, 1fr));
     gap: 12px;
+    margin: 16px 0;
 }
+
+.tasks-dashboard-overview {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+}
+
+.tasks-dashboard-metric {
+    border-left: 3px solid var(--interactive-accent);
+    padding: 4px 8px;
+}
+
+.tasks-dashboard-metric-value { font-size: var(--font-ui-larger); font-weight: var(--font-bold); }
+.tasks-dashboard-metric-label { color: var(--text-muted); font-size: var(--font-ui-small); }
 
 .tasks-dashboard-period {
     border: 1px solid var(--background-modifier-border);
@@ -39,8 +54,23 @@
 
 .tasks-dashboard-ring { color: var(--text-normal); }
 .tasks-dashboard-caption { color: var(--text-muted); font-size: var(--font-ui-small); }
+.tasks-dashboard-actions { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.tasks-dashboard-action-group h3 { margin: 0 0 8px; font-size: var(--font-ui-medium); }
+.tasks-dashboard-action-list { list-style: none; margin: 0; padding: 0; }
+.tasks-dashboard-task { align-items: center; border-top: 1px solid var(--background-modifier-border); display: grid; gap: 6px; grid-template-columns: auto minmax(0, 1fr); padding: 7px 0; }
+.tasks-dashboard-task-link { background: transparent; border: 0; color: var(--text-normal); cursor: pointer; overflow: hidden; padding: 0; text-align: left; text-overflow: ellipsis; white-space: nowrap; }
+.tasks-dashboard-task-link:hover { color: var(--text-accent); text-decoration: underline; }
+.tasks-dashboard-task-metadata { color: var(--text-muted); font-size: var(--font-ui-smaller); grid-column: 2; }
+.tasks-dashboard-empty { color: var(--text-muted); font-size: var(--font-ui-small); padding: 7px 0; }
+.tasks-dashboard-task.is-complete { opacity: 0.55; }
 
-@media (max-width: 499px) { .tasks-dashboard-grid { grid-template-columns: 1fr; } }
+@media (max-width: 799px) {
+    .tasks-dashboard-actions { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 499px) {
+    .tasks-dashboard-grid, .tasks-dashboard-overview { grid-template-columns: 1fr; }
+}
 @import './Config/DismissibleNotices';
 @import './Config/SettingsTab';
 @import './Config/PresetsSettingsUI';

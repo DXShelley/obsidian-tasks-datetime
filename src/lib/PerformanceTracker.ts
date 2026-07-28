@@ -1,4 +1,5 @@
 import { getSettings } from '../Config/Settings';
+import { logging } from './logging';
 
 /**
  * Helper class for measuring performance of code, and adding labels for profiling.
@@ -51,11 +52,11 @@ export class PerformanceTracker {
         // Get the last entry, in case the operation with this label has been run more than once this session.
         const lastEntry = entries[entries.length - 1];
 
-        // Log the duration to the console
+        // recordTimings is an explicit user opt-in, so emit at the default visible level.
         if (lastEntry) {
-            console.log(this.label + ':', lastEntry.duration.toFixed(2), 'milliseconds');
+            logging.getLogger('tasks.performance').info(`${this.label}: ${lastEntry.duration.toFixed(2)} milliseconds`);
         } else {
-            console.log(`Measurement for ${this.label} not found`);
+            logging.getLogger('tasks.performance').info(`Measurement for ${this.label} not found`);
         }
     }
 
