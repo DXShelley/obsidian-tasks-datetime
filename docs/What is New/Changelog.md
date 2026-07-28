@@ -12,6 +12,9 @@ _In recent [Tasks releases](https://github.com/obsidian-tasks-group/obsidian-tas
 
 ## 8.x releases
 
+- 8.3.13:
+  - Add the [[Task Dashboard]] for filtered progress review, risk tasks, plans, saved views, drill-down, and bulk task updates.
+  - Preserve date and time values when calculating the next recurrence.
 - X.Y.Z:
   - Add [[Layout#Hide and Show Nested Backlink|'hide nested backlink']] instruction, for when '`show tree`' makes the output just too cluttered.
 - 8.1.0:

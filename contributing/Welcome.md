@@ -31,6 +31,7 @@ Getting the most from this documentation:
 
 - [[About Dependencies]]
 - [[About Releases]]
+- [[Synchronizing with Upstream]]
 - [[About User Support]]
 
 ## Other information

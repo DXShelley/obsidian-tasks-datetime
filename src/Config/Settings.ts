@@ -14,6 +14,7 @@ import { DataviewTaskSerializer } from '../TaskSerializer/DataviewTaskSerializer
 import { i18n } from '../i18n/i18n';
 import type { PluginLanguage } from '../i18n/i18n';
 import { type PresetsMap, defaultPresets } from '../Query/Presets/Presets';
+import type { DashboardSavedView } from '../Dashboard/DashboardFilters';
 import { DebugSettings } from './DebugSettings';
 import { type EditModalShowSettings, defaultEditModalShowSettings } from './EditModalShowSettings';
 import { StatusSettings } from './StatusSettings';
@@ -119,6 +120,9 @@ export interface Settings {
     headingOpened: HeadingState;
     debugSettings: DebugSettings;
 
+    /** Saved dashboard filters. They do not affect task parsing or query execution. */
+    dashboardViews: DashboardSavedView[];
+
     loggingOptions: LogOptions;
 }
 
@@ -170,6 +174,7 @@ const defaultSettings: Readonly<Settings> = {
     },
     headingOpened: {},
     debugSettings: new DebugSettings(),
+    dashboardViews: [],
 
     /*
     `loggingOptions` is a property in the `Settings` interface that defines the logging options for

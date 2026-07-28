@@ -23,6 +23,7 @@ import { LinkResolver } from './Task/LinkResolver';
 import { ObsidianLocalStorageProvider } from './Config/ObsidianLocalStorageProvider';
 import { EnableJsInTasksQueries } from './Config/EnableJsInTasksQueries';
 import { TaskDashboardModal } from './Obsidian/TaskDashboardModal';
+import { DashboardViewStore } from './Dashboard/DashboardFilters';
 
 export default class TasksPlugin extends Plugin {
     private cache: Cache | undefined;
@@ -83,9 +84,7 @@ export default class TasksPlugin extends Plugin {
 
         this.registerEditorExtension(newLivePreviewExtension(this));
         this.registerEditorSuggest(new EditorSuggestor(this.app, getSettings(), this));
-        this.addRibbonIcon('chart-no-axes-combined', i18n.t('ui.dashboard.open'), () => {
-            new TaskDashboardModal(this.app, this.getTasks()).open();
-        });
+        this.addRibbonIcon('chart-no-axes-combined', i18n.t('ui.dashboard.open'), () => this.openDashboard());
         this.commands = new Commands({ plugin: this });
     }
 
@@ -129,6 +128,15 @@ export default class TasksPlugin extends Plugin {
         } else {
             return this.cache.getTasks();
         }
+    }
+
+    public openDashboard(): void {
+        const savedViews = getSettings().dashboardViews;
+        const viewStore = new DashboardViewStore(savedViews, async (views) => {
+            updateSettings({ dashboardViews: views });
+            await this.saveSettings();
+        });
+        new TaskDashboardModal(this.app, () => this.getTasks(), viewStore).open();
     }
 
     public getState(): State {

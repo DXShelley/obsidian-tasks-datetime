@@ -43,6 +43,48 @@ describe('Recurrence', () => {
         expect(next!.dueDate).toEqualMoment(moment('2022-02-28'));
     });
 
+    it('keeps the due time when calculating a monthly recurrence at month end', () => {
+        const recurrence = Recurrence.fromText({
+            recurrenceRuleText: 'every month',
+            occurrence: new Occurrence({
+                dueDate: moment('2022-01-31 22:15:30'),
+            }),
+        });
+
+        const next = recurrence!.next();
+
+        expect(next!.dueDate).toEqualMoment(moment('2022-02-28 22:15:30'));
+    });
+
+    it('keeps minutes and seconds for an hourly recurrence', () => {
+        const recurrence = Recurrence.fromText({
+            recurrenceRuleText: 'every hour',
+            occurrence: new Occurrence({
+                dueDate: moment('2022-01-01 09:15:30'),
+            }),
+        });
+
+        const next = recurrence!.next();
+
+        expect(next!.dueDate).toEqualMoment(moment('2022-01-01 10:15:30'));
+    });
+
+    it('keeps each populated field time while preserving calendar-day offsets', () => {
+        const recurrence = Recurrence.fromText({
+            recurrenceRuleText: 'every week',
+            occurrence: new Occurrence({
+                startDate: moment('2022-01-03 09:00:00'),
+                dueDate: moment('2022-01-07 18:30:45'),
+            }),
+        });
+
+        const next = recurrence!.next();
+
+        expect(next!.startDate).toEqualMoment(moment('2022-01-10 09:00:00'));
+        expect(next!.scheduledDate).toBeNull();
+        expect(next!.dueDate).toEqualMoment(moment('2022-01-14 18:30:45'));
+    });
+
     it('creates a recurrence 3 months in', () => {
         // Arrange
         const recurrence = Recurrence.fromText({

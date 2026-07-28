@@ -532,7 +532,7 @@ describe('Task editing', () => {
 
             submit.click();
             expect(await waitForClose).toMatchInlineSnapshot(`
-                "- [ ] Recurring 🔁 every day 📅 2024-02-18 00:00:00
+                "- [ ] Recurring 🔁 every day 📅 2024-02-18 22:00:00
                 - [x] Recurring 🔁 every day 📅 2024-02-17 22:00:00 ✅ 2024-02-29 00:00:00"
             `);
         });
@@ -547,7 +547,7 @@ describe('Task editing', () => {
             submit.click();
             expect(await waitForClose).toMatchInlineSnapshot(`
                 "- [x] Recurring 🔁 every day 📅 2024-02-17 22:00:00 ✅ 2024-02-29 00:00:00
-                - [ ] Recurring 🔁 every day 📅 2024-02-18 00:00:00"
+                - [ ] Recurring 🔁 every day 📅 2024-02-18 22:00:00"
             `);
         });
 
@@ -561,7 +561,7 @@ describe('Task editing', () => {
 
             submit.click();
             expect(await waitForClose).toMatchInlineSnapshot(`
-                "- [ ] Recurring 🔁 every day when done ➕ 2024-02-29 00:00:00 📅 2024-03-01 00:00:00
+                "- [ ] Recurring 🔁 every day when done ➕ 2024-02-29 00:00:00 📅 2024-03-01 22:00:00
                 - [x] Recurring 🔁 every day when done 📅 2024-02-17 22:00:00 ✅ 2024-02-29 00:00:00"
             `);
         });
@@ -578,7 +578,7 @@ describe('Task editing', () => {
 
             submit.click();
             expect(await waitForClose).toMatchInlineSnapshot(`
-                "- [ ] Recurring 🔁 every day when done ➕ 2024-02-29 00:00:00 📅 2024-02-24 00:00:00
+                "- [ ] Recurring 🔁 every day when done ➕ 2024-02-29 00:00:00 📅 2024-02-24 22:00:00
                 - [x] Recurring 🔁 every day when done 📅 2024-02-17 22:00:00 ✅ 2024-02-23 00:00:00"
             `);
         });
