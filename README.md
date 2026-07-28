@@ -19,7 +19,7 @@ The upstream project remains the date-only compatibility baseline. Tasks Datetim
 - Optional `YYYY-MM-DD HH:mm:ss` task dates, with date-only display when disabled.
 - A combined date and time picker for task editing.
 - Recurrence presets and four-quadrant importance/urgency editing.
-- Task dashboard for today, this week, and this month.
+- [Task dashboard](docs/Getting%20Started/Task%20Dashboard.md) for filtered progress, risks, plans, saved views, and bulk task updates.
 - Query support for date and time values, plus documented query examples.
 
 ## Installation
@@ -43,6 +43,10 @@ fnm exec --using=22.23.1 corepack yarn build
 ## Upstream Attribution
 
 Tasks Datetime is a modified derivative of [obsidian-tasks-group/obsidian-tasks](https://github.com/obsidian-tasks-group/obsidian-tasks). It retains the upstream MIT license and its required copyright notice in [LICENSE](LICENSE). See [NOTICE](NOTICE) for attribution, bundled-runtime notices, and the independent-project statement.
+
+For a maintained inventory of the open-source runtime components, development
+tools, and documentation-vault plugins used by this project, see
+[Open Source Acknowledgements](docs/Reference/Open%20Source%20Acknowledgements.md).
 
 ## Privacy and Permissions
 

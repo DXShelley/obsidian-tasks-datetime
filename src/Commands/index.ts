@@ -9,7 +9,6 @@ import {
 } from 'obsidian';
 import { i18n } from '../i18n/i18n';
 import type TasksPlugin from '../main';
-import { TaskDashboardModal } from '../Obsidian/TaskDashboardModal';
 import { StatusRegistry } from '../Statuses/StatusRegistry';
 import { TaskRegularExpressions } from '../Task/TaskRegularExpressions';
 import { createOrEdit } from './CreateOrEdit';
@@ -82,7 +81,7 @@ export class Commands {
             id: 'open-task-dashboard',
             name: i18n.t('commands.openTaskDashboard'),
             icon: 'chart-no-axes-combined',
-            callback: () => new TaskDashboardModal(this.app, this.plugin.getTasks()).open(),
+            callback: () => this.plugin.openDashboard(),
         });
 
         this.registerCommand({

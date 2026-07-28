@@ -1,4 +1,4 @@
-import { RRule } from 'rrule';
+import { Frequency, RRule } from 'rrule';
 import type { Occurrence } from './Occurrence';
 
 export class Recurrence {
@@ -74,7 +74,8 @@ export class Recurrence {
             return null;
         }
 
-        return this.occurrence.next(nextReferenceDate);
+        const isSubDaily = (this.rrule.origOptions.freq ?? Frequency.DAILY) >= Frequency.HOURLY;
+        return this.occurrence.next(nextReferenceDate, isSubDaily);
     }
 
     public identicalTo(other: Recurrence) {
@@ -89,12 +90,12 @@ export class Recurrence {
         return this.toText() === other.toText(); // this also checks baseOnToday
     }
 
-    private nextReferenceDate(today: Moment): Date {
+    private nextReferenceDate(today: Moment): Moment {
         if (this.baseOnToday) {
             // The next occurrence should happen based off the current date.
-            return this.nextReferenceDateFromToday(today.clone()).toDate();
+            return this.nextReferenceDateFromToday(today.clone());
         } else {
-            return this.nextReferenceDateFromOriginalReferenceDate().toDate();
+            return this.nextReferenceDateFromOriginalReferenceDate();
         }
     }
 
@@ -262,6 +263,12 @@ export class Recurrence {
         // the day of the year when DST kicks in and the time of day is before DST actually kicks in
         // (typically between midnight and very early morning, varying across geographies).
         // We workaround the bug by setting the time of day to noon before calling local(true)
+        const timeOfDay = {
+            hour: date.hour(),
+            minute: date.minute(),
+            second: date.second(),
+            millisecond: date.millisecond(),
+        };
         const localTimeZone = window.moment
             .utc(date)
             .set({
@@ -272,6 +279,6 @@ export class Recurrence {
             })
             .local(true);
 
-        return localTimeZone.startOf('day');
+        return localTimeZone.set(timeOfDay);
     }
 }

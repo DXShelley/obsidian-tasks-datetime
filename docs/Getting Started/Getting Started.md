@@ -65,6 +65,10 @@ You can find out more in [[Create or edit Task|‘Create or edit Task’ Modal]]
 
 See other pages in 'Getting Started' for more details on due dates and recurrence, and many other features.
 
+## Reviewing your tasks
+
+Use the [[Task Dashboard]] to review task progress, risks, and the current plan in one place. It supports filters, saved views, task drill-down, and bulk updates.
+
 You cannot toggle a task (un)done in the modal.
 For that, do one of the following.
 

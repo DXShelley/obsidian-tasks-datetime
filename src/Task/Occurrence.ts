@@ -100,8 +100,9 @@ export class Occurrence {
      * If the occurrence has no reference date, an empty {@link Occurrence} will be returned.
      *
      * @param nextReferenceDate
+     * @param isSubDaily Whether the recurrence frequency is hourly or smaller.
      */
-    public next(nextReferenceDate: Date): Occurrence {
+    public next(nextReferenceDate: Moment, isSubDaily: boolean): Occurrence {
         // Only if a reference date is given. A reference date will exist if at
         // least one of the other dates is set.
         if (this.referenceDate === null) {
@@ -119,11 +120,11 @@ export class Occurrence {
         const { removeScheduledDateOnRecurrence } = getSettings();
         const shouldRemoveScheduledDate = removeScheduledDateOnRecurrence && canRemoveScheduledDate;
 
-        const startDate = this.nextOccurrenceDate(this.startDate, nextReferenceDate);
+        const startDate = this.nextOccurrenceDate(this.startDate, nextReferenceDate, isSubDaily);
         const scheduledDate = shouldRemoveScheduledDate
             ? null
-            : this.nextOccurrenceDate(this.scheduledDate, nextReferenceDate);
-        const dueDate = this.nextOccurrenceDate(this.dueDate, nextReferenceDate);
+            : this.nextOccurrenceDate(this.scheduledDate, nextReferenceDate, isSubDaily);
+        const dueDate = this.nextOccurrenceDate(this.dueDate, nextReferenceDate, isSubDaily);
 
         return new Occurrence({
             startDate,
@@ -133,23 +134,45 @@ export class Occurrence {
     }
 
     /**
-     * Gets next occurrence (start/scheduled/due date) keeping the relative distance
-     * with the reference date
+     * Gets a next occurrence field while preserving its time of day.
+     *
+     * For daily-or-larger intervals, keep the calendar-day distance from the
+     * reference date. For hourly-or-smaller intervals, preserve the exact elapsed
+     * duration instead.
      *
      * @param nextReferenceDate
      * @param currentOccurrenceDate start/scheduled/due date
+     * @param isSubDaily Whether the recurrence frequency is hourly or smaller.
      * @private
      */
-    private nextOccurrenceDate(currentOccurrenceDate: Moment | null, nextReferenceDate: Date): Moment | null {
+    private nextOccurrenceDate(
+        currentOccurrenceDate: Moment | null,
+        nextReferenceDate: Moment,
+        isSubDaily: boolean,
+    ): Moment | null {
         if (currentOccurrenceDate === null) {
             return null;
         }
-        const originalDifference = window.moment.duration(currentOccurrenceDate.diff(this.referenceDate));
 
-        // Cloning so that original won't be manipulated:
-        const nextOccurrence = window.moment(nextReferenceDate);
-        // Rounding days to handle cross daylight-savings-time recurrences.
-        nextOccurrence.add(Math.round(originalDifference.asDays()), 'days');
-        return nextOccurrence;
+        const referenceDate = this.referenceDate;
+        if (referenceDate === null) {
+            return null;
+        }
+
+        if (isSubDaily) {
+            return nextReferenceDate.clone().add(currentOccurrenceDate.diff(referenceDate), 'milliseconds');
+        }
+
+        const dayDifference = currentOccurrenceDate
+            .clone()
+            .startOf('day')
+            .diff(referenceDate.clone().startOf('day'), 'days');
+
+        return nextReferenceDate.clone().startOf('day').add(dayDifference, 'days').set({
+            hour: currentOccurrenceDate.hour(),
+            minute: currentOccurrenceDate.minute(),
+            second: currentOccurrenceDate.second(),
+            millisecond: currentOccurrenceDate.millisecond(),
+        });
     }
 }
