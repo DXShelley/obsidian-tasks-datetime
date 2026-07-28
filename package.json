@@ -1,6 +1,6 @@
 {
   "name": "tasks-datetime",
-  "version": "8.3.11",
+  "version": "8.3.12",
   "description": "Tasks with date and time support down to seconds",
   "main": "main.js",
   "engines": {

@@ -5,6 +5,7 @@ import { type ExpressionParameter, evaluateExpression, parseExpression } from '.
 import type { QueryContext } from './QueryContext';
 import { resolveKnownPlaceholder } from './KnownPlaceholderResolver';
 import { JsInTasksQueriesDisabledError } from './JsInTasksQueriesDisabledError';
+import { TasksFile } from './TasksFile';
 
 // https://github.com/janl/mustache.js
 
@@ -24,10 +25,10 @@ import { JsInTasksQueriesDisabledError } from './JsInTasksQueriesDisabledError';
  *      not in the view, we ensure that errors are detected immediately.
  *      The first unknown placeholder is included in Error.message.
  */
-export function expandPlaceholders(template: string, view: any): string {
+export function expandPlaceholders(template: string, view: object): string {
     // Turn off HTML escaping of things like '/' in file paths:
     // https://github.com/janl/mustache.js#variables
-    Mustache.escape = function (text) {
+    Mustache.escape = function (text: string): string {
         return text;
     };
 
@@ -70,7 +71,7 @@ const PLACEHOLDER_REGEX = new RegExp(
     'g', // Global flag to find all matches
 );
 
-function evaluateAnyFunctionCalls(template: string, view: any) {
+function evaluateAnyFunctionCalls(template: string, view: object): string {
     return template.replace(PLACEHOLDER_REGEX, (_match, reconstructed: string) => {
         if (isQueryContext(view)) {
             const knownPlaceholder = resolveKnownPlaceholder(reconstructed, view);
@@ -118,8 +119,14 @@ function stringifyPlaceholderResult(result: unknown): string {
     return String(result);
 }
 
-function isQueryContext(view: any): view is QueryContext {
-    return view?.query?.file !== undefined;
+function isQueryContext(view: object): view is QueryContext {
+    const query = (view as { query?: unknown }).query;
+    return (
+        typeof query === 'object' &&
+        query !== null &&
+        'file' in query &&
+        (query as { file?: unknown }).file instanceof TasksFile
+    );
 }
 
 function throwInvalidPlaceholderError(reconstructed: string): void {
@@ -145,6 +152,6 @@ function isPlainMustachePlaceholder(reconstructed: string): boolean {
     return /^[A-Za-z_$][\w$]*(\.[A-Za-z_$][\w$]*)*$/.test(reconstructed.trim());
 }
 
-function createExpressionParameters(view: any): ExpressionParameter[] {
-    return Object.entries(view) as ExpressionParameter[];
+function createExpressionParameters(view: object): ExpressionParameter[] {
+    return Object.entries(view).map(([name, value]) => [name, value]);
 }

@@ -24,6 +24,10 @@ describe('getValueType', () => {
             ),
         ).toEqual('Map');
         expect(getValueType({})).toEqual('Object');
+        expect(getValueType(Object.create(null))).toEqual('Object');
+
+        class CustomType {}
+        expect(getValueType(new CustomType())).toEqual('CustomType');
 
         expect(getValueType(undefined)).toEqual('undefined');
         expect(getValueType(null)).toEqual('null');

@@ -341,7 +341,7 @@
   },
   "ui": {
     "common": { "apply": "应用", "cancel": "取消", "delete": "删除", "edit": "编辑", "save": "保存" },
-    "dashboard": { "caption": "已完成 {{completed}} / 截止 {{planned}}", "open": "打开任务面板", "periods": { "This month": "本月", "This week": "本周", "Today": "今天" }, "title": "任务面板" },
+    "dashboard": { "actions": { "dueToday": "今天到期", "highPriority": "未设置到期日的高优先级任务", "overdue": "已逾期" }, "caption": "已完成 {{completed}} / 截止 {{planned}}", "completeTask": "完成 {{description}}", "empty": "暂无任务", "metrics": { "completed": "今日已完成", "completionRate": "今日到期完成率", "dueToday": "今天到期", "overdue": "已逾期" }, "open": "打开任务面板", "periods": { "This month": "本月", "This week": "本周", "Today": "今天" }, "title": "任务面板" },
     "datePicker": {
       "chooseDate": "选择日期", "chooseDateTime": "选择日期和时间", "clear": "清除", "clearDate": "清除{{date}}日期", "confirm": "确认", "today": "今天"
     },
