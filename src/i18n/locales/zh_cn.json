@@ -135,6 +135,7 @@
     },
     "changeRequiresRestart": "需要重启。",
     "reminders": {
+      "heading": "提醒",
       "enabled": {
         "name": "启用提醒",
         "description": "发布开始、计划和截止提醒，供自动化任务和 Obsidian 消息使用。"
@@ -146,6 +147,19 @@
       "showInObsidian": {
         "name": "在 Obsidian 中显示提醒",
         "description": "提醒到期时以低打扰、合并的应用内消息显示。"
+      },
+      "gitIgnore": {
+        "button": "添加到 .gitignore",
+        "confirmation": {
+          "title": "在 Git 中忽略提醒快照？",
+          "description": "每次刷新任务缓存都会更新提醒快照。若 Git 同步此生成文件，可能反复产生工作区变更或同步冲突。将规则添加到 .gitignore；若快照已被 Git 跟踪，请先取消跟踪。"
+        },
+        "notices": {
+          "added": "已将提醒快照规则添加到 .gitignore。",
+          "already-ignored": ".gitignore 中已有提醒快照规则。",
+          "unavailable": "此 Vault 中未找到 Git 仓库。",
+          "enableFailed": "无法启用提醒。请检查 .gitignore 后重试。"
+        }
       }
     },
     "dates": {

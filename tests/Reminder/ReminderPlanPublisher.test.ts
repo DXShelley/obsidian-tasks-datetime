@@ -66,6 +66,31 @@ describe('ReminderPlanPublisher', () => {
         expect(process.mock.calls[0][1]('{}')).toContain('"activeEventCount": 0');
     });
 
+    it('does not create a reminder snapshot from cache updates while reminders are disabled', async () => {
+        const process = jest.fn().mockResolvedValue(undefined);
+        const onCacheUpdate = jest.fn();
+        const events = {
+            onCacheUpdate: onCacheUpdate.mockImplementation((handler) => {
+                events.handler = handler;
+                return 'cache-event';
+            }),
+            off: jest.fn(),
+            handler: undefined as any,
+        };
+        const publisher = new ReminderPlanPublisher({
+            events: events as any,
+            storage: { exists: jest.fn().mockResolvedValue(true), process, write: jest.fn() },
+            getAdvanceMinutes: () => 0,
+            isEnabled: () => false,
+        });
+
+        publisher.start();
+        events.handler({ tasks: [], state: State.Warm });
+        await waitForQueuedWrite();
+
+        expect(process).not.toHaveBeenCalled();
+    });
+
     it('logs and absorbs write failures from safe publication', async () => {
         const error = new Error('storage unavailable');
         const publisher = new ReminderPlanPublisher({

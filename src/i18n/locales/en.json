@@ -135,6 +135,7 @@
     },
     "changeRequiresRestart": "REQUIRES RESTART.",
     "reminders": {
+      "heading": "Reminders",
       "enabled": {
         "name": "Enable reminders",
         "description": "Publish start, scheduled, and due reminders for automations and Obsidian notices."
@@ -146,6 +147,19 @@
       "showInObsidian": {
         "name": "Show reminders in Obsidian",
         "description": "Show quiet, grouped in-app notices when reminders are due."
+      },
+      "gitIgnore": {
+        "button": "Add to .gitignore",
+        "confirmation": {
+          "title": "Ignore reminder snapshot in Git?",
+          "description": "Reminder snapshots change whenever the task cache is refreshed. If Git synchronizes this generated file, it can create recurring working-tree changes or synchronization conflicts. Add an ignore rule to .gitignore. If the snapshot is already tracked, remove it from Git tracking first."
+        },
+        "notices": {
+          "added": "Added a reminder snapshot rule to .gitignore.",
+          "already-ignored": "A reminder snapshot rule is already in .gitignore.",
+          "unavailable": "No Git repository was found in this vault.",
+          "enableFailed": "Couldn't enable reminders. Check .gitignore and try again."
+        }
       }
     },
     "dates": {

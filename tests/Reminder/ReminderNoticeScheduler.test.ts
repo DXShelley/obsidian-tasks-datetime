@@ -2,8 +2,11 @@
  * @jest-environment jsdom
  */
 
+import { Notice } from 'obsidian';
 import type { ReminderPlan } from '../../src/Reminder/ReminderPlan';
 import { ReminderNoticeScheduler } from '../../src/Reminder/ReminderNoticeScheduler';
+
+jest.mock('obsidian', () => ({ Notice: jest.fn() }));
 
 function plan(events: ReminderPlan['events']): ReminderPlan {
     return {
@@ -54,6 +57,18 @@ function event(id: string, triggerAt: string, title = id): ReminderPlan['events'
 }
 
 describe('ReminderNoticeScheduler', () => {
+    it('keeps default Obsidian notices visible for 10 seconds', () => {
+        let now = new Date('2026-07-30T10:00:00.000Z');
+        const scheduler = new ReminderNoticeScheduler({ isEnabled: () => true, now: () => now });
+        const reminderPlan = plan([event('one', '2026-07-30T10:01:00.000Z')]);
+
+        scheduler.update(reminderPlan);
+        now = new Date('2026-07-30T10:01:00.000Z');
+        scheduler.update(reminderPlan);
+
+        expect(jest.mocked(Notice)).toHaveBeenCalledWith('Due reminder: one', 10_000);
+    });
+
     it('does not replay reminders that were already due when Obsidian opened', () => {
         const showNotice = jest.fn();
         const scheduler = new ReminderNoticeScheduler({

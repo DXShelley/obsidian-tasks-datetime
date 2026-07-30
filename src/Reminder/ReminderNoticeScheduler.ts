@@ -3,6 +3,7 @@ import type { ReminderPlan, ReminderPlanEvent } from './ReminderPlan';
 
 const pollingIntervalMilliseconds = 30_000;
 const maximumItemsInNotice = 3;
+const noticeDurationMilliseconds = 10_000;
 
 export interface ReminderNoticeSchedulerOptions {
     isEnabled: () => boolean;
@@ -30,7 +31,7 @@ export class ReminderNoticeScheduler {
 
     constructor(private readonly options: ReminderNoticeSchedulerOptions) {
         this.now = options.now ?? (() => new Date());
-        this.showNotice = options.showNotice ?? ((message) => new Notice(message, 4000));
+        this.showNotice = options.showNotice ?? ((message) => new Notice(message, noticeDurationMilliseconds));
         this.setInterval =
             options.setInterval ?? ((callback, milliseconds) => window.setInterval(callback, milliseconds));
         this.clearInterval = options.clearInterval ?? ((intervalId) => window.clearInterval(intervalId));
