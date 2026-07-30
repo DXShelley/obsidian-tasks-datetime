@@ -90,6 +90,26 @@ describe('resetSettings behaviour', () => {
         expect(getSettings().defaultDateTimes).toEqual({ start: '09:00', scheduled: '11:30', due: '22:00' });
     });
 
+    it('should default reminder advance minutes to zero and preserve a configured value', () => {
+        expect(getSettings().reminderSettings).toEqual({ enabled: false, advanceMinutes: 0, showInObsidian: true });
+
+        updateSettings({ reminderSettings: { enabled: true, advanceMinutes: 15, showInObsidian: false } });
+
+        expect(getSettings().reminderSettings).toEqual({ enabled: true, advanceMinutes: 15, showInObsidian: false });
+    });
+
+    it('should enable Obsidian notices for existing reminder settings', () => {
+        updateSettings({ reminderSettings: { enabled: true, advanceMinutes: 15 } as any });
+
+        expect(getSettings().reminderSettings.showInObsidian).toBe(true);
+    });
+
+    it('should limit reminder advance to 60 minutes', () => {
+        updateSettings({ reminderSettings: { enabled: true, advanceMinutes: 120, showInObsidian: true } });
+
+        expect(getSettings().reminderSettings.advanceMinutes).toBe(60);
+    });
+
     it('should default the plugin interface to English and allow Chinese', () => {
         expect(getSettings().language).toBe('en');
         updateSettings({ language: 'zh' });

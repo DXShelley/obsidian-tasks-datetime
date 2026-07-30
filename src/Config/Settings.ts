@@ -15,6 +15,7 @@ import { i18n } from '../i18n/i18n';
 import type { PluginLanguage } from '../i18n/i18n';
 import { type PresetsMap, defaultPresets } from '../Query/Presets/Presets';
 import type { DashboardSavedView } from '../Dashboard/DashboardFilters';
+import { normaliseReminderAdvanceMinutes } from '../Reminder/ReminderSettings';
 import { DebugSettings } from './DebugSettings';
 import { type EditModalShowSettings, defaultEditModalShowSettings } from './EditModalShowSettings';
 import { StatusSettings } from './StatusSettings';
@@ -71,6 +72,12 @@ export interface DefaultDateTimes {
     due: string;
 }
 
+export interface ReminderSettings {
+    enabled: boolean;
+    advanceMinutes: number;
+    showInObsidian: boolean;
+}
+
 export interface Settings {
     /** Language used by Tasks' UI. */
     language: PluginLanguage;
@@ -83,6 +90,8 @@ export interface Settings {
     enableDateTime: boolean;
     /** Time used when a start, scheduled, or due date is entered without a time. */
     defaultDateTimes: DefaultDateTimes;
+    /** Settings for the agent-readable reminder plan. */
+    reminderSettings: ReminderSettings;
     setCreatedDate: boolean;
     setDoneDate: boolean;
     setCancelledDate: boolean;
@@ -138,6 +147,11 @@ const defaultSettings: Readonly<Settings> = {
         start: '09:00',
         scheduled: '11:30',
         due: '22:00',
+    },
+    reminderSettings: {
+        enabled: false,
+        advanceMinutes: 0,
+        showInObsidian: true,
     },
     setCreatedDate: false,
     setDoneDate: true,
@@ -221,6 +235,12 @@ export const getSettings = (): Settings => {
     addNewOptionsToUserSettings(defaultSettings.debugSettings, settings.debugSettings);
     settings.defaultDateTimes ??= { ...defaultSettings.defaultDateTimes };
     addNewOptionsToUserSettings(defaultSettings.defaultDateTimes, settings.defaultDateTimes);
+    settings.reminderSettings ??= { ...defaultSettings.reminderSettings };
+    settings.reminderSettings.enabled ??= defaultSettings.reminderSettings.enabled;
+    settings.reminderSettings.showInObsidian ??= defaultSettings.reminderSettings.showInObsidian;
+    settings.reminderSettings.advanceMinutes = normaliseReminderAdvanceMinutes(
+        settings.reminderSettings.advanceMinutes,
+    );
 
     // In case saves pre-dated StatusConfiguration.type
     // TODO Special case for symbol 'X' or 'x' (just in case)

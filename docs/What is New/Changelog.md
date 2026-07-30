@@ -12,6 +12,11 @@ _In recent [Tasks releases](https://github.com/obsidian-tasks-group/obsidian-tas
 
 ## 8.x releases
 
+- 8.4.0:
+  - Strengthen time management with second-precision task times that can remain compact in date-only views.
+  - Add quiet, grouped Obsidian reminders for start, scheduled, and due times, with a configurable advance of up to 60 minutes. See [[Reminders]].
+  - Add a structured local reminder snapshot for Agent automations, so an automation can deliver the same task reminders outside Obsidian.
+  - Keep task IDs and dependency IDs available in source mode while hiding them in Reading View and Live Preview.
 - 8.3.13:
   - Add the [[Task Dashboard]] for filtered progress review, risk tasks, plans, saved views, drill-down, and bulk task updates.
   - Preserve date and time values when calculating the next recurrence.

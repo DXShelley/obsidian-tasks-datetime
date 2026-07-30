@@ -1,6 +1,29 @@
-import { taskDateTimeRangesInLine, taskLineDisplaysMarkdownSource } from '../../src/Obsidian/LivePreviewExtension';
+import {
+    taskDateTimeRangesInLine,
+    taskInternalReferenceRangesInLine,
+    taskLineDisplaysMarkdownSource,
+} from '../../src/Obsidian/LivePreviewExtension';
 
 describe('Live Preview task date display', () => {
+    it('finds task ID and dependency fields including their leading separators', () => {
+        const line =
+            '- [ ] #task Review ticket 🆔 t-k4iq21a2b3c4 ⛔ t-k4iq21a2b3c4, t-9abcde123456 📅 2026-07-30 14:30:00';
+        const lineStart = 100;
+
+        const ranges = taskInternalReferenceRangesInLine(line, lineStart);
+
+        expect(ranges.map((range) => line.slice(range.from - lineStart, range.to - lineStart))).toEqual([
+            ' 🆔 t-k4iq21a2b3c4',
+            ' ⛔ t-k4iq21a2b3c4, t-9abcde123456',
+        ]);
+    });
+
+    it('recognises an ID without a space after the ID symbol', () => {
+        const line = '- [ ] Write about 🆔note';
+
+        expect(taskInternalReferenceRangesInLine(line, 0)).toEqual([{ from: 17, to: 24 }]);
+    });
+
     it('finds only the time portions of task date fields', () => {
         const line = '- [ ] Task 📅 2026-07-23 14:15:16 ✅ 2026-07-24 00:00:00';
         const lineStart = 100;

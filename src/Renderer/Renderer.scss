@@ -3,8 +3,9 @@
 
 }
 
-/* Task IDs remain available in source mode but stay out of rendered task rows. */
-.task-id {
+/* Task IDs and dependency IDs remain available in source mode but stay out of rendered task rows. */
+.task-id,
+.task-dependsOn {
     display: none !important;
 }
 

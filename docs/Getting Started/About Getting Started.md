@@ -17,6 +17,8 @@ publish: true
   - See also [[Global Query]], which is much more powerful, once you know how searching works.
 - [[Settings]]
   - A convenient list of all the Tasks plugin options.
+- [[Reminders]]
+  - Receive quiet, grouped notices for task start, scheduled, and due times.
 
 ## Adding data to your tasks
 

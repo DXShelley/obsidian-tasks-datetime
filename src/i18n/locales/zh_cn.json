@@ -134,6 +134,20 @@
       }
     },
     "changeRequiresRestart": "需要重启。",
+    "reminders": {
+      "enabled": {
+        "name": "启用提醒",
+        "description": "发布开始、计划和截止提醒，供自动化任务和 Obsidian 消息使用。"
+      },
+      "advanceMinutes": {
+        "name": "提前提醒分钟数",
+        "description": "在每个开始、计划或截止时间前提前多少分钟通知。"
+      },
+      "showInObsidian": {
+        "name": "在 Obsidian 中显示提醒",
+        "description": "提醒到期时以低打扰、合并的应用内消息显示。"
+      }
+    },
     "dates": {
       "defaultTimes": {
         "due": {

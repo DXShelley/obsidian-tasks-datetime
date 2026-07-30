@@ -25,6 +25,9 @@ import { EnableJsInTasksQueries } from './Config/EnableJsInTasksQueries';
 import { TaskDashboardModal } from './Obsidian/TaskDashboardModal';
 import { DashboardViewStore } from './Dashboard/DashboardFilters';
 import { TaskIdManager } from './TaskId/TaskIdManager';
+import { ReminderPlanPublisher } from './Reminder/ReminderPlanPublisher';
+import { reminderPlanFilename } from './Reminder/ReminderPlanWriter';
+import { ReminderNoticeScheduler } from './Reminder/ReminderNoticeScheduler';
 
 export default class TasksPlugin extends Plugin {
     private cache: Cache | undefined;
@@ -32,6 +35,8 @@ export default class TasksPlugin extends Plugin {
     public queryRenderer: QueryRenderer | undefined;
     private commands: Commands | undefined;
     private taskIdManager: TaskIdManager | undefined;
+    private reminderPlanPublisher: ReminderPlanPublisher | undefined;
+    private reminderNoticeScheduler: ReminderNoticeScheduler | undefined;
 
     get apiV1() {
         return tasksApiV1(this);
@@ -77,6 +82,21 @@ export default class TasksPlugin extends Plugin {
             workspace: this.app.workspace,
             events,
         });
+        this.reminderNoticeScheduler = new ReminderNoticeScheduler({
+            isEnabled: () => getSettings().reminderSettings.enabled && getSettings().reminderSettings.showInObsidian,
+        });
+        this.reminderNoticeScheduler.start();
+        this.reminderPlanPublisher = new ReminderPlanPublisher({
+            events,
+            storage: this.app.vault.adapter,
+            getAdvanceMinutes: () => getSettings().reminderSettings.advanceMinutes,
+            isEnabled: () => getSettings().reminderSettings.enabled,
+            getLanguage: () => getSettings().language,
+            planPath: `${this.manifest.dir ?? '.obsidian/plugins/tasks-datetime'}/${reminderPlanFilename}`,
+            producerVersion: this.manifest.version,
+            onPlanBuilt: (plan) => this.reminderNoticeScheduler?.update(plan),
+        });
+        this.reminderPlanPublisher.start();
 
         this.inlineRenderer = new InlineRenderer({ plugin: this, app: this.app });
         this.queryRenderer = new QueryRenderer({ plugin: this, events });
@@ -100,6 +120,8 @@ export default class TasksPlugin extends Plugin {
         log('info', i18n.t('main.unloadingPlugin', { name: this.manifest.name, version: this.manifest.version }));
         this.cache?.unload();
         this.taskIdManager?.unload();
+        this.reminderPlanPublisher?.unload();
+        this.reminderNoticeScheduler?.unload();
     }
 
     async loadSettings() {
@@ -132,6 +154,11 @@ export default class TasksPlugin extends Plugin {
         } else {
             return this.cache.getTasks();
         }
+    }
+
+    public refreshReminderPlan(): void {
+        if (this.getState() !== State.Warm) return;
+        this.reminderPlanPublisher?.publishSafely(this.getTasks());
     }
 
     public openDashboard(): void {
