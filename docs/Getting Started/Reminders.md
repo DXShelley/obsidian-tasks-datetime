@@ -29,7 +29,7 @@ To make reminders reliable, each task must have a unique task ID. Tasks with a m
 
 ## Quiet Obsidian notices
 
-When **Show reminders in Obsidian** is enabled, due reminders appear as a brief Obsidian notice. The plugin does not request operating-system notification permission, play a sound, or open the source note.
+When **Show reminders in Obsidian** is enabled, due reminders appear as a brief Obsidian notice for 10 seconds. The plugin does not request operating-system notification permission, play a sound, or open the source note.
 
 To reduce interruptions:
 
@@ -49,4 +49,12 @@ Obsidian must be running for an in-app notice to appear. For delivery outside Ob
 | **Reminder advance (minutes)** | Moves every reminder earlier by `0` to `60` whole minutes. Use `0` to remind at the task time. |
 | **Show reminders in Obsidian** | Controls the quiet, grouped notices shown while Obsidian is open. Turning it off does not disable the automation snapshot. |
 
-The snapshot is stored as `reminder-plan.v1.json` in the plugin's data directory and is refreshed when Tasks updates its cache. It is intended for local automation integrations; the in-app notices do not depend on an automation being configured.
+When reminders are enabled, the snapshot is stored at `.obsidian/plugins/tasks-datetime/reminder-plan.v1.json` and is refreshed when Tasks updates its cache. It is intended for local automation integrations; the in-app notices do not depend on an automation being configured.
+
+When you enable reminders in a Git-managed Vault, Tasks Datetime asks whether to add the generated snapshot to `.gitignore`. Snapshot data changes whenever the task cache refreshes, so synchronizing it with Git can create recurring working-tree changes or synchronization conflicts. Reminders are enabled only after you confirm **Add to .gitignore**. If `.gitignore` does not exist, the action creates it.
+
+Git ignore rules apply only to untracked files. If the snapshot is already tracked, adding the rule does not stop Git from synchronizing it. Remove the snapshot from Git's index once, while keeping the local file, then commit the change:
+
+```bash
+git rm --cached .obsidian/plugins/tasks-datetime/reminder-plan.v1.json
+```

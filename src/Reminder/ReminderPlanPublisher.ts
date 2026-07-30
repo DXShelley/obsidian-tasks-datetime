@@ -40,7 +40,7 @@ export class ReminderPlanPublisher {
     public start(): void {
         this.lifecycleGeneration++;
         this.cacheUpdateEventRef = this.options.events.onCacheUpdate(({ tasks, state }) => {
-            if (state !== State.Warm) return;
+            if (state !== State.Warm || this.options.isEnabled?.() === false) return;
             this.publishSafely(tasks);
         });
     }

@@ -92,7 +92,7 @@ export default class TasksPlugin extends Plugin {
             getAdvanceMinutes: () => getSettings().reminderSettings.advanceMinutes,
             isEnabled: () => getSettings().reminderSettings.enabled,
             getLanguage: () => getSettings().language,
-            planPath: `${this.manifest.dir ?? '.obsidian/plugins/tasks-datetime'}/${reminderPlanFilename}`,
+            planPath: this.getReminderPlanPath(),
             producerVersion: this.manifest.version,
             onPlanBuilt: (plan) => this.reminderNoticeScheduler?.update(plan),
         });
@@ -157,8 +157,17 @@ export default class TasksPlugin extends Plugin {
     }
 
     public refreshReminderPlan(): void {
-        if (this.getState() !== State.Warm) return;
+        if (this.getState() !== State.Warm || !getSettings().reminderSettings.enabled) return;
         this.reminderPlanPublisher?.publishSafely(this.getTasks());
+    }
+
+    public clearReminderPlan(): void {
+        if (this.getState() !== State.Warm) return;
+        this.reminderPlanPublisher?.publishSafely([]);
+    }
+
+    public getReminderPlanPath(): string {
+        return `${this.manifest.dir ?? '.obsidian/plugins/tasks-datetime'}/${reminderPlanFilename}`;
     }
 
     public openDashboard(): void {
