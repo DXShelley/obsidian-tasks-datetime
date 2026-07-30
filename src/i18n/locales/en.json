@@ -9,7 +9,9 @@
     "openTaskDashboard": "Open task dashboard",
     "toggleTaskDone": "Toggle task done",
     "updateHistoricalTaskDataInCurrentFile": "Update historical task data in current file",
-    "updateHistoricalTaskDataInVault": "Update historical task data in entire vault"
+    "updateHistoricalTaskDataInVault": "Update historical task data in entire vault",
+    "previewCurrentFileTaskIds": "Preview task ID issues in current file",
+    "addMissingTaskIdsInCurrentFile": "Add missing task IDs in current file"
   },
   "modals": {
     "fieldVisibility": {
@@ -354,7 +356,7 @@
       }
     },
     "menus": { "changeStatusTo": "Change status to: [{{symbol}}] {{name}}", "priority": "Priority: {{priority}}" },
-    "notices": { "allPropertiesPresent": "All supported properties are already present.", "cannotPostponeNullDate": "Cannot postpone a null date", "cannotSetStatus": "Cannot set status: line is not a task or does not match global filter", "propertiesUpdated": "Properties updated successfully.", "resultsCopied": "Results copied to clipboard" },
+    "notices": { "allPropertiesPresent": "All supported properties are already present.", "cannotPostponeNullDate": "Cannot postpone a null date", "cannotSetStatus": "Cannot set status: line is not a task or does not match global filter", "propertiesUpdated": "Properties updated successfully.", "recurringTaskCompleted": "Completed \"{{description}}\". Created the next occurrence{{nextDate}}.", "recurringTaskNextDate": " for {{date}}", "recurringTaskUndone": "Recurring task completion undone.", "resultsCopied": "Results copied to clipboard", "taskIdPreview": "{{count}} task(s) in the current file are missing an ID.", "taskIdsAdded": "Added IDs to {{count}} task(s).", "undo": "Undo" },
     "presets": { "dragToReorder": "Drag to reorder" },
     "queryResults": { "copyResults": "Copy results", "filterByDescription": "Filter by description...", "filterResults": "Filter results" },
     "priority": {

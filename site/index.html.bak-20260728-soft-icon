@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Tasks Datetime：让 Obsidian 任务保留完整时刻，并始终可以回到简洁的日期视图。"
+    />
+    <meta name="theme-color" content="#0d3938" />
+    <title>Tasks Datetime | 让任务时间经得起回看</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">跳到主要内容</a>
+    <header class="site-header">
+      <a class="brand" href="#top" aria-label="Tasks Datetime 首页">
+        <img src="assets/tasks-datetime-line-256.png" alt="" width="42" height="42" />
+        <span>Tasks Datetime</span>
+      </a>
+      <nav aria-label="页面导航">
+        <a href="#features">功能</a>
+        <a href="#workflow">理念</a>
+        <a href="#privacy">边界</a>
+        <a href="#install">安装</a>
+        <a href="https://github.com/DXShelley/obsidian-tasks-datetime">GitHub</a>
+      </nav>
+    </header>
+
+    <main id="main-content">
+      <section class="hero" id="top" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <p class="eyebrow">Obsidian task plugin · independent fork</p>
+          <h1 id="hero-title">任务在前，<br /><em>时间带动行动。</em></h1>
+          <p class="lede">
+            把任务、时间与行为放进同一套 Markdown 工作流：先明确要做什么，再安排何时发生，最后用优先级和重复规则把计划变成可持续的行动。
+          </p>
+          <div class="actions">
+            <a class="button button-primary" href="#workflow">了解设计理念</a>
+            <a class="button button-quiet" href="#install">手动安装</a>
+          </div>
+        </div>
+        <div class="timeline" aria-label="任务时间线示例">
+          <div class="timeline-topline">
+            <span>SAT · 25 JUL</span>
+            <span>YOUR VAULT</span>
+          </div>
+          <div class="time-row">
+            <time datetime="2026-07-25T10:00:00">10:00:00</time>
+            <span class="time-dot"></span>
+            <p>订生日蛋糕 <b>准备</b></p>
+          </div>
+          <div class="time-row">
+            <time datetime="2026-07-25T18:30:00">18:30:00</time>
+            <span class="time-dot"></span>
+            <p>布置晚餐 <b>计划</b></p>
+          </div>
+          <div class="time-row is-current">
+            <time datetime="2026-07-25T20:00:00">20:00:00</time>
+            <span class="time-dot"></span>
+            <p>为妈妈庆生 <b>🎯 重要</b></p>
+          </div>
+          <p class="timeline-caption">Markdown 保留完整时刻；界面可只显示日期。</p>
+        </div>
+      </section>
+
+      <section class="statement" aria-label="项目声明">
+        <p>独立维护的 MIT 衍生项目</p>
+        <span></span>
+        <p>感谢上游的长期维护；本项目独立承担自己的设计与支持</p>
+      </section>
+
+      <section class="workflow section" id="workflow" aria-labelledby="workflow-title">
+        <div class="workflow-intro">
+          <p class="eyebrow">一个朴素的原则</p>
+          <h2 id="workflow-title">记录真实发生的时间，<br />不替你抹平它。</h2>
+        </div>
+        <div class="workflow-copy">
+          <p>任务的 Markdown 是唯一事实来源。无论界面现在显示日期还是时间，已写入的时、分、秒都被完整保留。切换视图是为了专注，不是为了遗忘。</p>
+          <p>这让日程安排、完成记录、重复任务和查询结果能够表达同一件事：事情到底在什么时刻发生，而不仅是哪一天。</p>
+        </div>
+      </section>
+
+      <section class="features section" id="features" aria-labelledby="features-title">
+        <div class="section-heading">
+          <p class="eyebrow">在 Markdown 里工作</p>
+          <h2 id="features-title">管理一件事，也管理它如何发生。</h2>
+        </div>
+        <div class="feature-grid">
+          <article>
+            <span class="feature-number">任务管理</span>
+            <h3>从一条任务，到可执行的计划</h3>
+            <p>创建、编辑、查询、排序、分组与重复任务都留在熟悉的 Markdown 中，事情的内容与上下文无需离开 vault。</p>
+          </article>
+          <article>
+            <span class="feature-number">时间管理</span>
+            <h3>完整存储，按需呈现</h3>
+            <p>任务日期统一保存为 <code>YYYY-MM-DD HH:mm:ss</code>；创建、编辑与状态变更使用同一规则，界面仍可只显示日期。</p>
+          </article>
+          <article>
+            <span class="feature-number">行为管理</span>
+            <h3>为下一步留下判断</h3>
+            <p>用重要性与紧急性选择 🔥、🎯、⚡ 或 💤，结合重复规则与完成状态，让注意力和行动顺序有据可循。</p>
+          </article>
+          <article>
+            <span class="feature-number">平稳迁移</span>
+            <h3>让旧任务继续讲真话</h3>
+            <p>历史数据更新命令会将旧日期补为 <code>00:00:00</code>，只更新不完整字段；可重复执行，不会重写已有时间。</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="privacy section" id="privacy" aria-labelledby="privacy-title">
+        <div class="privacy-intro">
+          <p class="eyebrow">可核验的边界</p>
+          <h2 id="privacy-title">你的任务，留在你的 vault。</h2>
+          <p>插件通过 Obsidian Vault API 读取和修改当前打开 vault 中的任务 Markdown、插件设置及相关元数据，用于渲染、查询、创建、编辑与统计。</p>
+          <a class="text-link" href="https://github.com/DXShelley/obsidian-tasks-datetime/blob/main/PRIVACY.md">阅读完整隐私与权限说明</a>
+        </div>
+        <ul class="privacy-list">
+          <li><span aria-hidden="true">+</span>无遥测、分析、崩溃报告或广告</li>
+          <li><span aria-hidden="true">+</span>无账户、付款或远程同步</li>
+          <li><span aria-hidden="true">+</span>无网络请求、自动更新或外部代码下载</li>
+          <li><span aria-hidden="true">+</span>不主动访问当前 vault 以外的文件</li>
+        </ul>
+      </section>
+
+      <section class="install section" id="install" aria-labelledby="install-title">
+        <div class="section-heading">
+          <p class="eyebrow">当前分发方式</p>
+          <h2 id="install-title">从 Release 手动安装。</h2>
+        </div>
+        <ol class="install-steps">
+          <li><span>1</span><p>从项目 Release 下载 <code>main.js</code>、<code>manifest.json</code> 与 <code>styles.css</code>。</p></li>
+          <li><span>2</span><p>在 vault 中创建 <code>.obsidian/plugins/tasks-datetime/</code>。</p></li>
+          <li><span>3</span><p>复制三个文件并在 Obsidian 中启用 <strong>Tasks Datetime</strong>。</p></li>
+        </ol>
+        <p class="install-note">插件 ID 为 <code>tasks-datetime</code>。该项目目前不在 Obsidian Community Plugins 目录中；请仅从本项目的 GitHub Releases 获取构建文件。</p>
+      </section>
+
+      <section class="provenance section" aria-labelledby="provenance-title">
+        <p class="eyebrow">来源、敬意与责任</p>
+        <h2 id="provenance-title">先有值得信赖的基础，才有这一份延伸。</h2>
+        <p>Tasks Datetime 基于 <a href="https://github.com/obsidian-tasks-group/obsidian-tasks">obsidian-tasks-group/obsidian-tasks</a> 修改而来。上游项目多年沉淀出的 Markdown 兼容性、任务查询、状态体系与社区维护，是本项目得以开始的基础。我们由衷感谢每一位贡献者和维护者。</p>
+        <p>本项目保留上游 MIT 许可与所需版权声明，并将日期优先工作流视作兼容性基线。这里新增的时间表达、交互与后续维护，由 Tasks Datetime 独立负责；它不是官方替代品，也不代表或获得上游项目认可。</p>
+        <div class="version-origin">
+          <h3>为什么版本不是从 0 开始？</h3>
+          <p>Tasks Datetime 延续上游项目长期演进的 8.x 版本脉络。它不是从零搭建的新项目，而是在成熟、经验证的基础上继续解决时间表达的问题。</p>
+          <p>站在巨人的肩膀上，吃水不忘挖井。我们感谢每一位为上游代码、文档与社区投入心力的贡献者，也会为这一份延伸承担独立维护的责任。</p>
+        </div>
+        <div class="provenance-links">
+          <a href="https://github.com/DXShelley/obsidian-tasks-datetime/blob/main/NOTICE">版权与第三方声明</a>
+          <a href="https://github.com/DXShelley/obsidian-tasks-datetime/security/policy">报告安全问题</a>
+          <a href="https://github.com/DXShelley/obsidian-tasks-datetime/blob/main/docs/Compliance/Independent%20Fork%20Compliance%20Audit.md">阅读合规审计</a>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <a class="brand" href="#top"><img src="assets/tasks-datetime-line-256.png" alt="" width="28" height="28" /><span>Tasks Datetime</span></a>
+      <p>MIT License · Independent project</p>
+      <a href="https://github.com/DXShelley/obsidian-tasks-datetime">GitHub Repository</a>
+    </footer>
+  </body>
+</html>

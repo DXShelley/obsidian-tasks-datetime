@@ -9,7 +9,9 @@
     "openTaskDashboard": "打开任务面板",
     "toggleTaskDone": "切换任务完成状态",
     "updateHistoricalTaskDataInCurrentFile": "更新当前文件中的历史任务数据",
-    "updateHistoricalTaskDataInVault": "更新整个仓库中的历史任务数据"
+    "updateHistoricalTaskDataInVault": "更新整个仓库中的历史任务数据",
+    "previewCurrentFileTaskIds": "预览当前文件的任务 ID 问题",
+    "addMissingTaskIdsInCurrentFile": "为当前文件缺失 ID 的任务补齐 ID"
   },
   "modals": {
     "fieldVisibility": {
@@ -354,7 +356,7 @@
       }
     },
     "menus": { "changeStatusTo": "将状态更改为：[{{symbol}}] {{name}}", "priority": "优先级：{{priority}}" },
-    "notices": { "allPropertiesPresent": "所有支持的属性均已存在。", "cannotPostponeNullDate": "无法推迟空日期", "cannotSetStatus": "无法设置状态：该行不是任务，或不符合全局筛选器", "propertiesUpdated": "属性更新成功。", "resultsCopied": "结果已复制到剪贴板" },
+    "notices": { "allPropertiesPresent": "所有支持的属性均已存在。", "cannotPostponeNullDate": "无法推迟空日期", "cannotSetStatus": "无法设置状态：该行不是任务，或不符合全局筛选器", "propertiesUpdated": "属性更新成功。", "recurringTaskCompleted": "已完成\"{{description}}\"，已创建下一次任务{{nextDate}}。", "recurringTaskNextDate": "，开始于 {{date}}", "recurringTaskUndone": "已撤销重复任务完成操作。", "resultsCopied": "结果已复制到剪贴板", "taskIdPreview": "当前文件有 {{count}} 个任务缺少 ID。", "taskIdsAdded": "已为 {{count}} 个任务补齐 ID。", "undo": "撤销" },
     "presets": { "dragToReorder": "拖动以重新排序" },
     "queryResults": { "copyResults": "复制结果", "filterByDescription": "按任务描述筛选...", "filterResults": "筛选结果" },
     "priority": {

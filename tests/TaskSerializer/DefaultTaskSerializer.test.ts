@@ -72,7 +72,7 @@ describe('validate emoji regular expressions', () => {
             dueDateRegex: /(?:📅|📆|🗓)\\ufe0f? *(\\d{4}-\\d{2}-\\d{2}(?: \\d{2}:\\d{2}:\\d{2})?)$/
             doneDateRegex: /✅\\ufe0f? *(\\d{4}-\\d{2}-\\d{2}(?: \\d{2}:\\d{2}:\\d{2})?)$/
             cancelledDateRegex: /❌\\ufe0f? *(\\d{4}-\\d{2}-\\d{2}(?: \\d{2}:\\d{2}:\\d{2})?)$/
-            recurrenceRegex: /🔁\\ufe0f? *([a-zA-Z0-9, !]+)$/
+            recurrenceRegex: /🔁\\ufe0f? *([a-zA-Z0-9, !]+|(?:每 30 分钟|每小时|每天|每周|每月)(?: 完成后计算)?)$/
             onCompletionRegex: /🏁\\ufe0f? *([a-zA-Z]+)$/
             dependsOnRegex: /⛔\\ufe0f? *([a-zA-Z0-9-_]+( *, *[a-zA-Z0-9-_]+ *)*)$/
             idRegex: /🆔\\ufe0f? *([a-zA-Z0-9-_]+)$/
@@ -192,6 +192,13 @@ describe.each(symbolMap)("DefaultTaskSerializer with '$taskFormat' symbols", ({ 
             expect(taskDetails).toMatchTaskDetails({
                 recurrence: new RecurrenceBuilder().rule('every day').build(),
             });
+        });
+
+        it('should keep only the final Chinese recurrence when task data contains duplicates', () => {
+            const taskDetails = deserialize('Habit 🔁 每天 🔁 每周 🔁 每月');
+
+            expect(taskDetails.description).toBe('Habit');
+            expect(taskDetails.recurrence?.toText()).toBe('每月');
         });
 
         describe('should parse onCompletion', () => {

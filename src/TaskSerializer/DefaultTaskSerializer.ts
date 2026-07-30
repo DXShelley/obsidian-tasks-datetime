@@ -69,6 +69,10 @@ export const taskIdRegex = /[a-zA-Z0-9-_]+/;
 // The allowed characters in a comma-separated sequence of task ids:
 export const taskIdSequenceRegex = new RegExp(taskIdRegex.source + '( *, *' + taskIdRegex.source + ' *)*');
 
+// Standard Chinese rules written by the recurrence editor. Keep this separate from
+// the English RRule text so localized rules are extracted as one task field.
+export const recurrenceRuleValuePattern = '([a-zA-Z0-9, !]+|(?:每 30 分钟|每小时|每天|每周|每月)(?: 完成后计算)?)';
+
 function dateFieldRegex(symbols: string) {
     return fieldRegex(symbols, `(${taskDateValuePattern})`);
 }
@@ -117,7 +121,7 @@ export const DEFAULT_SYMBOLS: DefaultTaskSerializerSymbols = {
         dueDateRegex: dateFieldRegex('(?:📅|📆|🗓)'),
         doneDateRegex: dateFieldRegex('✅'),
         cancelledDateRegex: dateFieldRegex('❌'),
-        recurrenceRegex: fieldRegex('🔁', '([a-zA-Z0-9, !]+)'),
+        recurrenceRegex: fieldRegex('🔁', recurrenceRuleValuePattern),
         onCompletionRegex: fieldRegex('🏁', '([a-zA-Z]+)'),
         dependsOnRegex: fieldRegex('⛔', '(' + taskIdSequenceRegex.source + ')'),
         idRegex: fieldRegex('🆔', '(' + taskIdRegex.source + ')'),
@@ -371,7 +375,9 @@ export class DefaultTaskSerializer implements TaskSerializer {
                 // Save the recurrence rule, but *do not parse it yet*.
                 // Creating the Recurrence object requires a reference date (e.g. a due date),
                 // and it might appear in the next (earlier in the line) tokens to parse
-                recurrenceRule = match[1].trim();
+                // Multiple recurrence fields can exist in old task lines. Parsing works from
+                // right to left, so retain the final user-selected rule and remove the rest.
+                recurrenceRule ||= match[1].trim();
             });
 
             this.extractField(state, TaskFormatRegularExpressions.onCompletionRegex, (match) => {

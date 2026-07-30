@@ -24,12 +24,14 @@ import { ObsidianLocalStorageProvider } from './Config/ObsidianLocalStorageProvi
 import { EnableJsInTasksQueries } from './Config/EnableJsInTasksQueries';
 import { TaskDashboardModal } from './Obsidian/TaskDashboardModal';
 import { DashboardViewStore } from './Dashboard/DashboardFilters';
+import { TaskIdManager } from './TaskId/TaskIdManager';
 
 export default class TasksPlugin extends Plugin {
     private cache: Cache | undefined;
     public inlineRenderer: InlineRenderer | undefined;
     public queryRenderer: QueryRenderer | undefined;
     private commands: Commands | undefined;
+    private taskIdManager: TaskIdManager | undefined;
 
     get apiV1() {
         return tasksApiV1(this);
@@ -85,7 +87,8 @@ export default class TasksPlugin extends Plugin {
         this.registerEditorExtension(newLivePreviewExtension(this));
         this.registerEditorSuggest(new EditorSuggestor(this.app, getSettings(), this));
         this.addRibbonIcon('chart-no-axes-combined', i18n.t('ui.dashboard.open'), () => this.openDashboard());
-        this.commands = new Commands({ plugin: this });
+        this.taskIdManager = new TaskIdManager(this);
+        this.commands = new Commands({ plugin: this, taskIdManager: this.taskIdManager });
     }
 
     async loadTaskStatuses() {
@@ -96,6 +99,7 @@ export default class TasksPlugin extends Plugin {
     onunload() {
         log('info', i18n.t('main.unloadingPlugin', { name: this.manifest.name, version: this.manifest.version }));
         this.cache?.unload();
+        this.taskIdManager?.unload();
     }
 
     async loadSettings() {

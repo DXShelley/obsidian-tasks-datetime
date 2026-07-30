@@ -11,6 +11,7 @@ import { DateFallback } from '../../src/DateTime/DateFallback';
 import { StatusRegistry } from '../../src/Statuses/StatusRegistry';
 import type { Task } from '../../src/Task/Task';
 import EditTask from '../../src/ui/EditTask.svelte';
+import { setPluginLanguage } from '../../src/i18n/i18n';
 import { verifyWithFileExtension } from '../TestingTools/ApprovalTestHelpers';
 import { verifyAllCombinations3Async } from '../TestingTools/CombinationApprovalsAsync';
 import { prettifyHTML } from '../TestingTools/HTMLHelpers';
@@ -331,8 +332,28 @@ describe('Task rendering', () => {
 });
 
 describe('Task editing', () => {
-    afterEach(() => {
+    afterEach(async () => {
         GlobalFilter.getInstance().reset();
+        await setPluginLanguage('en');
+    });
+
+    it('writes a Chinese recurrence when selected in the Chinese UI while accepting an existing English rule', async () => {
+        await setPluginLanguage('zh');
+        const task = taskFromLine({
+            line: '- [ ] Recurring 🔁 every day 📅 2024-02-17',
+            path: '',
+        });
+        const { waitForClose, onSubmit } = constructSerialisingOnSubmit(task);
+        const { container } = renderAndCheckModal(task, onSubmit);
+        const recurrence = getAndCheckRenderedElement<HTMLSelectElement>(container, 'recurrence');
+
+        expect(recurrence.value).toBe('每天');
+        await fireEvent.change(recurrence, { target: { value: '每周' } });
+        const submit = container.querySelector<HTMLButtonElement>('button.mod-cta');
+        expect(submit).not.toBeNull();
+        submit!.click();
+
+        expect(await waitForClose).toBe('- [ ] Recurring 🔁 每周 📅 2024-02-17 22:00:00');
     });
 
     async function testDescriptionEdit(taskDescription: string, newDescription: string, expectedDescription: string) {

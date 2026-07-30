@@ -1,7 +1,8 @@
 <script lang="ts">
     import type { EditableTask } from './EditableTask';
     import { labelContentWithAccessKey } from './EditTaskHelpers';
-    import { i18n } from '../i18n/i18n';
+    import { getPluginLanguage, i18n } from '../i18n/i18n';
+    import { Recurrence } from '../Task/Recurrence';
 
     export let editableTask: EditableTask;
     export let isRecurrenceValid: boolean;
@@ -11,17 +12,22 @@
     let recurrenceInterval: string;
     let recurrenceWhenDone: boolean;
 
+    const language = getPluginLanguage();
     const recurrencePresets = [
         { label: i18n.t('ui.recurrence.doesNotRecur'), value: '' },
-        { label: i18n.t('ui.recurrence.every30Minutes'), value: 'every 30 minutes' },
-        { label: i18n.t('ui.recurrence.everyHour'), value: 'every hour' },
-        { label: i18n.t('ui.recurrence.everyDay'), value: 'every day' },
-        { label: i18n.t('ui.recurrence.everyWeek'), value: 'every week' },
-        { label: i18n.t('ui.recurrence.everyMonth'), value: 'every month' },
+        {
+            label: i18n.t('ui.recurrence.every30Minutes'),
+            value: Recurrence.localizePreset('every 30 minutes', language),
+        },
+        { label: i18n.t('ui.recurrence.everyHour'), value: Recurrence.localizePreset('every hour', language) },
+        { label: i18n.t('ui.recurrence.everyDay'), value: Recurrence.localizePreset('every day', language) },
+        { label: i18n.t('ui.recurrence.everyWeek'), value: Recurrence.localizePreset('every week', language) },
+        { label: i18n.t('ui.recurrence.everyMonth'), value: Recurrence.localizePreset('every month', language) },
     ];
 
     function setRecurrence(rule: string, whenDone: boolean) {
-        editableTask.recurrenceRule = rule ? `${rule}${whenDone ? ' when done' : ''}` : '';
+        const whenDoneText = language === 'zh' ? ' 完成后计算' : ' when done';
+        editableTask.recurrenceRule = rule ? `${rule}${whenDone ? whenDoneText : ''}` : '';
     }
 
     function onIntervalChange(event: Event) {
@@ -33,10 +39,9 @@
     }
 
     $: ({ isRecurrenceValid } = editableTask.parseAndValidateRecurrence());
-    $: recurrenceInterval = editableTask.recurrenceRule.replace(/ when done$/u, '');
-    $: recurrenceWhenDone = editableTask.recurrenceRule.endsWith(' when done');
+    $: recurrenceInterval = Recurrence.localizePreset(editableTask.recurrenceRule, language);
+    $: recurrenceWhenDone = Recurrence.isWhenDone(editableTask.recurrenceRule);
     $: hasCustomRecurrence = !recurrencePresets.some((preset) => preset.value === recurrenceInterval);
-
 </script>
 
 <label for="recurrence">{@html labelContentWithAccessKey(i18n.t('ui.taskEditor.recurs'), accesskey)}</label>

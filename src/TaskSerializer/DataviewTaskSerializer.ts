@@ -3,7 +3,12 @@ import { PriorityTools } from '../lib/PriorityTools';
 import type { Priority } from '../Task/Priority';
 import type { Task } from '../Task/Task';
 import { taskDateValuePattern } from '../DateTime/TaskDateTime';
-import { DefaultTaskSerializer, taskIdRegex, taskIdSequenceRegex } from './DefaultTaskSerializer';
+import {
+    DefaultTaskSerializer,
+    recurrenceRuleValuePattern,
+    taskIdRegex,
+    taskIdSequenceRegex,
+} from './DefaultTaskSerializer';
 
 /**
  * Takes a regex of the form 'key:: value' and turns it into a regex that can parse
@@ -88,7 +93,7 @@ export const DATAVIEW_SYMBOLS = {
         dueDateRegex: toInlineFieldRegex(new RegExp(`due:: *(${taskDateValuePattern})`)),
         doneDateRegex: toInlineFieldRegex(new RegExp(`completion:: *(${taskDateValuePattern})`)),
         cancelledDateRegex: toInlineFieldRegex(new RegExp(`cancelled:: *(${taskDateValuePattern})`)),
-        recurrenceRegex: toInlineFieldRegex(/repeat:: *([a-zA-Z0-9, !]+)/),
+        recurrenceRegex: toInlineFieldRegex(new RegExp(`repeat:: *${recurrenceRuleValuePattern}`)),
         onCompletionRegex: toInlineFieldRegex(/onCompletion:: *([a-zA-Z]+)/),
         dependsOnRegex: toInlineFieldRegex(new RegExp('dependsOn:: *(' + taskIdSequenceRegex.source + ')')),
         idRegex: toInlineFieldRegex(new RegExp('id:: *(' + taskIdRegex.source + ')')),

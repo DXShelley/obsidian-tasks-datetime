@@ -12,5 +12,5 @@ views:
       - tags
       - file.path
     sort:
-      - column: file.path
+      - property: file.path
         direction: ASC

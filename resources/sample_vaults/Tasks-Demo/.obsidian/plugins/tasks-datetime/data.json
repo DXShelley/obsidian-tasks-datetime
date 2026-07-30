@@ -1,4 +1,5 @@
 {
+  "language": "en",
   "presets": {
     "this_file": "path includes {{query.file.path}}",
     "this_folder": "folder includes {{query.file.folder}}",
@@ -21,6 +22,12 @@
   "globalFilter": "#task",
   "removeGlobalFilter": true,
   "taskFormat": "tasksPluginEmoji",
+  "enableDateTime": false,
+  "defaultDateTimes": {
+    "start": "09:00",
+    "scheduled": "11:30",
+    "due": "22:00"
+  },
   "setCreatedDate": false,
   "setDoneDate": true,
   "setCancelledDate": true,
@@ -82,6 +89,9 @@
     "created": true,
     "done": true,
     "cancelled": true
+  },
+  "dismissedNotices": {
+    "live-preview-callout-warning": false
   },
   "features": {
     "INTERNAL_TESTING_ENABLED_BY_DEFAULT": true

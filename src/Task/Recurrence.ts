@@ -4,11 +4,23 @@ import type { Occurrence } from './Occurrence';
 export class Recurrence {
     private readonly rrule: RRule;
     private readonly baseOnToday: boolean;
+    private readonly displayText: string;
     readonly occurrence: Occurrence;
 
-    constructor({ rrule, baseOnToday, occurrence }: { rrule: RRule; baseOnToday: boolean; occurrence: Occurrence }) {
+    constructor({
+        rrule,
+        baseOnToday,
+        displayText,
+        occurrence,
+    }: {
+        rrule: RRule;
+        baseOnToday: boolean;
+        displayText: string;
+        occurrence: Occurrence;
+    }) {
         this.rrule = rrule;
         this.baseOnToday = baseOnToday;
+        this.displayText = displayText;
         this.occurrence = occurrence;
     }
 
@@ -20,13 +32,18 @@ export class Recurrence {
         occurrence: Occurrence;
     }): Recurrence | null {
         try {
-            const match = recurrenceRuleText.match(/^([a-zA-Z0-9, !]+?)( when done)?$/i);
+            const parsedText = Recurrence.parseText(recurrenceRuleText);
+            if (parsedText === null) {
+                return null;
+            }
+
+            const match = parsedText.ruleText.match(/^([a-zA-Z0-9, !]+?)$/i);
             if (match == null) {
                 return null;
             }
 
             const isolatedRuleText = match[1].trim();
-            const baseOnToday = match[2] !== undefined;
+            const { baseOnToday } = parsedText;
 
             const options = RRule.parseText(isolatedRuleText);
             if (options !== null) {
@@ -42,6 +59,9 @@ export class Recurrence {
                 return new Recurrence({
                     rrule,
                     baseOnToday,
+                    displayText: parsedText.isChinese
+                        ? `${parsedText.displayRuleText}${baseOnToday ? ' 完成后计算' : ''}`
+                        : `${rrule.toText()}${baseOnToday ? ' when done' : ''}`,
                     occurrence,
                 });
             }
@@ -54,12 +74,65 @@ export class Recurrence {
     }
 
     public toText(): string {
-        let text = this.rrule.toText();
-        if (this.baseOnToday) {
-            text += ' when done';
+        return this.displayText;
+    }
+
+    /**
+     * Returns the text for a standard recurrence preset in the requested UI language.
+     * English remains the fallback for all languages other than Simplified Chinese.
+     */
+    public static localizePreset(ruleText: string, language: 'en' | 'zh'): string {
+        const parsedText = Recurrence.parseText(ruleText);
+        if (parsedText === null) {
+            return ruleText;
         }
 
-        return text;
+        const chineseRule = Recurrence.chineseRules.find((rule) => rule.english === parsedText.ruleText);
+        if (language === 'zh' && chineseRule !== undefined) {
+            return chineseRule.chinese;
+        }
+
+        return parsedText.ruleText;
+    }
+
+    public static isWhenDone(ruleText: string): boolean {
+        return Recurrence.parseText(ruleText)?.baseOnToday ?? false;
+    }
+
+    private static readonly chineseRules = [
+        { chinese: '每 30 分钟', english: 'every 30 minutes' },
+        { chinese: '每小时', english: 'every hour' },
+        { chinese: '每天', english: 'every day' },
+        { chinese: '每周', english: 'every week' },
+        { chinese: '每月', english: 'every month' },
+    ];
+
+    private static parseText(
+        recurrenceRuleText: string,
+    ): { ruleText: string; displayRuleText: string; baseOnToday: boolean; isChinese: boolean } | null {
+        const trimmedText = recurrenceRuleText.trim();
+        const chineseMatch = trimmedText.match(/^(每 30 分钟|每小时|每天|每周|每月)( 完成后计算)?$/u);
+        if (chineseMatch !== null) {
+            const chineseRule = Recurrence.chineseRules.find((rule) => rule.chinese === chineseMatch[1]);
+            return {
+                ruleText: chineseRule!.english,
+                displayRuleText: chineseRule!.chinese,
+                baseOnToday: chineseMatch[2] !== undefined,
+                isChinese: true,
+            };
+        }
+
+        const englishMatch = trimmedText.match(/^([a-zA-Z0-9, !]+?)( when done)?$/i);
+        if (englishMatch === null) {
+            return null;
+        }
+
+        return {
+            ruleText: englishMatch[1].trim(),
+            displayRuleText: englishMatch[1].trim(),
+            baseOnToday: englishMatch[2] !== undefined,
+            isChinese: false,
+        };
     }
 
     /**
@@ -87,7 +160,7 @@ export class Recurrence {
             return false;
         }
 
-        return this.toText() === other.toText(); // this also checks baseOnToday
+        return this.rrule.toText() === other.rrule.toText();
     }
 
     private nextReferenceDate(today: Moment): Moment {
@@ -148,7 +221,7 @@ export class Recurrence {
         let next = window.moment.utc(rrule.after(after.toDate()));
 
         // If this is a monthly recurrence, treat it special.
-        const asText = this.toText();
+        const asText = this.rrule.toText();
         const monthMatch = asText.match(/every( \d+)? month(s)?(.*)?/);
         if (monthMatch !== null) {
             // ... unless the rule fixes the date, such as 'every month on the 31st'
