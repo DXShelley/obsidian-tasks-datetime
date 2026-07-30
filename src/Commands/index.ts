@@ -11,6 +11,7 @@ import { i18n } from '../i18n/i18n';
 import type TasksPlugin from '../main';
 import { StatusRegistry } from '../Statuses/StatusRegistry';
 import { TaskRegularExpressions } from '../Task/TaskRegularExpressions';
+import type { TaskIdManager } from '../TaskId/TaskIdManager';
 import { createOrEdit } from './CreateOrEdit';
 
 import { toggleDone } from './ToggleDone';
@@ -22,14 +23,16 @@ export const getToggleTaskDoneCommandName = () => i18n.t('commands.toggleTaskDon
 
 export class Commands {
     private readonly plugin: TasksPlugin;
+    private readonly taskIdManager: TaskIdManager;
     private readonly registeredCommands: { localId: string; command: Command }[] = [];
 
     private get app(): App {
         return this.plugin.app;
     }
 
-    constructor({ plugin }: { plugin: TasksPlugin }) {
+    constructor({ plugin, taskIdManager }: { plugin: TasksPlugin; taskIdManager: TaskIdManager }) {
         this.plugin = plugin;
+        this.taskIdManager = taskIdManager;
 
         this.registerCommand({
             id: 'edit-task',
@@ -135,6 +138,30 @@ export class Commands {
             callback: () => updateHistoricalTaskDataInVault(this.app.vault).catch(console.error),
         });
 
+        this.registerCommand({
+            id: 'preview-current-file-task-ids',
+            name: i18n.t('commands.previewCurrentFileTaskIds'),
+            icon: 'scan-search',
+            checkCallback: (checking: boolean) => {
+                const activeFile = this.app.workspace.getActiveFile();
+                if (!activeFile || activeFile.extension !== 'md') return false;
+                if (!checking) void this.taskIdManager.previewCurrentFile();
+                return true;
+            },
+        });
+
+        this.registerCommand({
+            id: 'add-missing-task-ids-in-current-file',
+            name: i18n.t('commands.addMissingTaskIdsInCurrentFile'),
+            icon: 'fingerprint',
+            checkCallback: (checking: boolean) => {
+                const activeFile = this.app.workspace.getActiveFile();
+                if (!activeFile || activeFile.extension !== 'md') return false;
+                if (!checking) void this.taskIdManager.addIdsToCurrentFile();
+                return true;
+            },
+        });
+
         // Register set-status commands for each registered status
         const setStatusCommands = createSetStatusCommands(StatusRegistry.getInstance());
         for (const command of setStatusCommands) {
@@ -155,6 +182,8 @@ export class Commands {
             'add-query-file-defaults-properties': i18n.t('commands.addQueryFileDefaultsProperties'),
             'update-historical-task-data': i18n.t('commands.updateHistoricalTaskDataInCurrentFile'),
             'update-all-historical-task-data': i18n.t('commands.updateHistoricalTaskDataInVault'),
+            'preview-current-file-task-ids': i18n.t('commands.previewCurrentFileTaskIds'),
+            'add-missing-task-ids-in-current-file': i18n.t('commands.addMissingTaskIdsInCurrentFile'),
         };
         for (const { localId, command } of this.registeredCommands) {
             if (localId in translatedNames) {

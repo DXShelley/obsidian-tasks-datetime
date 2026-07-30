@@ -1,6 +1,8 @@
 import { readFileSync } from 'fs';
 import { verify } from 'approvals/lib/Providers/Jest/JestApprovals';
-import { findLineNumberOfTaskToToggle } from '../../src/Obsidian/File';
+import type { MetadataCache, TFile, Vault, Workspace } from 'obsidian';
+import { findLineNumberOfTaskToToggle, initializeFile, undoTaskReplacement } from '../../src/Obsidian/File';
+import type { ListItem } from '../../src/Task/ListItem';
 import type { MockTogglingDataForTesting } from '../../src/lib/MockDataCreator';
 
 /**
@@ -105,4 +107,52 @@ describe('replaceTaskWithTasks', () => {
     });
 
     // --------------------------------------------------------------------------------
+});
+
+describe('undoTaskReplacement', () => {
+    const file = { extension: 'md', path: 'tasks.md' } as unknown as TFile;
+    const originalTask = {
+        file: { tFile: file },
+        path: 'tasks.md',
+        toFileLineString: () => '- [ ] Read vocabulary 🔁 every day',
+    } as unknown as ListItem;
+    const completedTask = {
+        toFileLineString: () => '- [x] Read vocabulary 🔁 every day',
+    } as ListItem;
+    const nextTask = {
+        toFileLineString: () => '- [ ] Read vocabulary 🔁 every day',
+    } as ListItem;
+
+    it('restores the original task only when the generated replacement lines are unchanged', async () => {
+        const modify = jest.fn();
+        const vault = {
+            getFileByPath: jest.fn(() => file),
+            modify,
+            read: jest.fn(async () =>
+                ['# Habits', completedTask.toFileLineString(), nextTask.toFileLineString()].join('\n'),
+            ),
+        } as unknown as Vault;
+        initializeFile({ vault, metadataCache: {} as MetadataCache, workspace: {} as Workspace });
+
+        await expect(undoTaskReplacement({ originalTask, replacementTasks: [completedTask, nextTask] })).resolves.toBe(
+            true,
+        );
+        expect(modify).toHaveBeenCalledWith(file, ['# Habits', originalTask.toFileLineString()].join('\n'));
+    });
+
+    it('does not overwrite a replacement that has been edited', async () => {
+        jest.spyOn(console, 'warn').mockImplementation(() => {});
+        const modify = jest.fn();
+        const vault = {
+            getFileByPath: jest.fn(() => file),
+            modify,
+            read: jest.fn(async () => ['# Habits', completedTask.toFileLineString(), '- [ ] Changed task'].join('\n')),
+        } as unknown as Vault;
+        initializeFile({ vault, metadataCache: {} as MetadataCache, workspace: {} as Workspace });
+
+        await expect(undoTaskReplacement({ originalTask, replacementTasks: [completedTask, nextTask] })).resolves.toBe(
+            false,
+        );
+        expect(modify).not.toHaveBeenCalled();
+    });
 });

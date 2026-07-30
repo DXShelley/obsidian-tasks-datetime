@@ -99,6 +99,15 @@ describe('CreateOrEditTaskParser - task recognition', () => {
         expect(task.dueDate).toEqualMoment(moment('2024-12-10'));
         expect(task.doneDate).toEqualMoment(moment('2023-06-22'));
     });
+
+    it('should remove duplicate Chinese recurrence fields when a task is edited', () => {
+        const task = taskFromLine({
+            line: '- [ ] Habit 🔁 每天 🔁 每周 🔁 每月 📅 2024-02-17',
+            path: 'a/b/c.md',
+        });
+
+        expect(task.toFileLineString()).toBe('- [ ] Habit 🔁 每月 📅 2024-02-17 00:00:00');
+    });
 });
 
 describe('CreateOrEditTaskParser - created date', () => {

@@ -13,7 +13,7 @@ const trailingTaskMetadataRegex = new RegExp(
         `(?:${taskDateSymbolsPattern}\\s*${taskDateValuePattern})`,
         '(?:🔺|⏫|🔼|🔽|⏬|🔥|🎯|⚡|💤)\\uFE0F?',
         '#[^ !@#$%^&*(),.?":{}|<>]+',
-        '🔁\\uFE0F?\\s*[a-zA-Z0-9, !]+',
+        '🔁\\uFE0F?\\s*(?:[a-zA-Z0-9, !]+|(?:每 30 分钟|每小时|每天|每周|每月)(?: 完成后计算)?)',
         '🏁\\uFE0F?\\s*[a-zA-Z]+',
         '🆔\\uFE0F?\\s*[a-zA-Z0-9-_]+',
         '⛔\\uFE0F?\\s*[a-zA-Z0-9-_, ]+',

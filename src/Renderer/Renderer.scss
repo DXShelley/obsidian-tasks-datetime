@@ -3,6 +3,11 @@
 
 }
 
+/* Task IDs remain available in source mode but stay out of rendered task rows. */
+.task-id {
+    display: none !important;
+}
+
 .plugin-tasks-query-explanation{
     /* Prevent long explanation lines wrapping, so they are more readable,
        especially on small screens.
@@ -133,6 +138,38 @@ a.tasks-edit, a.tasks-postpone {
 
 .task-list-item-checkbox {
     cursor: pointer;
+}
+
+.plugin-tasks-list-item.tasks-recurring-task-completing {
+    animation: tasks-recurring-task-complete 320ms ease-out both;
+}
+
+.plugin-tasks-list-item.tasks-recurring-task-created {
+    animation: tasks-recurring-task-created 1.8s ease-out both;
+}
+
+@keyframes tasks-recurring-task-complete {
+    0% { background-color: transparent; opacity: 1; transform: translateX(0); }
+    45% { background-color: color-mix(in srgb, var(--color-green) 18%, transparent); opacity: 0.68; transform: translateX(3px); }
+    100% { background-color: transparent; opacity: 0.45; transform: translateX(0); }
+}
+
+@keyframes tasks-recurring-task-created {
+    0% { background-color: color-mix(in srgb, var(--interactive-accent) 26%, transparent); }
+    100% { background-color: transparent; }
+}
+
+.tasks-recurring-task-undo {
+    color: var(--text-accent);
+    font-weight: var(--font-semibold);
+    margin-inline-start: 0.75em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .plugin-tasks-list-item.tasks-recurring-task-completing,
+    .plugin-tasks-list-item.tasks-recurring-task-created {
+        animation: none;
+    }
 }
 
 /* Hide tags that Obsidian recognises, if `hide tags` instruction was used. */

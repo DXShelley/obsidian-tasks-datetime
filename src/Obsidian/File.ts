@@ -82,6 +82,52 @@ export const replaceTaskWithTasks = async ({
 };
 
 /**
+ * Restores a task after a just-completed recurring task created replacement lines.
+ * The exact generated lines must still be adjacent, so a later user edit is never overwritten.
+ */
+export const undoTaskReplacement = async ({
+    originalTask,
+    replacementTasks,
+}: {
+    originalTask: ListItem;
+    replacementTasks: ListItem[];
+}): Promise<boolean> => {
+    if (vault === undefined) {
+        errorAndNotice('Tasks: cannot use File before initializing it.');
+        return false;
+    }
+
+    const file = originalTask.file.tFile || vault.getFileByPath(originalTask.path);
+    if (!file) {
+        warnAndNotice('Tasks: Cannot undo because the task file no longer exists.');
+        return false;
+    }
+
+    const replacementLines = replacementTasks.map((task) => task.toFileLineString());
+    const fileLines = (await vault.read(file)).split('\n');
+    const candidateIndexes: number[] = [];
+    for (let index = 0; index <= fileLines.length - replacementLines.length; index++) {
+        if (replacementLines.every((line, offset) => fileLines[index + offset] === line)) {
+            candidateIndexes.push(index);
+        }
+    }
+
+    if (candidateIndexes.length !== 1) {
+        warnAndNotice('Tasks: Cannot undo because the completed task has changed.');
+        return false;
+    }
+
+    const index = candidateIndexes[0];
+    const restoredLines = [
+        ...fileLines.slice(0, index),
+        originalTask.toFileLineString(),
+        ...fileLines.slice(index + replacementLines.length),
+    ];
+    await vault.modify(file, restoredLines.join('\n'));
+    return true;
+};
+
+/**
  * @todo Unify this with {@link showError} in EditorSuggestorPopup.ts
  * @param message
  */

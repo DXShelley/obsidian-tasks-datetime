@@ -25,6 +25,16 @@ describe('Recurrence', () => {
         expect(next).toStrictEqual(nullOccurrence);
     });
 
+    it('parses and preserves Simplified Chinese recurrence text', () => {
+        const recurrence = Recurrence.fromText({
+            recurrenceRuleText: '每月 完成后计算',
+            occurrence: new Occurrence({ dueDate: moment('2022-01-31').startOf('day') }),
+        });
+
+        expect(recurrence?.toText()).toBe('每月 完成后计算');
+        expect(recurrence?.next(moment('2022-02-01'))?.dueDate).toEqualMoment(moment('2022-03-01'));
+    });
+
     it('creates a recurrence the next month, even on the 31st', () => {
         // Arrange
         const recurrence = Recurrence.fromText({

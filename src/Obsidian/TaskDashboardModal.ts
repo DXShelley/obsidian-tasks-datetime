@@ -30,6 +30,10 @@ import { Priority } from '../Task/Priority';
 import { type PriorityQuadrant, priorityQuadrantFromText, priorityQuadrantIcons } from '../Task/PriorityQuadrant';
 import { Task } from '../Task/Task';
 import { i18n } from '../i18n/i18n';
+import {
+    createsNextRecurringOccurrence,
+    showRecurringTaskCompletionFeedback,
+} from '../Renderer/RecurringTaskCompletionFeedback';
 import { replaceTaskWithTasks } from './File';
 
 export class TaskDashboardModal extends Modal {
@@ -495,7 +499,11 @@ export class TaskDashboardModal extends Modal {
             event.preventDefault();
             event.stopPropagation();
             complete.disabled = true;
-            await replaceTaskWithTasks({ originalTask: task, newTasks: task.toggleWithRecurrenceInUsersOrder() });
+            const toggledTasks = task.toggleWithRecurrenceInUsersOrder();
+            const saved = await replaceTaskWithTasks({ originalTask: task, newTasks: toggledTasks });
+            if (saved && createsNextRecurringOccurrence(task, toggledTasks)) {
+                showRecurringTaskCompletionFeedback(task, toggledTasks);
+            }
             this.scheduleRefresh();
         });
         const button = item.createEl('button', { text: task.descriptionWithoutTags, cls: 'tasks-dashboard-task-link' });

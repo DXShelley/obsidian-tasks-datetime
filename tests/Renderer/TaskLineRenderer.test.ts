@@ -15,6 +15,7 @@ import {
     createAndAppendElement,
     reconcileReplacementTask,
 } from '../../src/Renderer/TaskLineRenderer';
+import { markRecentlyCreatedOccurrence } from '../../src/Renderer/RecurringTaskCompletionFeedback';
 import type { Task } from '../../src/Task/Task';
 import { TaskRegularExpressions } from '../../src/Task/TaskRegularExpressions';
 import { verifyWithFileExtension } from '../TestingTools/ApprovalTestHelpers';
@@ -140,6 +141,17 @@ describe('task line rendering - HTML', () => {
 
         // Check that eventually the correct text was rendered
         expect((internalDescriptionSpan as HTMLSpanElement).innerText).toEqual('This is a simple task');
+    });
+
+    it('highlights a newly created recurring occurrence once', async () => {
+        const task = fromLine({ line: '- [ ] Read vocabulary 🔁 every day' });
+        markRecentlyCreatedOccurrence(task);
+
+        const firstRender = await renderListItem(task);
+        expect(firstRender.classList.contains('tasks-recurring-task-created')).toBe(true);
+
+        const secondRender = await renderListItem(task);
+        expect(secondRender.classList.contains('tasks-recurring-task-created')).toBe(false);
     });
 });
 

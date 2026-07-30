@@ -20,6 +20,11 @@ import { promptForDate } from '../ui/Menus/DatePicker';
 import { StatusMenu } from '../ui/Menus/StatusMenu';
 import { defaultTaskSaver, showMenu } from '../ui/Menus/TaskEditingMenu';
 import { TaskFieldRenderer } from './TaskFieldRenderer';
+import {
+    createsNextRecurringOccurrence,
+    isRecentlyCreatedOccurrence,
+    showRecurringTaskCompletionFeedback,
+} from './RecurringTaskCompletionFeedback';
 
 /**
  * The function used to render a Markdown task line into an existing HTML element.
@@ -177,6 +182,9 @@ export class TaskLineRenderer {
         isFilenameUnique?: boolean;
     }): Promise<void> {
         li.classList.add('task-list-item', 'plugin-tasks-list-item');
+        if (isRecentlyCreatedOccurrence(task)) {
+            li.classList.add('tasks-recurring-task-created');
+        }
 
         const textSpan = createAndAppendElement('span', li);
         textSpan.classList.add('tasks-list-text');
@@ -206,10 +214,21 @@ export class TaskLineRenderer {
                 // Should be re-rendered as enabled after update in file.
                 checkbox.disabled = true;
                 const toggledTasks = task.toggleWithRecurrenceInUsersOrder();
-                await replaceTaskWithTasks({
+                const createsNextOccurrence = createsNextRecurringOccurrence(task, toggledTasks);
+                if (createsNextOccurrence) {
+                    checkbox.checked = true;
+                    li.classList.add('is-checked', 'tasks-recurring-task-completing');
+                }
+                const saved = await replaceTaskWithTasks({
                     originalTask: task,
                     newTasks: toggledTasks,
                 });
+                if (saved && createsNextOccurrence) {
+                    showRecurringTaskCompletionFeedback(task, toggledTasks);
+                } else if (!saved) {
+                    checkbox.checked = task.status.symbol !== ' ';
+                    li.classList.remove('tasks-recurring-task-completing');
+                }
             });
 
             checkbox.addEventListener('contextmenu', (ev: MouseEvent) => {
