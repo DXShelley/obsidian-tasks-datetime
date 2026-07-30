@@ -1,7 +1,7 @@
 {
   "id": "tasks-datetime",
   "name": "Tasks Datetime",
-  "version": "8.3.13",
+  "version": "8.4.0",
   "minAppVersion": "1.8.7",
   "description": "Tasks with date and time support down to seconds.",
   "helpUrl": "https://github.com/DXShelley/obsidian-tasks-datetime#readme",

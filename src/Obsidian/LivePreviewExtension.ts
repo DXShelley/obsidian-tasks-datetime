@@ -42,6 +42,8 @@ const taskDateTimeRegex = new RegExp(
     `${taskDateSymbolsPattern}\\s*\\d{4}-\\d{2}-\\d{2}(\\s+\\d{2}:\\d{2}:\\d{2})`,
     'gu',
 );
+const taskInternalReferenceRegex =
+    /(?:^|\s)(?:🆔\uFE0F?\s*[a-zA-Z0-9_-]+|⛔\uFE0F?\s*[a-zA-Z0-9_-]+(?:\s*,\s*[a-zA-Z0-9_-]+)*)(?=\s|$)/gu;
 
 /** Refreshes the visible task date format after the time-display setting changes. */
 export function refreshLivePreviewTaskDateDisplay(): void {
@@ -58,6 +60,19 @@ export function taskDateTimeRangesInLine(line: string, lineStart: number): { fro
         }
         const from = lineStart + matchStart + match[0].length - time.length;
         ranges.push({ from, to: from + time.length });
+    }
+    return ranges;
+}
+
+/** Returns task ID and dependency fields, including their preceding separator when present. */
+export function taskInternalReferenceRangesInLine(line: string, lineStart: number): { from: number; to: number }[] {
+    const ranges: { from: number; to: number }[] = [];
+    for (const match of line.matchAll(taskInternalReferenceRegex)) {
+        const matchStart = match.index;
+        if (matchStart === undefined) {
+            continue;
+        }
+        ranges.push({ from: lineStart + matchStart, to: lineStart + matchStart + match[0].length });
     }
     return ranges;
 }
@@ -128,14 +143,24 @@ class LivePreviewExtension implements PluginValue {
     }
 
     private buildDateTimeDecorations(): DecorationSet {
-        if (getSettings().enableDateTime || this.view.state.field(editorLivePreviewField, false) !== true) {
+        if (this.view.state.field(editorLivePreviewField, false) !== true) {
             return Decoration.none;
         }
 
         const builder = new RangeSetBuilder<Decoration>();
         for (let lineNumber = 1; lineNumber <= this.view.state.doc.lines; lineNumber++) {
             const line = this.view.state.doc.line(lineNumber);
-            if (!TaskRegularExpressions.taskRegex.test(line.text) || this.taskLineDisplaysMarkdownSource(line.from)) {
+            if (!TaskRegularExpressions.taskRegex.test(line.text)) {
+                continue;
+            }
+            if (this.taskLineDisplaysMarkdownSource(line.from)) {
+                continue;
+            }
+            // IDs and dependencies are implementation data. Keep them accessible in source mode only.
+            for (const range of taskInternalReferenceRangesInLine(line.text, line.from)) {
+                builder.add(range.from, range.to, Decoration.replace({}));
+            }
+            if (getSettings().enableDateTime) {
                 continue;
             }
             for (const range of taskDateTimeRangesInLine(line.text, line.from)) {

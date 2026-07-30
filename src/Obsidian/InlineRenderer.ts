@@ -8,6 +8,53 @@ import { Task } from '../Task/Task';
 import { TaskLineRenderer, createAndAppendElement, reconcileReplacementTask } from '../Renderer/TaskLineRenderer';
 import { TaskLocation } from '../Task/TaskLocation';
 
+const taskInternalReferenceFieldRegex =
+    /(?:^|[ \t]+)(?:🆔\uFE0F?\s*[a-zA-Z0-9_-]+|⛔\uFE0F?\s*[a-zA-Z0-9_-]+(?:\s*,\s*[a-zA-Z0-9_-]+)*)(?=\s|$)/gu;
+
+/**
+ * Hides task IDs and dependency IDs in Reading View even when the task row
+ * cannot be replaced by {@link TaskLineRenderer}, for example when another renderer owns the block.
+ */
+export function hideTaskIdsInReadingView(taskElement: HTMLElement): void {
+    const textNodes: Text[] = [];
+    const collectTextNodes = (element: Element): void => {
+        for (const child of Array.from(element.childNodes)) {
+            if (child.nodeType === Node.TEXT_NODE) {
+                textNodes.push(child as Text);
+            } else if (
+                child.nodeType === Node.ELEMENT_NODE &&
+                !['INPUT', 'OL', 'UL'].includes((child as Element).tagName)
+            ) {
+                collectTextNodes(child as Element);
+            }
+        }
+    };
+    collectTextNodes(taskElement);
+
+    for (const textNode of textNodes) {
+        const text = textNode.textContent ?? '';
+        const matches = Array.from(text.matchAll(taskInternalReferenceFieldRegex));
+        if (matches.length === 0 || !textNode.parentNode) continue;
+
+        const fragment = textNode.ownerDocument.createDocumentFragment();
+        let previousMatchEnd = 0;
+        for (const match of matches) {
+            const matchStart = match.index;
+            if (matchStart === undefined) continue;
+
+            fragment.append(text.slice(previousMatchEnd, matchStart));
+            const idElement = textNode.ownerDocument.createElement('span');
+            idElement.classList.add('task-id');
+            idElement.setAttribute('aria-hidden', 'true');
+            idElement.textContent = match[0];
+            fragment.append(idElement);
+            previousMatchEnd = matchStart + match[0].length;
+        }
+        fragment.append(text.slice(previousMatchEnd));
+        textNode.parentNode.replaceChild(fragment, textNode);
+    }
+}
+
 /**
  * An inline renderer for processing and rendering tasks in the Reading View of an Obsidian file.
  *
@@ -47,7 +94,10 @@ export class InlineRenderer {
         const childComponent = new MarkdownRenderChild(element);
         context.addChild(childComponent);
 
-        const renderedElements = element.findAll('.task-list-item').filter((taskItem) => {
+        const allRenderedTaskElements = element.findAll('.task-list-item');
+        allRenderedTaskElements.forEach((taskItem) => hideTaskIdsInReadingView(taskItem));
+
+        const renderedElements = allRenderedTaskElements.filter((taskItem) => {
             const linesText = taskItem.textContent?.split('\n');
             if (linesText === undefined) {
                 return false;

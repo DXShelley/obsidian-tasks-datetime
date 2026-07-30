@@ -16,8 +16,8 @@ The upstream project remains the date-only compatibility baseline. Tasks Datetim
 
 ## Highlights
 
-- Optional `YYYY-MM-DD HH:mm:ss` task dates, with date-only display when disabled.
-- A combined date and time picker for task editing.
+- Time management with optional `YYYY-MM-DD HH:mm:ss` task dates, a combined date and time picker, and compact date-only display when you need less detail.
+- Quiet Obsidian reminders and a structured reminder snapshot for Agent automations. See [Reminders](docs/Getting%20Started/Reminders.md).
 - Recurrence presets and four-quadrant importance/urgency editing.
 - [Task dashboard](docs/Getting%20Started/Task%20Dashboard.md) for filtered progress, risks, plans, saved views, and bulk task updates.
 - Query support for date and time values, plus documented query examples.

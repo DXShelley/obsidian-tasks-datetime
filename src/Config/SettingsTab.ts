@@ -9,6 +9,7 @@ import { i18n } from '../i18n/i18n';
 import { type PluginLanguage, setPluginLanguage } from '../i18n/i18n';
 import type { TasksEvents } from '../Obsidian/TasksEvents';
 import { refreshLivePreviewTaskDateDisplay } from '../Obsidian/LivePreviewExtension';
+import { maximumReminderAdvanceMinutes } from '../Reminder/ReminderSettings';
 import * as Themes from './Themes';
 import {
     type HeadingState,
@@ -387,6 +388,7 @@ export class SettingsTab extends PluginSettingTab {
             'start',
             this.plugin,
         );
+
         addDefaultDateTimeSetting(
             containerEl,
             i18n.t('settings.dates.defaultTimes.scheduled.name'),
@@ -401,6 +403,56 @@ export class SettingsTab extends PluginSettingTab {
             'due',
             this.plugin,
         );
+
+        new Setting(containerEl)
+            .setName(i18n.t('settings.reminders.enabled.name'))
+            .setDesc(i18n.t('settings.reminders.enabled.description'))
+            .addToggle((toggle) => {
+                toggle.setValue(getSettings().reminderSettings.enabled).onChange(async (enabled) => {
+                    updateSettings({
+                        reminderSettings: { ...getSettings().reminderSettings, enabled },
+                    });
+                    await this.plugin.saveSettings();
+                    this.plugin.refreshReminderPlan();
+                });
+            });
+
+        new Setting(containerEl)
+            .setName(i18n.t('settings.reminders.advanceMinutes.name'))
+            .setDesc(i18n.t('settings.reminders.advanceMinutes.description'))
+            .addText((text) => {
+                text.inputEl.type = 'number';
+                text.inputEl.min = '0';
+                text.inputEl.max = String(maximumReminderAdvanceMinutes);
+                text.inputEl.step = '1';
+                text.setValue(String(getSettings().reminderSettings.advanceMinutes)).onChange(async (value) => {
+                    const advanceMinutes = Number(value);
+                    if (
+                        !Number.isFinite(advanceMinutes) ||
+                        advanceMinutes < 0 ||
+                        advanceMinutes > maximumReminderAdvanceMinutes ||
+                        !Number.isInteger(advanceMinutes)
+                    )
+                        return;
+                    updateSettings({
+                        reminderSettings: { ...getSettings().reminderSettings, advanceMinutes },
+                    });
+                    await this.plugin.saveSettings();
+                    this.plugin.refreshReminderPlan();
+                });
+            });
+
+        new Setting(containerEl)
+            .setName(i18n.t('settings.reminders.showInObsidian.name'))
+            .setDesc(i18n.t('settings.reminders.showInObsidian.description'))
+            .addToggle((toggle) => {
+                toggle.setValue(getSettings().reminderSettings.showInObsidian).onChange(async (showInObsidian) => {
+                    updateSettings({
+                        reminderSettings: { ...getSettings().reminderSettings, showInObsidian },
+                    });
+                    await this.plugin.saveSettings();
+                });
+            });
 
         new Setting(containerEl)
             .setName(i18n.t('settings.dates.createdDate.name'))

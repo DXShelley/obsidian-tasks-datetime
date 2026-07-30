@@ -134,6 +134,20 @@
       }
     },
     "changeRequiresRestart": "REQUIRES RESTART.",
+    "reminders": {
+      "enabled": {
+        "name": "Enable reminders",
+        "description": "Publish start, scheduled, and due reminders for automations and Obsidian notices."
+      },
+      "advanceMinutes": {
+        "name": "Reminder advance (minutes)",
+        "description": "Notify this many minutes before each start, scheduled, or due time."
+      },
+      "showInObsidian": {
+        "name": "Show reminders in Obsidian",
+        "description": "Show quiet, grouped in-app notices when reminders are due."
+      }
+    },
     "dates": {
       "defaultTimes": {
         "due": {
