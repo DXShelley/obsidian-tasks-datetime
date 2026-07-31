@@ -12,6 +12,9 @@ _In recent [Tasks releases](https://github.com/obsidian-tasks-group/obsidian-tas
 
 ## 8.x releases
 
+- 8.4.2:
+  - Keep automatically managed task IDs and dependency IDs hidden in Live Preview, Reading view, and Tasks query results, independently of the task-time display setting. They remain visible in Source mode.
+  - Document automatic task ID generation, visibility, and regression checks in [[Task IDs]].
 - 8.4.0:
   - Strengthen time management with second-precision task times that can remain compact in date-only views.
   - Add quiet, grouped Obsidian reminders for start, scheduled, and due times, with a configurable advance of up to 60 minutes. See [[Reminders]].
