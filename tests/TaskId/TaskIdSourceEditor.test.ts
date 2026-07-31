@@ -1,6 +1,11 @@
 import type { ListItemCache } from 'obsidian';
 
-import { addMissingTaskIds, previewMissingTaskIds } from '../../src/TaskId/TaskIdSourceEditor';
+import {
+    addMissingTaskIds,
+    addMissingTaskIdsInSource,
+    previewMissingTaskIds,
+    previewMissingTaskIdsInSource,
+} from '../../src/TaskId/TaskIdSourceEditor';
 
 function taskAt(line: number): ListItemCache {
     return {
@@ -62,6 +67,17 @@ An ordinary line
 
         expect(result.added).toBe(1);
         expect(result.content.split('\n')[2]).toBe('- [ ] Second task');
+    });
+
+    it('finds eligible task rows directly from Markdown source', () => {
+        const content = `- [ ] #tag Write release notes
+Not a task
+> - [ ] #tag Review pull request
+- [ ] #tag`;
+        const options = { requireTagAndDescription: true };
+
+        expect(previewMissingTaskIdsInSource(content, options)).toBe(2);
+        expect(addMissingTaskIdsInSource(content, options).added).toBe(2);
     });
 
     it('requires both a tag and task description when automatic completion is requested', () => {

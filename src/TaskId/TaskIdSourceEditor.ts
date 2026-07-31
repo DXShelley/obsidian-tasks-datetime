@@ -30,6 +30,12 @@ function taskLineNumbers(listItems: ListItemCache[]): number[] {
     return listItems.filter((listItem) => listItem.task !== undefined).map((listItem) => listItem.position.start.line);
 }
 
+function taskLineNumbersFromSource(content: string): number[] {
+    return content
+        .split('\n')
+        .flatMap((line, lineNumber) => (TaskRegularExpressions.taskRegex.test(line) ? [lineNumber] : []));
+}
+
 function addIdToTaskLine(line: string, id: string): { line: string; cursorColumn: number } {
     const firstDateTimeField = firstDateTimeFieldRegex.exec(line);
     if (firstDateTimeField?.index !== undefined) {
@@ -70,12 +76,20 @@ export function addMissingTaskIds(
     listItems: ListItemCache[],
     options: TaskIdCompletionOptions = {},
 ): TaskIdEditResult {
+    return addMissingTaskIdsOnLines(content, taskLineNumbers(listItems), options);
+}
+
+function addMissingTaskIdsOnLines(
+    content: string,
+    lineNumbers: readonly number[],
+    options: TaskIdCompletionOptions,
+): TaskIdEditResult {
     const lines = content.split('\n');
     let added = 0;
     let missing = 0;
     const additions: TaskIdAddition[] = [];
 
-    for (const lineNumber of taskLineNumbers(listItems)) {
+    for (const lineNumber of lineNumbers) {
         const line = lines[lineNumber];
         if (line === undefined || !isMissingIdTask(line, options)) {
             continue;
@@ -91,16 +105,34 @@ export function addMissingTaskIds(
     return { content: lines.join('\n'), added, missing, additions };
 }
 
+/** Adds IDs by scanning task lines in the original Markdown source. */
+export function addMissingTaskIdsInSource(content: string, options: TaskIdCompletionOptions = {}): TaskIdEditResult {
+    return addMissingTaskIdsOnLines(content, taskLineNumbersFromSource(content), options);
+}
+
 /** Reports missing IDs without generating or modifying anything. */
 export function previewMissingTaskIds(
     content: string,
     listItems: ListItemCache[],
     options: TaskIdCompletionOptions = {},
 ): number {
+    return previewMissingTaskIdsOnLines(content, taskLineNumbers(listItems), options);
+}
+
+function previewMissingTaskIdsOnLines(
+    content: string,
+    lineNumbers: readonly number[],
+    options: TaskIdCompletionOptions,
+): number {
     const lines = content.split('\n');
 
-    return taskLineNumbers(listItems).filter((lineNumber) => {
+    return lineNumbers.filter((lineNumber) => {
         const line = lines[lineNumber];
         return line !== undefined && isMissingIdTask(line, options);
     }).length;
+}
+
+/** Reports missing IDs by scanning task lines in the original Markdown source. */
+export function previewMissingTaskIdsInSource(content: string, options: TaskIdCompletionOptions = {}): number {
+    return previewMissingTaskIdsOnLines(content, taskLineNumbersFromSource(content), options);
 }
