@@ -50,7 +50,7 @@ export class TaskIdManager {
         const file = this.currentMarkdownFile();
         if (!file) return;
 
-        const missing = await this.countMissingIds(file, true, true);
+        const missing = await this.countMissingIds(file, true);
         new Notice(i18n.t('ui.notices.taskIdPreview', { count: missing }));
     }
 
@@ -58,13 +58,22 @@ export class TaskIdManager {
         const file = this.currentMarkdownFile();
         if (!file) return;
 
-        const result = await this.completeFile(file, true, true);
+        const result = await this.completeFile(file, true);
         new Notice(i18n.t('ui.notices.taskIdsAdded', { count: result.added }));
     }
 
     private currentMarkdownFile(): TFile | null {
         const file = this.plugin.app.workspace.getActiveFile();
         return file?.extension === 'md' ? file : null;
+    }
+
+    private async readSourceContent(file: TFile): Promise<string> {
+        const view = this.plugin.app.workspace.getActiveViewOfType(MarkdownView);
+        if (view?.file?.path === file.path) {
+            return view.getViewData();
+        }
+
+        return this.plugin.app.vault.read(file);
     }
 
     private async drain(path: string): Promise<void> {
@@ -96,7 +105,7 @@ export class TaskIdManager {
         const cache = this.plugin.app.metadataCache.getFileCache(file);
         if (!cache?.listItems) return 0;
 
-        const content = await this.plugin.app.vault.read(file);
+        const content = await this.readSourceContent(file);
         return previewMissingTaskIds(content, cache.listItems, { requireTagAndDescription, requireTrailingSpace });
     }
 
@@ -109,7 +118,7 @@ export class TaskIdManager {
         const cache = this.plugin.app.metadataCache.getFileCache(file);
         if (!cache?.listItems) return noChanges('');
 
-        const currentContent = await this.plugin.app.vault.read(file);
+        const currentContent = await this.readSourceContent(file);
         const options = { requireTagAndDescription, requireTrailingSpace };
         if (previewMissingTaskIds(currentContent, cache.listItems, options) === 0) return noChanges(currentContent);
 

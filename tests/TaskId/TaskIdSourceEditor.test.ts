@@ -31,6 +31,21 @@ describe('TaskIdSourceEditor', () => {
         expect(result.content).toMatch(/^- \[ \] Review ticket 🆔 t-[0-9abcdefghjkmnpqrstvwxyz]{12} $/);
     });
 
+    it('adds IDs to tagged tasks with a description without requiring a trailing space', () => {
+        const content = `- [ ] Untagged task
+- [ ] #tag
+- [ ] #tag Write release notes`;
+
+        const result = addMissingTaskIds(content, [taskAt(0), taskAt(1), taskAt(2)], {
+            requireTagAndDescription: true,
+        });
+
+        expect(result.added).toBe(1);
+        expect(result.content.split('\n')[0]).toBe('- [ ] Untagged task');
+        expect(result.content.split('\n')[1]).toBe('- [ ] #tag');
+        expect(result.content).toMatch(/\n- \[ \] #tag Write release notes 🆔 t-.* $/);
+    });
+
     it('does not rewrite an existing ID', () => {
         const content = '- [ ] Review ticket 🆔 k4iq21 📅 2026-07-30';
 
