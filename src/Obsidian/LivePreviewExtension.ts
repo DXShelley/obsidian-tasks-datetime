@@ -153,14 +153,12 @@ class LivePreviewExtension implements PluginValue {
             if (!TaskRegularExpressions.taskRegex.test(line.text)) {
                 continue;
             }
-            if (this.taskLineDisplaysMarkdownSource(line.from)) {
-                continue;
-            }
-            // IDs and dependencies are implementation data. Keep them accessible in source mode only.
+            // IDs and dependencies are implementation data in all Live Preview states.
             for (const range of taskInternalReferenceRangesInLine(line.text, line.from)) {
                 builder.add(range.from, range.to, Decoration.replace({}));
             }
-            if (getSettings().enableDateTime) {
+            // Times retain their existing setting and active-source-line behaviour.
+            if (getSettings().enableDateTime || this.taskLineDisplaysMarkdownSource(line.from)) {
                 continue;
             }
             for (const range of taskDateTimeRangesInLine(line.text, line.from)) {

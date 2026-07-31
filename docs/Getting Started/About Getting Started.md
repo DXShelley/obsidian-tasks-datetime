@@ -19,6 +19,8 @@ publish: true
   - A convenient list of all the Tasks plugin options.
 - [[Reminders]]
   - Receive quiet, grouped notices for task start, scheduled, and due times.
+- [[Task IDs]]
+  - Automatically add stable task IDs for dependencies and reminders.
 
 ## Adding data to your tasks
 

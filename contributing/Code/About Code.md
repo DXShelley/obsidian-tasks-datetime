@@ -16,5 +16,6 @@ This section stores information about the design and implementation of the plugi
 - [[How do I add a new task filter]]
 - [[How do I add one-click support for new themes or snippets for custom statuses]]
 - [[How does Tasks handle status changes]]
+- [[Task ID Management]] - ID generation, visibility invariants, and regression checks.
 - [[How do I use Moment in src]] - how to use date and time values
 - [[How do I see circular dependencies]] - in source files
