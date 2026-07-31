@@ -1,6 +1,7 @@
 import { Notice, type TFile, type Vault } from 'obsidian';
 import { TaskRegularExpressions } from '../Task/TaskRegularExpressions';
 import { taskDateSymbolsPattern, taskDateValuePattern, upgradeTaskDateTime } from '../DateTime/TaskDateTime';
+import { addMissingTaskIdsInSource } from '../TaskId/TaskIdSourceEditor';
 
 const dateWithoutTimeRegex = new RegExp(
     `(${taskDateSymbolsPattern}\\s*)(${taskDateValuePattern})(?!\\s+\\d{2}:\\d{2}:\\d{2})`,
@@ -54,14 +55,22 @@ export function updateHistoricalTaskData(content: string): { content: string; up
     return { content: lines.join('\n'), updatedTaskCount };
 }
 
-export async function updateHistoricalTaskDataInFile(vault: Vault, file: TFile): Promise<number> {
-    const updatedTaskCount = await updateHistoricalTaskDataInSingleFile(vault, file);
+type HistoricalTaskDataUpdateResult = {
+    updatedTaskCount: number;
+    addedTaskIdCount: number;
+};
+
+export async function updateHistoricalTaskDataInFile(
+    vault: Vault,
+    file: TFile,
+): Promise<HistoricalTaskDataUpdateResult> {
+    const result = await updateHistoricalTaskDataInSingleFile(vault, file);
     new Notice(
-        updatedTaskCount === 0
+        result.updatedTaskCount === 0 && result.addedTaskIdCount === 0
             ? 'No historical task data needed updating.'
-            : `Updated historical data in ${updatedTaskCount} task(s).`,
+            : `Updated historical data in ${result.updatedTaskCount} task(s) and added IDs to ${result.addedTaskIdCount} task(s).`,
     );
-    return updatedTaskCount;
+    return result;
 }
 
 /**
@@ -70,32 +79,43 @@ export async function updateHistoricalTaskDataInFile(vault: Vault, file: TFile):
  */
 export async function updateHistoricalTaskDataInVault(
     vault: Vault,
-): Promise<{ updatedFileCount: number; updatedTaskCount: number }> {
+): Promise<{ updatedFileCount: number; updatedTaskCount: number; addedTaskIdCount: number }> {
     let updatedFileCount = 0;
     let updatedTaskCount = 0;
+    let addedTaskIdCount = 0;
 
     for (const file of vault.getMarkdownFiles()) {
-        const updatedTasksInFile = await updateHistoricalTaskDataInSingleFile(vault, file);
-        if (updatedTasksInFile > 0) {
+        const result = await updateHistoricalTaskDataInSingleFile(vault, file);
+        if (result.updatedTaskCount > 0 || result.addedTaskIdCount > 0) {
             updatedFileCount++;
-            updatedTaskCount += updatedTasksInFile;
+            updatedTaskCount += result.updatedTaskCount;
+            addedTaskIdCount += result.addedTaskIdCount;
         }
     }
 
     new Notice(
-        updatedTaskCount === 0
+        updatedTaskCount === 0 && addedTaskIdCount === 0
             ? 'No historical task data needed updating in the vault.'
-            : `Updated historical data in ${updatedFileCount} file(s), affecting ${updatedTaskCount} task(s).`,
+            : `Updated historical data in ${updatedFileCount} file(s), affecting ${updatedTaskCount} task(s) and adding IDs to ${addedTaskIdCount} task(s).`,
     );
-    return { updatedFileCount, updatedTaskCount };
+    return { updatedFileCount, updatedTaskCount, addedTaskIdCount };
 }
 
-async function updateHistoricalTaskDataInSingleFile(vault: Vault, file: TFile): Promise<number> {
-    let updatedTaskCount = 0;
+async function updateHistoricalTaskDataInSingleFile(
+    vault: Vault,
+    file: TFile,
+): Promise<HistoricalTaskDataUpdateResult> {
+    let result: HistoricalTaskDataUpdateResult = { updatedTaskCount: 0, addedTaskIdCount: 0 };
     await vault.process(file, (content) => {
-        const result = updateHistoricalTaskData(content);
-        updatedTaskCount = result.updatedTaskCount;
-        return result.content;
+        const historicalDataResult = updateHistoricalTaskData(content);
+        const taskIdResult = addMissingTaskIdsInSource(historicalDataResult.content, {
+            requireTagAndDescription: true,
+        });
+        result = {
+            updatedTaskCount: historicalDataResult.updatedTaskCount,
+            addedTaskIdCount: taskIdResult.added,
+        };
+        return taskIdResult.content;
     });
-    return updatedTaskCount;
+    return result;
 }
