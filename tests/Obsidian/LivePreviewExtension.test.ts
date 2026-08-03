@@ -244,6 +244,22 @@ describe('Live Preview task date display', () => {
         expect(updated.doc.toString()).toBe('- [ ] Task ');
     });
 
+    it('allows replacing the visible ID value while retaining its trailing delimiter', () => {
+        const original = '- [ ] Task 🆔 t-k4iq21a2b3c4 ';
+        const state = EditorState.create({
+            doc: original,
+            extensions: [EditorState.changeFilter.of(taskInternalReferenceChangeFilter)],
+        });
+        const idStart = original.indexOf('🆔');
+        const idValueEnd = original.indexOf(' ', idStart + 1 + 't-k4iq21a2b3c4'.length);
+
+        const updated = state.update({
+            changes: { from: idStart, to: idValueEnd, insert: '🆔 t-replaced123456' },
+        }).state;
+
+        expect(updated.doc.toString()).toBe('- [ ] Task 🆔 t-replaced123456 ');
+    });
+
     it('allows replacing an ID as one atomic field', () => {
         const original = '- [ ] Task 🆔 t-k4iq21a2b3c4 ';
         const state = EditorState.create({

@@ -36,9 +36,7 @@ export const newLivePreviewExtension = (plugin: LivePreviewPlugin) => {
             {
                 decorations: (extension) => extension.dateTimeDecorations,
                 provide: (extension) =>
-                    EditorView.atomicRanges.of(
-                        (view) => view.plugin(extension)?.dateTimeDecorations ?? Decoration.none,
-                    ),
+                    EditorView.atomicRanges.of((view) => view.plugin(extension)?.atomicRanges ?? Decoration.none),
             },
         ),
     ];
@@ -172,6 +170,14 @@ function internalReferenceWasChanged(transaction: Transaction, range: { from: nu
     const markerOffset = Math.max(oldField.indexOf('🆔'), oldField.indexOf('⛔'));
     const idMarkerOffset = oldField.indexOf('🆔');
     const atomicStart = range.from + markerOffset;
+    const referenceCoreLength =
+        markerOffset >= 0
+            ? oldField
+                  .slice(markerOffset)
+                  .match(/(?:🆔\uFE0F?\s*[a-zA-Z0-9_-]+|⛔\uFE0F?\s*[a-zA-Z0-9_-]+(?:\s*,\s*[a-zA-Z0-9_-]+)*)/u)?.[0]
+                  .length ?? 0
+            : 0;
+    const referenceCoreEnd = atomicStart + referenceCoreLength;
     const idValueEnd =
         idMarkerOffset >= 0
             ? range.from +
@@ -208,7 +214,8 @@ function internalReferenceWasChanged(transaction: Transaction, range: { from: nu
     // Partial edits remain blocked below.
     let replacedWholeReference = false;
     transaction.changes.iterChanges((fromA, toA, _fromB, _toB, inserted) => {
-        const coversWholeReference = (fromA === range.from || fromA === atomicStart) && toA === range.to;
+        const coversWholeReference =
+            (fromA === range.from || fromA === atomicStart) && (toA === range.to || toA === referenceCoreEnd);
         if (!coversWholeReference) {
             return;
         }
@@ -223,7 +230,7 @@ function internalReferenceWasChanged(transaction: Transaction, range: { from: nu
             matches.length === 1 &&
             matches[0][0] === replacement.trimEnd() &&
             (fromA !== range.from || !/^\s/u.test(oldField) || /^\s/u.test(replacement)) &&
-            (!matches[0][0].includes('🆔') || /\s$/u.test(replacement));
+            (!matches[0][0].includes('🆔') || /\s$/u.test(replacement) || /\s$/u.test(oldField));
     });
     if (replacedWholeReference) {
         return false;
@@ -320,6 +327,7 @@ class LivePreviewExtension implements PluginValue {
     private readonly view: EditorView;
     private readonly plugin: LivePreviewPlugin;
     public dateTimeDecorations: DecorationSet;
+    public atomicRanges: DecorationSet;
     private dateTimeDecorationsNeedRefresh = false;
     private dateTimeDecorationRefreshFrame: number | undefined;
 
@@ -327,6 +335,7 @@ class LivePreviewExtension implements PluginValue {
         this.view = view;
         this.plugin = plugin;
         this.dateTimeDecorations = this.buildDateTimeDecorations();
+        this.atomicRanges = this.buildAtomicRanges();
         livePreviewExtensions.add(this);
 
         this.view.dom.addEventListener('click', this.handleClickEvent);
@@ -350,6 +359,9 @@ class LivePreviewExtension implements PluginValue {
         if (update.docChanged || update.selectionSet || livePreviewModeChanged || this.dateTimeDecorationsNeedRefresh) {
             this.dateTimeDecorationsNeedRefresh = false;
             this.dateTimeDecorations = this.buildDateTimeDecorations();
+        }
+        if (update.docChanged || livePreviewModeChanged) {
+            this.atomicRanges = this.buildAtomicRanges();
         }
         if (update.selectionSet || livePreviewModeChanged) {
             this.refreshDateTimeDecorationsAfterDomUpdate();
@@ -380,6 +392,21 @@ class LivePreviewExtension implements PluginValue {
                 } else {
                     builder.add(range.from, range.to, Decoration.replace({}));
                 }
+            }
+        }
+        return builder.finish();
+    }
+
+    /** Makes internal fields atomic in both Live Preview and Source mode. */
+    private buildAtomicRanges(): DecorationSet {
+        const builder = new RangeSetBuilder<Decoration>();
+        for (let lineNumber = 1; lineNumber <= this.view.state.doc.lines; lineNumber++) {
+            const line = this.view.state.doc.line(lineNumber);
+            if (!TaskRegularExpressions.taskRegex.test(line.text)) {
+                continue;
+            }
+            for (const range of taskInternalReferenceRangesInLine(line.text, line.from)) {
+                builder.add(range.from, range.to, Decoration.mark({}));
             }
         }
         return builder.finish();
