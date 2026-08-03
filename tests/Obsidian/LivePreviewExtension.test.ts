@@ -174,6 +174,19 @@ describe('Live Preview task date display', () => {
         expect(updated.doc.toString()).toBe(original);
     });
 
+    it('blocks insertion at the end of an ID', () => {
+        const original = '- [ ] Task 🆔 t-k4iq21a2b3c4 ';
+        const state = EditorState.create({
+            doc: original,
+            extensions: [EditorState.changeFilter.of(taskInternalReferenceChangeFilter)],
+        });
+        const idEnd = original.indexOf('t-k4iq21a2b3c4') + 't-k4iq21a2b3c4'.length;
+
+        const updated = state.update({ changes: { from: idEnd, to: idEnd, insert: 'x' } }).state;
+
+        expect(updated.doc.toString()).toBe(original);
+    });
+
     it('allows a full task-line rewrite when the ID is preserved', () => {
         const original = '- [ ] Task 🆔 t-k4iq21a2b3c4';
         const state = EditorState.create({
@@ -197,6 +210,24 @@ describe('Live Preview task date display', () => {
 
         const updated = state.update({
             changes: { from: 0, to: original.length, insert: '- [x] Updated Task 🆔 t-replaced123456' },
+        }).state;
+
+        expect(updated.doc.toString()).toBe(original);
+    });
+
+    it('blocks a replacement that copies the old ID into the description', () => {
+        const original = '- [ ] Task 🆔 t-k4iq21a2b3c4';
+        const state = EditorState.create({
+            doc: original,
+            extensions: [EditorState.changeFilter.of(taskInternalReferenceChangeFilter)],
+        });
+
+        const updated = state.update({
+            changes: {
+                from: 0,
+                to: original.length,
+                insert: '- [ ] Mention 🆔 t-k4iq21a2b3c4 🆔 t-replaced123456',
+            },
         }).state;
 
         expect(updated.doc.toString()).toBe(original);

@@ -50,7 +50,7 @@ export class TaskIdManager {
         const file = this.currentMarkdownFile();
         if (!file) return;
 
-        const missing = await this.countMissingIds(file, true);
+        const missing = await this.countMissingIds(file, true, true);
         new Notice(i18n.t('ui.notices.taskIdPreview', { count: missing }));
     }
 
@@ -58,7 +58,7 @@ export class TaskIdManager {
         const file = this.currentMarkdownFile();
         if (!file) return;
 
-        const result = await this.completeFile(file, true);
+        const result = await this.completeFile(file, true, true);
         new Notice(i18n.t('ui.notices.taskIdsAdded', { count: result.added }));
     }
 
@@ -68,12 +68,17 @@ export class TaskIdManager {
     }
 
     private async readSourceContent(file: TFile): Promise<string> {
-        const view = this.plugin.app.workspace.getActiveViewOfType(MarkdownView);
-        if (view?.file?.path === file.path) {
+        const view = this.activeMarkdownView(file);
+        if (view) {
             return view.getViewData();
         }
 
         return this.plugin.app.vault.read(file);
+    }
+
+    private activeMarkdownView(file: TFile): MarkdownView | null {
+        const view = this.plugin.app.workspace.getActiveViewOfType(MarkdownView);
+        return view?.file?.path === file.path ? view : null;
     }
 
     private async drain(path: string): Promise<void> {
@@ -117,6 +122,13 @@ export class TaskIdManager {
         if (previewMissingTaskIdsInSource(currentContent, options) === 0) return noChanges(currentContent);
 
         let result = noChanges(currentContent);
+
+        const activeView = this.activeMarkdownView(file);
+        if (activeView) {
+            result = addMissingTaskIdsInSource(currentContent, options);
+            activeView.setViewData(result.content, false);
+            return result;
+        }
 
         await this.plugin.app.vault.process(file, (content) => {
             result = addMissingTaskIdsInSource(content, options);

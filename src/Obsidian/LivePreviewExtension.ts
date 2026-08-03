@@ -130,7 +130,7 @@ function taskInternalReferenceRangesInDocument(doc: Text): { from: number; to: n
 
 function changeTouchesRange(from: number, to: number, range: { from: number; to: number }): boolean {
     if (from === to) {
-        return from > range.from && from < range.to;
+        return from > range.from && from <= range.to;
     }
     return from < range.to && to > range.from;
 }
@@ -153,19 +153,35 @@ function internalReferenceWasChanged(transaction: Transaction, range: { from: nu
     const line = transaction.startState.doc.lineAt(range.from);
     const mappedFrom = transaction.changes.mapPos(range.from, 1);
     const mappedTo = transaction.changes.mapPos(range.to, -1);
+    let insertedAtReferenceEnd = false;
 
     // A task checkbox click and the task modal rewrite the complete line. In that case
     // CodeMirror maps the old range to the replacement boundary, so compare the old
     // internal field with the inserted line text directly.
     let fullLineReplacement: string | undefined;
     transaction.changes.iterChanges((fromA, toA, _fromB, _toB, inserted) => {
+        if (fromA === range.to && toA === range.to && inserted.length > 0) {
+            insertedAtReferenceEnd = true;
+        }
         if (fromA <= line.from && toA >= line.to && inserted.length > 0) {
             fullLineReplacement = inserted.toString();
         }
     });
+    if (insertedAtReferenceEnd) {
+        return true;
+    }
     if (fullLineReplacement !== undefined) {
-        const before = transaction.startState.doc.sliceString(range.from, range.to);
-        return !fullLineReplacement.includes(before);
+        const oldRanges = taskInternalReferenceRangesInLine(line.text, line.from);
+        const oldIndex = oldRanges.findIndex((candidate) => candidate.from === range.from && candidate.to === range.to);
+        const replacementLine = fullLineReplacement.split(/\r?\n/u, 1)[0] ?? '';
+        const newRanges = taskInternalReferenceRangesInLine(replacementLine, 0);
+        if (oldIndex < 0 || oldIndex >= newRanges.length || oldRanges.length !== newRanges.length) {
+            return true;
+        }
+
+        const before = line.text.slice(range.from - line.from, range.to - line.from);
+        const after = replacementLine.slice(newRanges[oldIndex].from, newRanges[oldIndex].to);
+        return before !== after;
     }
 
     if (mappedTo < mappedFrom) {

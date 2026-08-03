@@ -30,6 +30,10 @@ Use these commands to review or complete IDs in the active Markdown file. They a
 - **Tasks: Preview current file task IDs**
 - **Tasks: Add missing task IDs in current file**
 
+The historical task data command also adds missing IDs to eligible tasks across
+the vault while upgrading legacy date fields. Markdown fenced code blocks are
+excluded, so task examples in documentation are never modified.
+
 ## Visibility
 
 Task IDs and dependency IDs are source metadata. They are stored in Markdown and remain available to searches, dependencies, reminders, and automations, but they are not shown in normal task rendering.

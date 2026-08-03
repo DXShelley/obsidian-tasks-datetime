@@ -4,7 +4,7 @@ This document records the display and completion contract for automatically mana
 
 ## Source format
 
-Automatic IDs are written as `🆔 t-<12 ULID-random-characters>`. They are inserted after the task description and before the first task date field. Completion is deliberately conservative: the task must have a tag, non-tag description text, and a trailing space. Existing IDs and duplicates are not rewritten.
+Automatic IDs are written as `🆔 t-<12 ULID-random-characters>`. They are inserted after the task description and before the first task date field. Completion is deliberately conservative: the task must have a tag, non-tag description text, and a trailing space. Existing IDs and duplicates are not rewritten. Task-looking lines inside fenced Markdown code blocks are not tasks and must never be changed.
 
 `⛔ depends on` values are internal references too. They use the same visibility rules as `🆔 id`.
 
@@ -58,7 +58,8 @@ In Live Preview, the ID decoration is independent of all time-display logic. In 
 ## Implementation boundaries
 
 - `src/TaskId/TaskIdSourceEditor.ts` owns ID syntax, eligibility, insertion, and cursor placement.
-- `src/TaskId/TaskIdManager.ts` owns metadata-cache scheduling and the two active-file commands.
+- `src/TaskId/TaskIdManager.ts` owns metadata-cache scheduling, the two active-file commands, and writing active-editor changes from the current in-memory source without overwriting unsaved content.
+- `src/Commands/UpdateHistoricalTaskData.ts` intentionally upgrades legacy dates and adds missing IDs to eligible tasks across the vault; it uses the same source scanner and skips fenced code blocks.
 - `src/Obsidian/LivePreviewExtension.ts` hides internal ID fields with CodeMirror replacements in Live Preview.
 - `src/Obsidian/InlineRenderer.ts` provides the Reading View fallback for task rows that Tasks does not replace.
 - `src/Renderer/Renderer.scss` hides the rendered `task-id` and `task-dependsOn` components in Tasks output.
@@ -70,7 +71,7 @@ Do not use CSS alone for Live Preview: CodeMirror content is not rendered as Tas
 Run these tests after changing this behaviour:
 
 ```bash
-npm test -- --runTestsByPath tests/TaskId/TaskIdSourceEditor.test.ts tests/Obsidian/LivePreviewExtension.test.ts tests/Obsidian/InlineRenderer.test.ts
+npm test -- --runTestsByPath tests/TaskId/TaskIdSourceEditor.test.ts tests/TaskId/TaskIdManager.test.ts tests/Obsidian/LivePreviewExtension.test.ts tests/Obsidian/InlineRenderer.test.ts
 ```
 
 Manual verification must cover both values of **Include time in task dates**. In each case, `🆔` and `⛔` remain hidden in Live Preview, Reading view, and query results, while they remain visible in Source mode.

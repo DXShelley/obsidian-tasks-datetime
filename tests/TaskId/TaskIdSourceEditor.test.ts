@@ -80,6 +80,20 @@ Not a task
         expect(addMissingTaskIdsInSource(content, options).added).toBe(2);
     });
 
+    it('skips task-looking lines inside fenced code blocks', () => {
+        const content = ['```markdown', '- [ ] #tag Example in documentation', '```', '- [ ] #tag Real task'].join(
+            '\n',
+        );
+        const options = { requireTagAndDescription: true };
+
+        expect(previewMissingTaskIdsInSource(content, options)).toBe(1);
+        const result = addMissingTaskIdsInSource(content, options);
+
+        expect(result.added).toBe(1);
+        expect(result.content).toContain('- [ ] #tag Example in documentation\n```');
+        expect(result.content).toMatch(/- \[ \] #tag Real task 🆔 t-/);
+    });
+
     it('requires both a tag and task description when automatic completion is requested', () => {
         const content = `- [ ] #task
 - [ ] Write release notes

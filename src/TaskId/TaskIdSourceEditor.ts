@@ -31,9 +31,33 @@ function taskLineNumbers(listItems: ListItemCache[]): number[] {
 }
 
 function taskLineNumbersFromSource(content: string): number[] {
-    return content
-        .split('\n')
-        .flatMap((line, lineNumber) => (TaskRegularExpressions.taskRegex.test(line) ? [lineNumber] : []));
+    const lineNumbers: number[] = [];
+    let fence: { marker: '`' | '~'; length: number } | null = null;
+
+    for (const [lineNumber, line] of content.split('\n').entries()) {
+        if (fence !== null) {
+            const closingFence = new RegExp(`^ {0,3}${fence.marker}{${fence.length},}\\s*$`, 'u');
+            if (closingFence.test(line)) {
+                fence = null;
+            }
+            continue;
+        }
+
+        const openingFence = /^( {0,3})(`{3,}|~{3,})(.*)$/u.exec(line);
+        if (openingFence !== null) {
+            const marker = openingFence[2][0] as '`' | '~';
+            if (marker === '~' || !openingFence[3].includes('`')) {
+                fence = { marker, length: openingFence[2].length };
+                continue;
+            }
+        }
+
+        if (TaskRegularExpressions.taskRegex.test(line)) {
+            lineNumbers.push(lineNumber);
+        }
+    }
+
+    return lineNumbers;
 }
 
 function addIdToTaskLine(line: string, id: string): { line: string; cursorColumn: number } {
