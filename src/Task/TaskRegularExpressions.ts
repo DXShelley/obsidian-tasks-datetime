@@ -30,6 +30,10 @@ export class TaskRegularExpressions {
         'u',
     );
 
+    /** Matches internal task references, including their preceding separator when present. */
+    public static readonly taskInternalReferenceRegex =
+        /(?:^|\s)(?:🆔\uFE0F?\s*[a-zA-Z0-9_-]+|⛔\uFE0F?\s*[a-zA-Z0-9_-]+(?:\s*,\s*[a-zA-Z0-9_-]+)*)(?=\s|$)/gu;
+
     // Used with the "Create or Edit Task" command to parse indentation and status if present
     // It matches the following:
     // - Indentation

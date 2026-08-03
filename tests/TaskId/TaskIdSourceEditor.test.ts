@@ -1,6 +1,11 @@
 import type { ListItemCache } from 'obsidian';
 
-import { addMissingTaskIds, previewMissingTaskIds } from '../../src/TaskId/TaskIdSourceEditor';
+import {
+    addMissingTaskIds,
+    addMissingTaskIdsInSource,
+    previewMissingTaskIds,
+    previewMissingTaskIdsInSource,
+} from '../../src/TaskId/TaskIdSourceEditor';
 
 function taskAt(line: number): ListItemCache {
     return {
@@ -31,6 +36,21 @@ describe('TaskIdSourceEditor', () => {
         expect(result.content).toMatch(/^- \[ \] Review ticket 🆔 t-[0-9abcdefghjkmnpqrstvwxyz]{12} $/);
     });
 
+    it('adds IDs to tagged tasks with a description without requiring a trailing space', () => {
+        const content = `- [ ] Untagged task
+- [ ] #tag
+- [ ] #tag Write release notes`;
+
+        const result = addMissingTaskIds(content, [taskAt(0), taskAt(1), taskAt(2)], {
+            requireTagAndDescription: true,
+        });
+
+        expect(result.added).toBe(1);
+        expect(result.content.split('\n')[0]).toBe('- [ ] Untagged task');
+        expect(result.content.split('\n')[1]).toBe('- [ ] #tag');
+        expect(result.content).toMatch(/\n- \[ \] #tag Write release notes 🆔 t-.* $/);
+    });
+
     it('does not rewrite an existing ID', () => {
         const content = '- [ ] Review ticket 🆔 k4iq21 📅 2026-07-30';
 
@@ -47,6 +67,17 @@ An ordinary line
 
         expect(result.added).toBe(1);
         expect(result.content.split('\n')[2]).toBe('- [ ] Second task');
+    });
+
+    it('finds eligible task rows directly from Markdown source', () => {
+        const content = `- [ ] #tag Write release notes
+Not a task
+> - [ ] #tag Review pull request
+- [ ] #tag`;
+        const options = { requireTagAndDescription: true };
+
+        expect(previewMissingTaskIdsInSource(content, options)).toBe(2);
+        expect(addMissingTaskIdsInSource(content, options).added).toBe(2);
     });
 
     it('requires both a tag and task description when automatic completion is requested', () => {

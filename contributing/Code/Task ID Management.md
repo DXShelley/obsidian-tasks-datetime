@@ -8,6 +8,38 @@ Automatic IDs are written as `🆔 t-<12 ULID-random-characters>`. They are inse
 
 `⛔ depends on` values are internal references too. They use the same visibility rules as `🆔 id`.
 
+## Obsidian views and editing modes
+
+Obsidian's official terminology separates the **view** from the **editing mode** ([编辑与预览笔记](https://obsidian.md/zh/help/edit-and-read)):
+
+- **Reading view（阅读视图）** is a view that renders the note without Markdown syntax for reading.
+- **Editing view（编辑视图）** is the view in which the note can be changed. It has two editing modes:
+  - **Live Preview（实时预览）** renders formatted text inline and hides most Markdown syntax. When the cursor enters formatted content, Obsidian reveals the underlying syntax for editing.
+  - **Source mode（源码模式）** displays all Markdown syntax exactly as written.
+
+The Chinese help page labels the editable section **编辑模式**, while the view
+switcher calls the top-level state **编辑视图**. Keep that distinction when
+describing or testing the plugin: **实时预览** and **源码模式** are modes inside
+**编辑视图**, not sibling views.
+
+The view-switcher icon identifies the current/target view, but it does not by
+itself distinguish **Live Preview** from **Source mode**. In the screenshots,
+the pencil tooltip identifies the first tab as **Reading view**, while the view
+menu in the second tab has **Source mode** checked. The editing mode must be
+checked in the view menu, status-bar mode control, or **Settings → Editor →
+Default editing mode**.
+
+For task rendering, Live Preview consequently has two relevant row states. An inactive row is rendered inline; when the cursor enters the row, Obsidian temporarily reveals its Markdown source. The latter is still **Live Preview**, not a third view or editing mode.
+
+The plugin-specific field contract is:
+
+| Obsidian state | ID / dependency fields | Complete task time |
+| --- | --- | --- |
+| Reading view | Hidden | Follows **Include time in task dates** |
+| Editing view + Live Preview, inactive row | Hidden | Follows **Include time in task dates** |
+| Editing view + Live Preview, active row with source revealed | Hidden | Always shown |
+| Editing view + Source mode | Visible | Shown |
+
 ## Rendering invariant
 
 The following is a user-visible invariant:

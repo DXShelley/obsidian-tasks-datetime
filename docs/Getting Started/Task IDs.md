@@ -19,6 +19,12 @@ The plugin adds an ID only when all of these conditions are met:
 
 The ID is inserted after the description and before the first task date field. Existing IDs, including duplicate IDs, are not changed automatically.
 
+After an ID is generated, it is treated as immutable metadata in the editor:
+editing the task description, status, dates, or other fields cannot change the
+ID or dependency IDs. Deleting the complete task line is the only direct editing
+operation that removes the metadata; a newly created task can then receive a new
+ID.
+
 Use these commands to review or complete IDs in the active Markdown file. They apply the same eligibility rules as automatic completion:
 
 - **Tasks: Preview current file task IDs**
@@ -34,6 +40,11 @@ Task IDs and dependency IDs are source metadata. They are stored in Markdown and
 | Live Preview | Hidden |
 | Reading view | Hidden |
 | Tasks query results | Hidden |
+
+These rows describe visible display states for convenience. Conceptually,
+**Live Preview** and **Source mode** are editing modes inside **Editing view**;
+they are not separate top-level views. See [[About Editing#Obsidian views and editing modes]]
+for the complete hierarchy and the task-time rules for an active Live Preview row.
 
 This visibility rule is independent of the **Include time in task dates** setting. Changing whether task times are displayed must never reveal or hide task IDs.
 

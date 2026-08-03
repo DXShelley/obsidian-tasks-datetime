@@ -1,5 +1,9 @@
 import type { TFile, Vault } from 'obsidian';
-import { updateHistoricalTaskData, updateHistoricalTaskDataInVault } from '../../src/Commands/UpdateHistoricalTaskData';
+import {
+    updateHistoricalTaskData,
+    updateHistoricalTaskDataInFile,
+    updateHistoricalTaskDataInVault,
+} from '../../src/Commands/UpdateHistoricalTaskData';
 
 describe('update historical task data', () => {
     it('upgrades only task dates to midnight', () => {
@@ -66,9 +70,32 @@ An ordinary date 📅 2026-07-23 must not change`,
         await expect(updateHistoricalTaskDataInVault(vault)).resolves.toEqual({
             updatedFileCount: 1,
             updatedTaskCount: 1,
+            addedTaskIdCount: 0,
         });
         expect(processedPaths).toEqual(['one.md', 'two.md']);
         expect(contents.get('one.md')).toBe('- [ ] High 🔼 📅 2026-07-23 00:00:00');
         expect(contents.get('two.md')).toBe('- [ ] No priority 📅 2026-07-24 08:00:00');
+    });
+
+    it('adds IDs to eligible source tasks when updating historical data', async () => {
+        const file = { path: 'tasks.md' } as TFile;
+        let content = `- [ ] #task Write release notes
+- [ ] #task
+- [ ] No tag`;
+        const vault = {
+            process: async (_file: TFile, updater: (source: string) => string) => {
+                content = updater(content);
+                return content;
+            },
+        } as unknown as Vault;
+
+        await expect(updateHistoricalTaskDataInFile(vault, file)).resolves.toEqual({
+            updatedTaskCount: 0,
+            addedTaskIdCount: 1,
+        });
+        expect(content.split('\n')[0]).toMatch(
+            /^- \[ \] #task Write release notes 🆔 t-[0-9abcdefghjkmnpqrstvwxyz]{12} $/,
+        );
+        expect(content).toContain('- [ ] #task\n- [ ] No tag');
     });
 });

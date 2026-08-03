@@ -2,7 +2,7 @@ import { type CachedMetadata, MarkdownView, Notice, type TFile } from 'obsidian'
 
 import type TasksPlugin from '../main';
 import { i18n } from '../i18n/i18n';
-import { type TaskIdEditResult, addMissingTaskIds, previewMissingTaskIds } from './TaskIdSourceEditor';
+import { type TaskIdEditResult, addMissingTaskIdsInSource, previewMissingTaskIdsInSource } from './TaskIdSourceEditor';
 
 const DEBOUNCE_MS = 400;
 const CURSOR_SYNC_RETRY_MS = 25;
@@ -50,7 +50,7 @@ export class TaskIdManager {
         const file = this.currentMarkdownFile();
         if (!file) return;
 
-        const missing = await this.countMissingIds(file, true, true);
+        const missing = await this.countMissingIds(file, true);
         new Notice(i18n.t('ui.notices.taskIdPreview', { count: missing }));
     }
 
@@ -58,13 +58,22 @@ export class TaskIdManager {
         const file = this.currentMarkdownFile();
         if (!file) return;
 
-        const result = await this.completeFile(file, true, true);
+        const result = await this.completeFile(file, true);
         new Notice(i18n.t('ui.notices.taskIdsAdded', { count: result.added }));
     }
 
     private currentMarkdownFile(): TFile | null {
         const file = this.plugin.app.workspace.getActiveFile();
         return file?.extension === 'md' ? file : null;
+    }
+
+    private async readSourceContent(file: TFile): Promise<string> {
+        const view = this.plugin.app.workspace.getActiveViewOfType(MarkdownView);
+        if (view?.file?.path === file.path) {
+            return view.getViewData();
+        }
+
+        return this.plugin.app.vault.read(file);
     }
 
     private async drain(path: string): Promise<void> {
@@ -93,11 +102,8 @@ export class TaskIdManager {
         requireTagAndDescription = false,
         requireTrailingSpace = false,
     ): Promise<number> {
-        const cache = this.plugin.app.metadataCache.getFileCache(file);
-        if (!cache?.listItems) return 0;
-
-        const content = await this.plugin.app.vault.read(file);
-        return previewMissingTaskIds(content, cache.listItems, { requireTagAndDescription, requireTrailingSpace });
+        const content = await this.readSourceContent(file);
+        return previewMissingTaskIdsInSource(content, { requireTagAndDescription, requireTrailingSpace });
     }
 
     private async completeFile(
@@ -106,20 +112,14 @@ export class TaskIdManager {
         requireTrailingSpace = false,
     ): Promise<TaskIdEditResult> {
         const noChanges = (content: string): TaskIdEditResult => ({ content, added: 0, missing: 0, additions: [] });
-        const cache = this.plugin.app.metadataCache.getFileCache(file);
-        if (!cache?.listItems) return noChanges('');
-
-        const currentContent = await this.plugin.app.vault.read(file);
+        const currentContent = await this.readSourceContent(file);
         const options = { requireTagAndDescription, requireTrailingSpace };
-        if (previewMissingTaskIds(currentContent, cache.listItems, options) === 0) return noChanges(currentContent);
+        if (previewMissingTaskIdsInSource(currentContent, options) === 0) return noChanges(currentContent);
 
         let result = noChanges(currentContent);
 
         await this.plugin.app.vault.process(file, (content) => {
-            const currentCache = this.plugin.app.metadataCache.getFileCache(file);
-            if (!currentCache?.listItems) return content;
-
-            result = addMissingTaskIds(content, currentCache.listItems, options);
+            result = addMissingTaskIdsInSource(content, options);
             return result.content;
         });
 
