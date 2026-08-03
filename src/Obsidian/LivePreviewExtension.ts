@@ -84,7 +84,22 @@ export function taskInternalReferenceRangesInLine(line: string, lineStart: numbe
         if (matchStart === undefined) {
             continue;
         }
-        ranges.push({ from: lineStart + matchStart, to: lineStart + matchStart + match[0].length });
+        let to = lineStart + matchStart + match[0].length;
+
+        // Generated IDs always have a trailing space. Keep that space in the
+        // hidden/atomic range so deleting it removes the complete ID instead
+        // of leaving an ID with an invalid delimiter. Do not claim the space
+        // before another internal reference, because that reference owns its
+        // leading separator and the decoration ranges must not overlap.
+        if (match[0].includes('🆔')) {
+            const nextText = line.slice(to - lineStart);
+            const nextNonWhitespace = nextText.trimStart();
+            if (nextText.length > 0 && !nextNonWhitespace.startsWith('🆔') && !nextNonWhitespace.startsWith('⛔')) {
+                to += 1;
+            }
+        }
+
+        ranges.push({ from: lineStart + matchStart, to });
     }
     return ranges;
 }
@@ -130,7 +145,7 @@ function taskInternalReferenceRangesInDocument(doc: Text): { from: number; to: n
 
 function changeTouchesRange(from: number, to: number, range: { from: number; to: number }): boolean {
     if (from === to) {
-        return from > range.from && from <= range.to;
+        return from > range.from && from < range.to;
     }
     return from < range.to && to > range.from;
 }
@@ -153,23 +168,67 @@ function internalReferenceWasChanged(transaction: Transaction, range: { from: nu
     const line = transaction.startState.doc.lineAt(range.from);
     const mappedFrom = transaction.changes.mapPos(range.from, 1);
     const mappedTo = transaction.changes.mapPos(range.to, -1);
-    let insertedAtReferenceEnd = false;
+    const oldField = line.text.slice(range.from - line.from, range.to - line.from);
+    const markerOffset = Math.max(oldField.indexOf('🆔'), oldField.indexOf('⛔'));
+    const idMarkerOffset = oldField.indexOf('🆔');
+    const atomicStart = range.from + markerOffset;
+    const idValueEnd =
+        idMarkerOffset >= 0
+            ? range.from +
+              idMarkerOffset +
+              (oldField.slice(idMarkerOffset).match(/🆔\uFE0F?\s*[a-zA-Z0-9_-]+/u)?.[0].length ?? 0)
+            : -1;
 
     // A task checkbox click and the task modal rewrite the complete line. In that case
     // CodeMirror maps the old range to the replacement boundary, so compare the old
     // internal field with the inserted line text directly.
     let fullLineReplacement: string | undefined;
     transaction.changes.iterChanges((fromA, toA, _fromB, _toB, inserted) => {
-        if (fromA === range.to && toA === range.to && inserted.length > 0) {
-            insertedAtReferenceEnd = true;
-        }
         if (fromA <= line.from && toA >= line.to && inserted.length > 0) {
             fullLineReplacement = inserted.toString();
         }
     });
-    if (insertedAtReferenceEnd) {
-        return true;
+
+    // Typing a date after an ID is allowed, including for legacy lines that
+    // were saved without the canonical trailing space. The inserted delimiter
+    // becomes the ID's required separator and does not edit the ID value.
+    if (idValueEnd >= 0) {
+        let insertedDelimiterAfterId = false;
+        transaction.changes.iterChanges((fromA, toA, _fromB, _toB, inserted) => {
+            if (fromA === idValueEnd && toA === idValueEnd && inserted.length > 0 && /^\s/u.test(inserted.toString())) {
+                insertedDelimiterAfterId = true;
+            }
+        });
+        if (insertedDelimiterAfterId) {
+            return false;
+        }
     }
+
+    // Replacing or deleting the complete internal field is an atomic edit.
+    // Partial edits remain blocked below.
+    let replacedWholeReference = false;
+    transaction.changes.iterChanges((fromA, toA, _fromB, _toB, inserted) => {
+        const coversWholeReference = (fromA === range.from || fromA === atomicStart) && toA === range.to;
+        if (!coversWholeReference) {
+            return;
+        }
+        if (inserted.length === 0) {
+            replacedWholeReference = true;
+            return;
+        }
+
+        const replacement = inserted.toString();
+        const matches = [...replacement.matchAll(TaskRegularExpressions.taskInternalReferenceRegex)];
+        replacedWholeReference =
+            matches.length === 1 &&
+            matches[0][0] === replacement.trimEnd() &&
+            (fromA !== range.from || !/^\s/u.test(oldField) || /^\s/u.test(replacement)) &&
+            (!matches[0][0].includes('🆔') || /\s$/u.test(replacement));
+    });
+    if (replacedWholeReference) {
+        return false;
+    }
+
     if (fullLineReplacement !== undefined) {
         const oldRanges = taskInternalReferenceRangesInLine(line.text, line.from);
         const oldIndex = oldRanges.findIndex((candidate) => candidate.from === range.from && candidate.to === range.to);
@@ -205,7 +264,22 @@ export function taskInternalReferenceChangeFilter(transaction: Transaction): boo
     const internalReferenceRanges = taskInternalReferenceRangesInDocument(transaction.startState.doc);
     for (const range of internalReferenceRanges) {
         let blocked = false;
+        const oldField = transaction.startState.doc.sliceString(range.from, range.to);
+        const hasTrailingDelimiter = /\s$/u.test(oldField);
         transaction.changes.iterChanges((fromA, toA, _fromB, _toB, inserted) => {
+            // An ID or dependency value without a trailing space is still an
+            // atomic field. Appending a non-whitespace character would mutate
+            // it; appending the delimiter is the one allowed boundary edit.
+            if (
+                fromA === range.to &&
+                toA === range.to &&
+                !hasTrailingDelimiter &&
+                inserted.length > 0 &&
+                !/^\s/u.test(inserted.toString())
+            ) {
+                blocked = true;
+                return;
+            }
             if (
                 changeTouchesRange(fromA, toA, range) &&
                 !deletesWholeTaskLine(transaction.startState.doc, fromA, toA, inserted, range) &&

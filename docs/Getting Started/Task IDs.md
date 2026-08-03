@@ -19,11 +19,12 @@ The plugin adds an ID only when all of these conditions are met:
 
 The ID is inserted after the description and before the first task date field. Existing IDs, including duplicate IDs, are not changed automatically.
 
-After an ID is generated, it is treated as immutable metadata in the editor:
-editing the task description, status, dates, or other fields cannot change the
-ID or dependency IDs. Deleting the complete task line is the only direct editing
-operation that removes the metadata; a newly created task can then receive a new
-ID.
+After an ID is generated, it is treated as an atomic metadata field in the
+editor. Editing the task description, status, dates, or other fields cannot
+partially change the ID or dependency IDs. The complete ID field may be added,
+replaced, or deleted in one operation. Generated IDs always include a trailing
+space, allowing a date to be typed immediately after the ID; removing only that
+space is blocked together with other partial edits.
 
 Use these commands to review or complete IDs in the active Markdown file. They apply the same eligibility rules as automatic completion:
 

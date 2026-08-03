@@ -187,6 +187,92 @@ describe('Live Preview task date display', () => {
         expect(updated.doc.toString()).toBe(original);
     });
 
+    it('allows a date delimiter to be inserted after an ID without a trailing space', () => {
+        const original = '- [ ] Task 🆔 t-k4iq21a2b3c4';
+        const state = EditorState.create({
+            doc: original,
+            extensions: [EditorState.changeFilter.of(taskInternalReferenceChangeFilter)],
+        });
+        const idEnd = original.indexOf('t-k4iq21a2b3c4') + 't-k4iq21a2b3c4'.length;
+
+        const updated = state.update({
+            changes: { from: idEnd, to: idEnd, insert: ' 📅 2026-08-03 12:00:00' },
+        }).state;
+
+        expect(updated.doc.toString()).toBe('- [ ] Task 🆔 t-k4iq21a2b3c4 📅 2026-08-03 12:00:00');
+    });
+
+    it('allows a date to be inserted after the canonical ID trailing space', () => {
+        const original = '- [ ] Task 🆔 t-k4iq21a2b3c4 ';
+        const state = EditorState.create({
+            doc: original,
+            extensions: [EditorState.changeFilter.of(taskInternalReferenceChangeFilter)],
+        });
+        const idRange = taskInternalReferenceRangesInLine(original, 0)[0];
+
+        const updated = state.update({
+            changes: { from: idRange.to, to: idRange.to, insert: '📅 2026-08-03 12:00:00' },
+        }).state;
+
+        expect(updated.doc.toString()).toBe('- [ ] Task 🆔 t-k4iq21a2b3c4 📅 2026-08-03 12:00:00');
+    });
+
+    it('allows deleting an ID as one atomic field', () => {
+        const original = '- [ ] Task 🆔 t-k4iq21a2b3c4 ';
+        const state = EditorState.create({
+            doc: original,
+            extensions: [EditorState.changeFilter.of(taskInternalReferenceChangeFilter)],
+        });
+        const [idRange] = taskInternalReferenceRangesInLine(original, 0);
+
+        const updated = state.update({ changes: { from: idRange.from, to: idRange.to, insert: '' } }).state;
+
+        expect(updated.doc.toString()).toBe('- [ ] Task');
+    });
+
+    it('allows deleting the visible ID value without requiring its leading separator', () => {
+        const original = '- [ ] Task 🆔 t-k4iq21a2b3c4 ';
+        const state = EditorState.create({
+            doc: original,
+            extensions: [EditorState.changeFilter.of(taskInternalReferenceChangeFilter)],
+        });
+        const idStart = original.indexOf('🆔');
+        const idEnd = original.length;
+
+        const updated = state.update({ changes: { from: idStart, to: idEnd, insert: '' } }).state;
+
+        expect(updated.doc.toString()).toBe('- [ ] Task ');
+    });
+
+    it('allows replacing an ID as one atomic field', () => {
+        const original = '- [ ] Task 🆔 t-k4iq21a2b3c4 ';
+        const state = EditorState.create({
+            doc: original,
+            extensions: [EditorState.changeFilter.of(taskInternalReferenceChangeFilter)],
+        });
+        const [idRange] = taskInternalReferenceRangesInLine(original, 0);
+
+        const updated = state.update({
+            changes: { from: idRange.from, to: idRange.to, insert: ' 🆔 t-replaced123456 ' },
+        }).state;
+
+        expect(updated.doc.toString()).toBe('- [ ] Task 🆔 t-replaced123456 ');
+    });
+
+    it('does not allow deleting only the ID value or its trailing space', () => {
+        const original = '- [ ] Task 🆔 t-k4iq21a2b3c4 ';
+        const state = EditorState.create({
+            doc: original,
+            extensions: [EditorState.changeFilter.of(taskInternalReferenceChangeFilter)],
+        });
+        const idValueStart = original.indexOf('t-k4iq21a2b3c4');
+        const idValueEnd = idValueStart + 't-k4iq21a2b3c4'.length;
+
+        const updated = state.update({ changes: { from: idValueEnd, to: idValueEnd + 1, insert: '' } }).state;
+
+        expect(updated.doc.toString()).toBe(original);
+    });
+
     it('allows a full task-line rewrite when the ID is preserved', () => {
         const original = '- [ ] Task 🆔 t-k4iq21a2b3c4';
         const state = EditorState.create({

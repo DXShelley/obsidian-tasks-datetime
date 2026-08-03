@@ -7,6 +7,10 @@ This document records the display and completion contract for automatically mana
 Automatic IDs are written as `🆔 t-<12 ULID-random-characters>`. They are inserted after the task description and before the first task date field. Completion is deliberately conservative: the task must have a tag, non-tag description text, and a trailing space. Existing IDs and duplicates are not rewritten. Task-looking lines inside fenced Markdown code blocks are not tasks and must never be changed.
 
 `⛔ depends on` values are internal references too. They use the same visibility rules as `🆔 id`.
+In Editing view, an ID is an atomic field: its complete value may be added,
+replaced, or deleted, while partial edits are blocked. Generated IDs include a
+trailing space; that delimiter is part of the atomic range so a date can be
+typed after the ID without modifying its value.
 
 ## Obsidian views and editing modes
 
@@ -60,7 +64,7 @@ In Live Preview, the ID decoration is independent of all time-display logic. In 
 - `src/TaskId/TaskIdSourceEditor.ts` owns ID syntax, eligibility, insertion, and cursor placement.
 - `src/TaskId/TaskIdManager.ts` owns metadata-cache scheduling, the two active-file commands, and writing active-editor changes from the current in-memory source without overwriting unsaved content.
 - `src/Commands/UpdateHistoricalTaskData.ts` intentionally upgrades legacy dates and adds missing IDs to eligible tasks across the vault; it uses the same source scanner and skips fenced code blocks.
-- `src/Obsidian/LivePreviewExtension.ts` hides internal ID fields with CodeMirror replacements in Live Preview.
+- `src/Obsidian/LivePreviewExtension.ts` hides internal ID fields with CodeMirror replacements in Live Preview and filters partial edits while allowing atomic ID changes.
 - `src/Obsidian/InlineRenderer.ts` provides the Reading View fallback for task rows that Tasks does not replace.
 - `src/Renderer/Renderer.scss` hides the rendered `task-id` and `task-dependsOn` components in Tasks output.
 
