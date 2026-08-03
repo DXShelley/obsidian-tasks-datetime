@@ -1,7 +1,7 @@
 <!-- snippet: QueryResultsRenderer.test.QueryResultsRenderer_-_rendering_queries_fully_populated_task.approved.html -->
 ```html
 <!--
-  - [ ] Do exercises #todo #health 🆔 abcdef ⛔ 123456,abc123 🔼 🔁 every day when done 🏁 delete ➕ 2023-07-01 🛫 2023-07-02 ⏳ 2023-07-03 📅 2023-07-04 ❌ 2023-07-06 ✅ 2023-07-05 ^dcf64c
+  - [ ] Do exercises #todo #health 🆔 abcdef ⛔ 123456,abc123 🔼 🔁 every day when done 🏁 delete ➕ 2023-07-01 00:00:00 🛫 2023-07-02 00:00:00 ⏳ 2023-07-03 00:00:00 📅 2023-07-04 00:00:00 ❌ 2023-07-06 00:00:00 ✅ 2023-07-05 00:00:00 ^dcf64c
 -->
 
 <div>

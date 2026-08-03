@@ -46,13 +46,13 @@ For more information, including adding your own customised statuses, see [[Statu
 
 | Field | Type 1 | Example 1 | Type 2 | Example 2 |
 | ----- | ----- | ----- | ----- | ----- |
-| `task.created` | `TasksDate` | `2023-07-01 00:00` | `TasksDate` | `` |
-| `task.start` | `TasksDate` | `2023-07-02 00:00` | `TasksDate` | `` |
-| `task.scheduled` | `TasksDate` | `2023-07-03 00:00` | `TasksDate` | `` |
-| `task.due` | `TasksDate` | `2023-07-04 00:00` | `TasksDate` | `` |
-| `task.cancelled` | `TasksDate` | `2023-07-06 00:00` | `TasksDate` | `` |
-| `task.done` | `TasksDate` | `2023-07-05 00:00` | `TasksDate` | `` |
-| `task.happens` | `TasksDate` | `2023-07-02 00:00` | `TasksDate` | `` |
+| `task.created` | `TasksDate` | `2023-07-01` | `TasksDate` | `` |
+| `task.start` | `TasksDate` | `2023-07-02` | `TasksDate` | `` |
+| `task.scheduled` | `TasksDate` | `2023-07-03` | `TasksDate` | `` |
+| `task.due` | `TasksDate` | `2023-07-04` | `TasksDate` | `` |
+| `task.cancelled` | `TasksDate` | `2023-07-06` | `TasksDate` | `` |
+| `task.done` | `TasksDate` | `2023-07-05` | `TasksDate` | `` |
+| `task.happens` | `TasksDate` | `2023-07-02` | `TasksDate` | `` |
 
 <!-- placeholder to force blank line after included text --><!-- endInclude -->
 
@@ -147,7 +147,7 @@ For more information, including adding your own customised statuses, see [[Statu
 | `task.recurrenceRule` | `string` | `'every day when done'` | `string` | `''` |
 | `task.onCompletion` | `string` | `'delete'` | `string` | `''` |
 | `task.tags` | `string[]` | `['#todo', '#health']` | `any[]` | `[]` |
-| `task.originalMarkdown` | `string` | `'  - [ ] Do exercises #todo #health 🆔 abcdef ⛔ 123456,abc123 🔼 🔁 every day when done 🏁 delete ➕ 2023-07-01 🛫 2023-07-02 ⏳ 2023-07-03 📅 2023-07-04 ❌ 2023-07-06 ✅ 2023-07-05 ^dcf64c'` | `string` | `'- [/] minimal task'` |
+| `task.originalMarkdown` | `string` | `'  - [ ] Do exercises #todo #health 🆔 abcdef ⛔ 123456,abc123 🔼 🔁 every day when done 🏁 delete ➕ 2023-07-01 00:00:00 🛫 2023-07-02 00:00:00 ⏳ 2023-07-03 00:00:00 📅 2023-07-04 00:00:00 ❌ 2023-07-06 00:00:00 ✅ 2023-07-05 00:00:00 ^dcf64c'` | `string` | `'- [/] minimal task'` |
 | `task.lineNumber` | `number` | `17` | `number` | `0` |
 | `task.listMarker` | `string` | `'-'` | `string` | `'-'` |
 
