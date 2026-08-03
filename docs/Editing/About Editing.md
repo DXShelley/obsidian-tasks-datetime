@@ -14,14 +14,23 @@ Obsidian separates the **view** (whether you are reading or editing) from the
 **editing mode** (how Markdown is displayed while editing). The official
 terminology is:
 
-- **Reading view** renders the note without Markdown syntax.
-- **Editing view** lets you change the note. It contains two editing modes:
-  - **Live Preview** renders formatted text inline and hides most Markdown syntax.
+- **Reading view（阅读视图）** renders the note without Markdown syntax.
+- **Editing view（编辑视图）** lets you change the note. It contains two editing modes:
+  - **Live Preview（实时预览）** renders formatted text inline and hides most Markdown syntax.
     When the cursor enters formatted content, the underlying syntax is revealed
     for that row while it is being edited.
-  - **Source mode** displays all Markdown syntax exactly as written.
+  - **Source mode（源码模式）** displays all Markdown syntax exactly as written.
+
+The Chinese help page uses the heading **编辑模式** for the editable part of a
+note, while the view switcher calls that top-level state **编辑视图**. In this
+document, **编辑视图** means the top-level view, and **实时预览** or **源码模式**
+means the editing mode selected inside it.
 
 The task field display contract in this plugin is:
+
+For day-to-day use there are three visible task display states: **Reading
+view**, **Editing view + Live Preview**, and **Editing view + Source mode**. The
+last two are both inside **Editing view**; they are not two additional views.
 
 | Obsidian state | Task row | ID | Complete time |
 | --- | --- | --- | --- |
@@ -38,7 +47,7 @@ The first issue screenshot shows the pencil view-switcher tooltip for the
 current **Reading view**, where task IDs are hidden. The second screenshot opens
 the view menu with **Source mode** checked, where the task's full Markdown,
 including its ID and complete time, is visible. The official description is in
-[Views and editing mode](https://help.obsidian.md/Editing+and+formatting/Views+and+editing+mode).
+[编辑与预览笔记](https://obsidian.md/zh/help/edit-and-read).
 
 ## General editing techniques
 

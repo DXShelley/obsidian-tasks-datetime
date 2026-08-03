@@ -10,12 +10,17 @@ Automatic IDs are written as `🆔 t-<12 ULID-random-characters>`. They are inse
 
 ## Obsidian views and editing modes
 
-Obsidian's official terminology separates the **view** from the **editing mode** ([Views and editing mode](https://help.obsidian.md/edit-and-read)):
+Obsidian's official terminology separates the **view** from the **editing mode** ([编辑与预览笔记](https://obsidian.md/zh/help/edit-and-read)):
 
-- **Reading view** is a view that renders the note without Markdown syntax for reading.
-- **Editing view** is the view in which the note can be changed. It has two editing modes:
-  - **Live Preview** renders formatted text inline and hides most Markdown syntax. When the cursor enters formatted content, Obsidian reveals the underlying syntax for editing.
-  - **Source mode** displays all Markdown syntax exactly as written.
+- **Reading view（阅读视图）** is a view that renders the note without Markdown syntax for reading.
+- **Editing view（编辑视图）** is the view in which the note can be changed. It has two editing modes:
+  - **Live Preview（实时预览）** renders formatted text inline and hides most Markdown syntax. When the cursor enters formatted content, Obsidian reveals the underlying syntax for editing.
+  - **Source mode（源码模式）** displays all Markdown syntax exactly as written.
+
+The Chinese help page labels the editable section **编辑模式**, while the view
+switcher calls the top-level state **编辑视图**. Keep that distinction when
+describing or testing the plugin: **实时预览** and **源码模式** are modes inside
+**编辑视图**, not sibling views.
 
 The view-switcher icon identifies the current/target view, but it does not by
 itself distinguish **Live Preview** from **Source mode**. In the screenshots,

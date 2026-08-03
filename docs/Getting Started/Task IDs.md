@@ -35,6 +35,11 @@ Task IDs and dependency IDs are source metadata. They are stored in Markdown and
 | Reading view | Hidden |
 | Tasks query results | Hidden |
 
+These rows describe visible display states for convenience. Conceptually,
+**Live Preview** and **Source mode** are editing modes inside **Editing view**;
+they are not separate top-level views. See [[About Editing#Obsidian views and editing modes]]
+for the complete hierarchy and the task-time rules for an active Live Preview row.
+
 This visibility rule is independent of the **Include time in task dates** setting. Changing whether task times are displayed must never reveal or hide task IDs.
 
 ## Dependencies
