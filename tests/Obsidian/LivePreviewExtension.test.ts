@@ -24,6 +24,12 @@ describe('Live Preview task date display', () => {
         expect(taskInternalReferenceRangesInLine(line, 0)).toEqual([{ from: 17, to: 24 }]);
     });
 
+    it('finds an ID at the end of an active task source line', () => {
+        const line = '- [ ] #task Review ticket 🛫 2026-08-03 09:00:00 📅 2026-08-03 22:00:00 🆔 t-948c3afyb8ct';
+
+        expect(taskInternalReferenceRangesInLine(line, 0)).toEqual([{ from: line.indexOf(' 🆔'), to: line.length }]);
+    });
+
     it('finds only the time portions of task date fields', () => {
         const line = '- [ ] Task 📅 2026-07-23 14:15:16 ✅ 2026-07-24 00:00:00';
         const lineStart = 100;

@@ -9,6 +9,11 @@
     display: none !important;
 }
 
+// CodeMirror marks keep task implementation fields hidden while the active row shows Markdown source.
+.tasks-task-internal-reference {
+    display: none !important;
+}
+
 .plugin-tasks-query-explanation{
     /* Prevent long explanation lines wrapping, so they are more readable,
        especially on small screens.

@@ -155,7 +155,8 @@ class LivePreviewExtension implements PluginValue {
             }
             // IDs and dependencies are implementation data in all Live Preview states.
             for (const range of taskInternalReferenceRangesInLine(line.text, line.from)) {
-                builder.add(range.from, range.to, Decoration.replace({}));
+                // A mark is retained when Obsidian turns the active task row back into source text.
+                builder.add(range.from, range.to, Decoration.mark({ class: 'tasks-task-internal-reference' }));
             }
             // Times retain their existing setting and active-source-line behaviour.
             if (getSettings().enableDateTime || this.taskLineDisplaysMarkdownSource(line.from)) {
