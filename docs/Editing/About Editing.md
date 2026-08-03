@@ -43,6 +43,11 @@ Revealing the Markdown of the row under the cursor in Live Preview does not
 switch the note to Source mode. The ID remains hidden, while the complete time
 is shown so the date can be edited precisely.
 
+Generated task IDs and dependency IDs are immutable in both Live Preview and
+Source mode. Rewriting a task line is allowed when its existing internal fields
+are preserved (for example, changing the status), but changing an internal
+field is blocked. Deleting the complete task line remains allowed.
+
 The first issue screenshot shows the pencil view-switcher tooltip for the
 current **Reading view**, where task IDs are hidden. The second screenshot opens
 the view menu with **Source mode** checked, where the task's full Markdown,

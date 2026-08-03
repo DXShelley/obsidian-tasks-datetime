@@ -1,4 +1,4 @@
-import { RangeSetBuilder } from '@codemirror/state';
+import { EditorState, RangeSetBuilder, type Text, type Transaction } from '@codemirror/state';
 import type { DecorationSet, PluginValue, ViewUpdate } from '@codemirror/view';
 import { Decoration, EditorView, ViewPlugin } from '@codemirror/view';
 import { type App, editorLivePreviewField } from 'obsidian';
@@ -25,16 +25,23 @@ interface LivePreviewPlugin extends SettingsSaver {
 // CodeMirror constructs view plugins with only the EditorView, so capture the Tasks plugin here
 // to enable us to ask the plugin to save settings.
 export const newLivePreviewExtension = (plugin: LivePreviewPlugin) => {
-    return ViewPlugin.fromClass(
-        class extends LivePreviewExtension {
-            constructor(view: EditorView) {
-                super(view, plugin);
-            }
-        },
-        {
-            decorations: (extension) => extension.dateTimeDecorations,
-        },
-    );
+    return [
+        EditorState.changeFilter.of(taskInternalReferenceChangeFilter),
+        ViewPlugin.fromClass(
+            class extends LivePreviewExtension {
+                constructor(view: EditorView) {
+                    super(view, plugin);
+                }
+            },
+            {
+                decorations: (extension) => extension.dateTimeDecorations,
+                provide: (extension) =>
+                    EditorView.atomicRanges.of(
+                        (view) => view.plugin(extension)?.dateTimeDecorations ?? Decoration.none,
+                    ),
+            },
+        ),
+    ];
 };
 
 const livePreviewExtensions = new Set<LivePreviewExtension>();
@@ -107,6 +114,96 @@ export function taskDecorationRangesInLine(
     }
 
     return ranges.sort((a, b) => a.from - b.from || a.to - b.to);
+}
+
+function taskInternalReferenceRangesInDocument(doc: Text): { from: number; to: number }[] {
+    const ranges: { from: number; to: number }[] = [];
+    for (let lineNumber = 1; lineNumber <= doc.lines; lineNumber++) {
+        const line = doc.line(lineNumber);
+        if (!TaskRegularExpressions.taskRegex.test(line.text)) {
+            continue;
+        }
+        ranges.push(...taskInternalReferenceRangesInLine(line.text, line.from));
+    }
+    return ranges;
+}
+
+function changeTouchesRange(from: number, to: number, range: { from: number; to: number }): boolean {
+    if (from === to) {
+        return from > range.from && from < range.to;
+    }
+    return from < range.to && to > range.from;
+}
+
+function deletesWholeTaskLine(
+    doc: Text,
+    from: number,
+    to: number,
+    inserted: Text,
+    range: { from: number; to: number },
+): boolean {
+    if (inserted.length !== 0) {
+        return false;
+    }
+    const line = doc.lineAt(range.from);
+    return from <= line.from && to >= line.to;
+}
+
+function internalReferenceWasChanged(transaction: Transaction, range: { from: number; to: number }): boolean {
+    const line = transaction.startState.doc.lineAt(range.from);
+    const mappedFrom = transaction.changes.mapPos(range.from, 1);
+    const mappedTo = transaction.changes.mapPos(range.to, -1);
+
+    // A task checkbox click and the task modal rewrite the complete line. In that case
+    // CodeMirror maps the old range to the replacement boundary, so compare the old
+    // internal field with the inserted line text directly.
+    let fullLineReplacement: string | undefined;
+    transaction.changes.iterChanges((fromA, toA, _fromB, _toB, inserted) => {
+        if (fromA <= line.from && toA >= line.to && inserted.length > 0) {
+            fullLineReplacement = inserted.toString();
+        }
+    });
+    if (fullLineReplacement !== undefined) {
+        const before = transaction.startState.doc.sliceString(range.from, range.to);
+        return !fullLineReplacement.includes(before);
+    }
+
+    if (mappedTo < mappedFrom) {
+        return true;
+    }
+
+    const before = transaction.startState.doc.sliceString(range.from, range.to);
+    const after = transaction.newDoc.sliceString(mappedFrom, mappedTo);
+    return before !== after;
+}
+
+/**
+ * Prevents changing internal task references in either editing mode.
+ * Deleting the complete task line remains allowed so a newly created task can receive a new ID.
+ */
+export function taskInternalReferenceChangeFilter(transaction: Transaction): boolean | readonly number[] {
+    if (!transaction.docChanged) {
+        return true;
+    }
+
+    const internalReferenceRanges = taskInternalReferenceRangesInDocument(transaction.startState.doc);
+    for (const range of internalReferenceRanges) {
+        let blocked = false;
+        transaction.changes.iterChanges((fromA, toA, _fromB, _toB, inserted) => {
+            if (
+                changeTouchesRange(fromA, toA, range) &&
+                !deletesWholeTaskLine(transaction.startState.doc, fromA, toA, inserted, range) &&
+                internalReferenceWasChanged(transaction, range)
+            ) {
+                blocked = true;
+            }
+        });
+        if (blocked) {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 /** Returns whether a DOM line is currently rendered as Markdown source. */
