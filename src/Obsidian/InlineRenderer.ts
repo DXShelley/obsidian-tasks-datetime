@@ -7,9 +7,7 @@ import { TasksFile } from '../Scripting/TasksFile';
 import { Task } from '../Task/Task';
 import { TaskLineRenderer, createAndAppendElement, reconcileReplacementTask } from '../Renderer/TaskLineRenderer';
 import { TaskLocation } from '../Task/TaskLocation';
-
-const taskInternalReferenceFieldRegex =
-    /(?:^|[ \t]+)(?:🆔\uFE0F?\s*[a-zA-Z0-9_-]+|⛔\uFE0F?\s*[a-zA-Z0-9_-]+(?:\s*,\s*[a-zA-Z0-9_-]+)*)(?=\s|$)/gu;
+import { TaskRegularExpressions } from '../Task/TaskRegularExpressions';
 
 /**
  * Hides task IDs and dependency IDs in Reading View even when the task row
@@ -33,7 +31,7 @@ export function hideTaskIdsInReadingView(taskElement: HTMLElement): void {
 
     for (const textNode of textNodes) {
         const text = textNode.textContent ?? '';
-        const matches = Array.from(text.matchAll(taskInternalReferenceFieldRegex));
+        const matches = Array.from(text.matchAll(TaskRegularExpressions.taskInternalReferenceRegex));
         if (matches.length === 0 || !textNode.parentNode) continue;
 
         const fragment = textNode.ownerDocument.createDocumentFragment();

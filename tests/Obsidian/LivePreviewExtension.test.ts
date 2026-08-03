@@ -1,5 +1,9 @@
+import { RangeSetBuilder } from '@codemirror/state';
+import { Decoration } from '@codemirror/view';
 import {
+    isTaskLineActive,
     taskDateTimeRangesInLine,
+    taskDecorationRangesInLine,
     taskInternalReferenceRangesInLine,
     taskLineDisplaysMarkdownSource,
 } from '../../src/Obsidian/LivePreviewExtension';
@@ -42,6 +46,40 @@ describe('Live Preview task date display', () => {
         ]);
     });
 
+    it('returns mixed ID and date ranges in document order', () => {
+        const line = '- [ ] Task 📅 2026-07-23 14:15:16 🆔 t-k4iq21a2b3c4';
+
+        expect(taskDecorationRangesInLine(line, 0, true)).toEqual([
+            { from: line.indexOf(' 14:15:16'), to: line.indexOf(' 14:15:16') + 9, kind: 'dateTime' },
+            { from: line.indexOf(' 🆔'), to: line.length, kind: 'internalReference' },
+        ]);
+    });
+
+    it('builds CodeMirror decorations when a date precedes an ID', () => {
+        const line = '- [ ] Task 📅 2026-07-23 14:15:16 🆔 t-k4iq21a2b3c4';
+        const builder = new RangeSetBuilder<Decoration>();
+
+        for (const range of taskDecorationRangesInLine(line, 0, true)) {
+            builder.add(
+                range.from,
+                range.to,
+                range.kind === 'internalReference'
+                    ? Decoration.mark({ class: 'tasks-task-internal-reference' })
+                    : Decoration.replace({}),
+            );
+        }
+
+        expect(() => builder.finish()).not.toThrow();
+    });
+
+    it('keeps ID ranges while leaving the complete time visible on the active row', () => {
+        const line = '- [ ] Task 📅 2026-07-23 14:15:16 🆔 t-k4iq21a2b3c4';
+
+        expect(taskDecorationRangesInLine(line, 0, false)).toEqual([
+            { from: line.indexOf(' 🆔'), to: line.length, kind: 'internalReference' },
+        ]);
+    });
+
     it('does not hide dates without a seconds-precision time', () => {
         expect(taskDateTimeRangesInLine('- [ ] Task 📅 2026-07-23', 0)).toEqual([]);
     });
@@ -61,5 +99,10 @@ describe('Live Preview task date display', () => {
 
         expect(taskLineDisplaysMarkdownSource(sourceLine)).toBe(true);
         expect(taskLineDisplaysMarkdownSource(renderedLine)).toBe(false);
+    });
+
+    it('limits source-row time handling to the active task line', () => {
+        expect(isTaskLineActive(10, 10)).toBe(true);
+        expect(isTaskLineActive(10, 20)).toBe(false);
     });
 });

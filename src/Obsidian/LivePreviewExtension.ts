@@ -42,8 +42,13 @@ const taskDateTimeRegex = new RegExp(
     `${taskDateSymbolsPattern}\\s*\\d{4}-\\d{2}-\\d{2}(\\s+\\d{2}:\\d{2}:\\d{2})`,
     'gu',
 );
-const taskInternalReferenceRegex =
-    /(?:^|\s)(?:🆔\uFE0F?\s*[a-zA-Z0-9_-]+|⛔\uFE0F?\s*[a-zA-Z0-9_-]+(?:\s*,\s*[a-zA-Z0-9_-]+)*)(?=\s|$)/gu;
+export type TaskDecorationKind = 'internalReference' | 'dateTime';
+
+export interface TaskDecorationRange {
+    from: number;
+    to: number;
+    kind: TaskDecorationKind;
+}
 
 /** Refreshes the visible task date format after the time-display setting changes. */
 export function refreshLivePreviewTaskDateDisplay(): void {
@@ -67,7 +72,7 @@ export function taskDateTimeRangesInLine(line: string, lineStart: number): { fro
 /** Returns task ID and dependency fields, including their preceding separator when present. */
 export function taskInternalReferenceRangesInLine(line: string, lineStart: number): { from: number; to: number }[] {
     const ranges: { from: number; to: number }[] = [];
-    for (const match of line.matchAll(taskInternalReferenceRegex)) {
+    for (const match of line.matchAll(TaskRegularExpressions.taskInternalReferenceRegex)) {
         const matchStart = match.index;
         if (matchStart === undefined) {
             continue;
@@ -78,12 +83,39 @@ export function taskInternalReferenceRangesInLine(line: string, lineStart: numbe
 }
 
 /**
- * Returns whether a line is the sole Markdown source line currently being edited in Live Preview.
- * Only the main selection head is relevant: a cross-line selection must not reveal time on every
- * selected task line.
+ * Returns all Live Preview decoration ranges in document order.
+ * CodeMirror's RangeSetBuilder rejects ranges that are added out of order, so
+ * internal references and date-time ranges must be merged before decoration.
  */
+export function taskDecorationRangesInLine(
+    line: string,
+    lineStart: number,
+    hideDateTime: boolean,
+): TaskDecorationRange[] {
+    const ranges: TaskDecorationRange[] = taskInternalReferenceRangesInLine(line, lineStart).map((range) => ({
+        ...range,
+        kind: 'internalReference',
+    }));
+
+    if (hideDateTime) {
+        ranges.push(
+            ...taskDateTimeRangesInLine(line, lineStart).map((range) => ({
+                ...range,
+                kind: 'dateTime' as const,
+            })),
+        );
+    }
+
+    return ranges.sort((a, b) => a.from - b.from || a.to - b.to);
+}
+
+/** Returns whether a DOM line is currently rendered as Markdown source. */
 export function taskLineDisplaysMarkdownSource(lineElement: Element | null): boolean {
     return /^\s*(?:[-+*]|\d+[.)])\s+\[[^\]]\]/u.test(lineElement?.textContent ?? '');
+}
+
+export function isTaskLineActive(lineFrom: number, activeLineFrom: number): boolean {
+    return lineFrom === activeLineFrom;
 }
 
 /**
@@ -153,23 +185,25 @@ class LivePreviewExtension implements PluginValue {
             if (!TaskRegularExpressions.taskRegex.test(line.text)) {
                 continue;
             }
-            // IDs and dependencies are implementation data in all Live Preview states.
-            for (const range of taskInternalReferenceRangesInLine(line.text, line.from)) {
-                // A mark is retained when Obsidian turns the active task row back into source text.
-                builder.add(range.from, range.to, Decoration.mark({ class: 'tasks-task-internal-reference' }));
-            }
-            // Times retain their existing setting and active-source-line behaviour.
-            if (getSettings().enableDateTime || this.taskLineDisplaysMarkdownSource(line.from)) {
-                continue;
-            }
-            for (const range of taskDateTimeRangesInLine(line.text, line.from)) {
-                builder.add(range.from, range.to, Decoration.replace({}));
+            const hideDateTime = !getSettings().enableDateTime && !this.taskLineDisplaysMarkdownSource(line.from);
+            for (const range of taskDecorationRangesInLine(line.text, line.from, hideDateTime)) {
+                if (range.kind === 'internalReference') {
+                    // A mark is retained when Obsidian turns the active task row back into source text.
+                    builder.add(range.from, range.to, Decoration.mark({ class: 'tasks-task-internal-reference' }));
+                } else {
+                    builder.add(range.from, range.to, Decoration.replace({}));
+                }
             }
         }
         return builder.finish();
     }
 
     private taskLineDisplaysMarkdownSource(lineFrom: number): boolean {
+        const activeLineFrom = this.view.state.doc.lineAt(this.view.state.selection.main.head).from;
+        if (!isTaskLineActive(lineFrom, activeLineFrom)) {
+            return false;
+        }
+
         const domPosition = this.view.domAtPos(lineFrom);
         const element =
             domPosition.node.nodeType === Node.ELEMENT_NODE
